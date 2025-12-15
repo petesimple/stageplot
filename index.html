@@ -916,29 +916,28 @@
     let drag = null;
 
     function onDragStart(e){
-      e.preventDefault();
-      e.stopPropagation();
-      const id = e.currentTarget.dataset.id;
-      selectedId = id;
-      syncEditor();
-      render();
+  e.preventDefault();
+  e.stopPropagation();
 
-      const item = state.items.find(i => i.id === id);
-      if(!item) return;
+  const id = e.currentTarget.dataset.id;
+  selectedId = id;
+  syncEditor();
+  render();
 
-      drag = {
-        id,
-        startX: e.clientX,
-        startY: e.clientY,
-        itemStartX: item.x,
-        itemStartY: item.y
-      };
+  const item = state.items.find(i => i.id === id);
+  if(!item) return;
 
-      e.currentTarget.setPointerCapture(e.pointerId);
-      e.currentTarget.addEventListener("pointermove", onDragMove);
-      e.currentTarget.addEventListener("pointerup", onDragEnd);
-      e.currentTarget.addEventListener("pointercancel", onDragEnd);
-    }
+  drag = {
+    id,
+    startX: e.clientX,
+    startY: e.clientY,
+    itemStartX: item.x,
+    itemStartY: item.y
+  };
+
+  window.addEventListener("pointermove", onDragMove);
+  window.addEventListener("pointerup", onDragEnd, { once: true });
+}
 
     function onDragMove(e){
       if(!drag) return;
@@ -970,15 +969,12 @@
       render();
     }
 
-    function onDragEnd(e){
-      const el = e.currentTarget;
-      el.removeEventListener("pointermove", onDragMove);
-      el.removeEventListener("pointerup", onDragEnd);
-      el.removeEventListener("pointercancel", onDragEnd);
-      drag = null;
-      save();
-      render();
-    }
+    function onDragEnd(){
+  window.removeEventListener("pointermove", onDragMove);
+  drag = null;
+  save();
+  render();
+}
 
     // Stage click clears selection
     stageEl.addEventListener("click", () => {
