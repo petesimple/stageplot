@@ -1257,6 +1257,12 @@
       clearTimeout(t);
       t = setTimeout(render, 60);
     });
+    // PWA: register service worker
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+  });
+}
   </script>
 </body>
 </html>
