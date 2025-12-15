@@ -1,0 +1,1169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>StagePlot v2</title>
+  <style>
+    :root{
+      --bg:#0b0d12;
+      --panel:#121826;
+      --panel2:#0f1420;
+      --line:#26324a;
+      --text:#e9eefb;
+      --muted:#a9b4cc;
+      --accent:#4aa3ff;
+      --danger:#ff5a6a;
+      --ok:#40d98a;
+      --grid:rgba(255,255,255,.06);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: radial-gradient(1200px 700px at 50% -10%, #1a2540, var(--bg));
+      color:var(--text);
+    }
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:14px 16px;
+      border-bottom:1px solid var(--line);
+      background: rgba(10,12,18,.7);
+      backdrop-filter: blur(10px);
+      position:sticky;
+      top:0;
+      z-index:10;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    header h1{
+      font-size:16px;
+      margin:0;
+      letter-spacing:.2px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    header .right{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    button, select, input, textarea{
+      font: inherit;
+      color:var(--text);
+      background: var(--panel);
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:8px 10px;
+      outline:none;
+    }
+    button{
+      cursor:pointer;
+      transition: transform .05s ease, border-color .15s ease, background .15s ease;
+    }
+    button:hover{ border-color: rgba(74,163,255,.8); }
+    button:active{ transform: translateY(1px); }
+    button.primary{ background: rgba(74,163,255,.14); border-color: rgba(74,163,255,.6); }
+    button.danger{ background: rgba(255,90,106,.12); border-color: rgba(255,90,106,.5); }
+    button.ok{ background: rgba(64,217,138,.12); border-color: rgba(64,217,138,.5); }
+
+    .pill{
+      display:inline-flex;
+      gap:6px;
+      align-items:center;
+      padding:6px 10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.08);
+      color: var(--muted);
+      font-size:12px;
+      cursor:default;
+      user-select:none;
+    }
+    .pill.clickable{ cursor:pointer; }
+    .dot{ width:8px; height:8px; border-radius:50%; background: var(--accent); display:inline-block; }
+
+    .layout{
+      display:grid;
+      grid-template-columns: 340px 1fr 380px;
+      gap:12px;
+      padding:12px;
+      min-height: calc(100vh - 70px);
+    }
+    .panel{
+      background: linear-gradient(180deg, rgba(18,24,38,.9), rgba(12,16,26,.9));
+      border:1px solid var(--line);
+      border-radius:16px;
+      overflow:hidden;
+      box-shadow: 0 12px 30px rgba(0,0,0,.35);
+    }
+    .panel .title{
+      padding:12px 12px 10px 12px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .panel .title h2{
+      margin:0;
+      font-size:13px;
+      color: var(--muted);
+      font-weight:600;
+      letter-spacing:.2px;
+      text-transform: uppercase;
+    }
+    .panel .body{ padding:12px; }
+    .stack{ display:flex; flex-direction:column; gap:10px; }
+    .row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .small{ font-size:12px; color: var(--muted); }
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+
+    /* Catalog list */
+    .catalog{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      max-height: 420px;
+      overflow:auto;
+      padding-right:4px;
+    }
+    .catItem{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:10px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.04);
+    }
+    .catLeft{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      min-width:0;
+    }
+    .catIcon{
+      width:34px;
+      height:34px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex:0 0 auto;
+    }
+    .catText{ min-width:0; }
+    .catName{
+      font-size:13px;
+      font-weight:650;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width: 210px;
+    }
+    .catMeta{ font-size:12px; color: var(--muted); }
+
+    /* Stage */
+    .stageWrap{
+      padding:12px;
+      height: 100%;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .stageMeta{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+    .stage{
+      flex:1;
+      min-height: 540px;
+      background:
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      background-size: 32px 32px, 32px 32px, auto;
+      border:1px solid var(--line);
+      border-radius:16px;
+      position:relative;
+      overflow:hidden;
+    }
+    .stage::before{
+      content:"AUDIENCE";
+      position:absolute;
+      top:10px;
+      left:50%;
+      transform: translateX(-50%);
+      font-size:12px;
+      color: rgba(255,255,255,.22);
+      letter-spacing: 2px;
+      pointer-events:none;
+      user-select:none;
+    }
+    .stageEdge{
+      position:absolute;
+      inset:0;
+      border-radius:16px;
+      pointer-events:none;
+      box-shadow: inset 0 0 0 2px rgba(74,163,255,.06);
+    }
+
+    .item{
+      position:absolute;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.08);
+      box-shadow: 0 10px 18px rgba(0,0,0,.25);
+      padding:10px 10px 8px 10px;
+      touch-action:none;
+      user-select:none;
+      min-width: 90px;
+      color: var(--accent);
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    .item .iconWrap{
+      width:34px;
+      height:34px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex:0 0 auto;
+    }
+    .item svg.icon{
+      width:22px; height:22px;
+      display:block;
+      color: currentColor;
+    }
+    .item .textWrap{ min-width:0; }
+    .item .type{ font-size:10px; color: rgba(233,238,251,.70); text-transform: uppercase; letter-spacing:.35px; }
+    .item .label{ font-size:13px; font-weight:700; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width: 180px; color: rgba(233,238,251,.96); }
+    .item .sub{ font-size:11px; color: rgba(233,238,251,.60); margin-top:3px; display:flex; gap:8px; }
+    .item.selected{
+      border-color: rgba(74,163,255,.9);
+      box-shadow: 0 0 0 2px rgba(74,163,255,.25), 0 10px 18px rgba(0,0,0,.25);
+    }
+
+    /* Tables */
+    table{
+      width:100%;
+      border-collapse: collapse;
+      font-size:12px;
+    }
+    th, td{
+      text-align:left;
+      padding:8px 8px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      vertical-align:top;
+    }
+    th{ color: var(--muted); font-weight:650; }
+
+    .scrollBox{
+      max-height: 220px;
+      overflow:auto;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:12px;
+      background: rgba(255,255,255,.03);
+    }
+
+    /* Print layout */
+    @page { margin: 0.45in; }
+    @media print{
+      header{ display:none !important; }
+      body{ background:#fff; color:#000; }
+      .layout{
+        grid-template-columns: 62% 38%;
+        grid-template-areas:
+          "stage info";
+        padding:0;
+        gap: 12px;
+        min-height: 0;
+      }
+      .panel{
+        box-shadow:none;
+        background:#fff;
+        color:#000;
+        border:1px solid #ddd;
+      }
+      .panel.catalogPanel{ display:none !important; }
+
+      .stagePanel{ grid-area: stage; }
+      .infoPanel{ grid-area: info; }
+
+      button, select, input, textarea, .pill.clickable{ display:none !important; }
+
+      .stage{ min-height: 9.2in; background: #fff; border:1px solid #bbb; }
+      .stage::before{ color:#888; }
+      .stageEdge{ box-shadow:none; }
+
+      .item{
+        box-shadow:none;
+        background: rgba(0,0,0,.04);
+        border: 1px solid rgba(0,0,0,.22);
+        color:#000;
+      }
+      .item .label{ color:#000; }
+      .item .type, .item .sub{ color: rgba(0,0,0,.70); }
+
+      th, td{ border-bottom: 1px solid #e3e3e3; }
+      th{ color:#444; }
+
+      .scrollBox{ max-height: none; overflow: visible; border:1px solid #ddd; }
+      .small{ color:#444; }
+
+      /* Try to keep it all one page */
+      .panel{ break-inside: avoid; page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sprite sheet (SVG symbols). All shapes use currentColor for clean tinting. -->
+  <svg width="0" height="0" style="position:absolute; left:-9999px; top:-9999px;" aria-hidden="true" focusable="false">
+    <symbol id="spr-mic" viewBox="0 0 64 64">
+      <path fill="currentColor" d="M32 6c-6 0-11 5-11 11v14c0 6 5 11 11 11s11-5 11-11V17c0-6-5-11-11-11zm-7 25V17a7 7 0 0 1 14 0v14a7 7 0 0 1-14 0z"/>
+      <path fill="currentColor" d="M18 30a2 2 0 0 1 2 2c0 7 5 13 12 13s12-6 12-13a2 2 0 1 1 4 0c0 8-6 15-14 16v6h6a2 2 0 1 1 0 4H24a2 2 0 1 1 0-4h6v-6c-8-1-14-8-14-16a2 2 0 0 1 2-2z"/>
+    </symbol>
+
+    <symbol id="spr-guitar" viewBox="0 0 64 64">
+      <path fill="currentColor" d="M44 6l14 14-4 4-3-3-9 9c2 5 0 12-5 17-6 6-15 7-20 2l-5 5a4 4 0 0 1-6-6l5-5c-5-5-4-14 2-20 5-5 12-7 17-5l9-9-3-3 4-4zm-24 19c-4 4-5 10-1 14s10 3 14-1 5-10 1-14-10-3-14 1z"/>
+    </symbol>
+
+    <symbol id="spr-bass" viewBox="0 0 64 64">
+      <path fill="currentColor" d="M46 6l12 12-4 4-2-2-10 10c3 6 1 13-5 19-7 7-17 8-23 2l-4 4a4 4 0 1 1-6-6l4-4c-6-6-5-16 2-23 6-6 13-8 19-5L39 17l-2-2 4-4zM20 24c-5 5-6 12-2 16s11 3 16-2 6-12 2-16-11-3-16 2z"/>
+    </symbol>
+
+    <symbol id="spr-keys" viewBox="0 0 64 64">
+      <path fill="currentColor" d="M10 18h44a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h44V22H10z"/>
+      <path fill="currentColor" d="M14 22h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22z"/>
+      <path fill="currentColor" d="M19 22h3v12h-3V22zm8 0h3v12h-3V22zm8 0h3v12h-3V22zm8 0h3v12h-3V22z"/>
+    </symbol>
+
+    <symbol id="spr-drums" viewBox="0 0 64 64">
+      <path fill="currentColor" d="M14 26c0-8 8-14 18-14s18 6 18 14-8 14-18 14-18-6-18-14zm4 0c0 6 6 10 14 10s14-4 14-10-6-10-14-10-14 4-14 10z"/>
+      <path fill="currentColor" d="M20 40h24v12a4 4 0 0 1-4 4H24a4 4 0 0 1-4-4V40zm4 4v8h16v-8H24z"/>
+      <path fill="currentColor" d="M10 18a2 2 0 0 1 3 0l8 8a2 2 0 0 1-3 3l-8-8a2 2 0 0 1 0-3zm44 0a2 2 0 0 1 0 3l-8 8a2 2 0 1 1-3-3l8-8a2 2 0 0 1 3 0z"/>
+    </symbol>
+
+    <symbol id="spr-amp" viewBox="0 0 64 64">
+      <path fill="currentColor" d="M14 16h36a4 4 0 0 1 4 4v28a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V20a4 4 0 0 1 4-4zm0 4v28h36V20H14z"/>
+      <path fill="currentColor" d="M18 24h28v4H18v-4zm0 8h28v4H18v-4zm0 8h18v4H18v-4z"/>
+      <circle fill="currentColor" cx="44" cy="42" r="3"/>
+    </symbol>
+
+    <symbol id="spr-wedge" viewBox="0 0 64 64">
+      <path fill="currentColor" d="M10 42l44-16v18a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4v-2z"/>
+      <path fill="currentColor" d="M12 40l40-14v3L12 43v-3z" opacity=".5"/>
+    </symbol>
+
+    <symbol id="spr-iem" viewBox="0 0 64 64">
+      <path fill="currentColor" d="M20 28c0-7 5-12 12-12s12 5 12 12v10a2 2 0 1 1-4 0V28c0-4-3-8-8-8s-8 4-8 8v10a2 2 0 1 1-4 0V28z"/>
+      <path fill="currentColor" d="M16 40a6 6 0 0 0 12 0v-2h-4v2a2 2 0 0 1-4 0v-2h-4v2zm20 0a6 6 0 0 0 12 0v-2h-4v2a2 2 0 0 1-4 0v-2h-4v2z"/>
+    </symbol>
+
+    <symbol id="spr-di" viewBox="0 0 64 64">
+      <path fill="currentColor" d="M18 18h28a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h28V22H18z"/>
+      <path fill="currentColor" d="M22 26h8v4h-8v-4zm0 8h12v4H22v-4z"/>
+      <circle fill="currentColor" cx="42" cy="28" r="2"/>
+      <circle fill="currentColor" cx="42" cy="36" r="2"/>
+    </symbol>
+
+    <symbol id="spr-stand" viewBox="0 0 64 64">
+      <path fill="currentColor" d="M40 10a2 2 0 0 1 2 2v10a2 2 0 1 1-4 0V12a2 2 0 0 1 2-2z"/>
+      <path fill="currentColor" d="M26 22a2 2 0 0 1 3 0l11 11a2 2 0 1 1-3 3L26 25a2 2 0 0 1 0-3z"/>
+      <path fill="currentColor" d="M40 32a2 2 0 0 1 2 2v14l6 6a2 2 0 1 1-3 3l-5-5-5 5a2 2 0 1 1-3-3l6-6V34a2 2 0 0 1 2-2z"/>
+      <path fill="currentColor" d="M20 52h40a2 2 0 1 1 0 4H20a2 2 0 1 1 0-4z"/>
+    </symbol>
+
+    <symbol id="spr-outlet" viewBox="0 0 64 64">
+      <path fill="currentColor" d="M20 12h24a8 8 0 0 1 8 8v24a8 8 0 0 1-8 8H20a8 8 0 0 1-8-8V20a8 8 0 0 1 8-8zm0 4a4 4 0 0 0-4 4v24a4 4 0 0 0 4 4h24a4 4 0 0 0 4-4V20a4 4 0 0 0-4-4H20z"/>
+      <circle fill="currentColor" cx="26" cy="28" r="4"/>
+      <circle fill="currentColor" cx="38" cy="28" r="4"/>
+      <rect fill="currentColor" x="29" y="36" width="6" height="10" rx="3"/>
+    </symbol>
+
+    <symbol id="spr-riser" viewBox="0 0 64 64">
+      <path fill="currentColor" d="M10 22h44a4 4 0 0 1 4 4v16a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V26a4 4 0 0 1 4-4zm0 4v16h44V26H10z"/>
+      <path fill="currentColor" d="M14 30h10v8H14v-8zm13 0h10v8H27v-8zm13 0h10v8H40v-8z" opacity=".55"/>
+    </symbol>
+
+    <symbol id="spr-console" viewBox="0 0 64 64">
+      <path fill="currentColor" d="M10 18h44a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h44V22H10z"/>
+      <path fill="currentColor" d="M14 26h36v4H14v-4zm0 8h20v4H14v-4z"/>
+      <circle fill="currentColor" cx="44" cy="36" r="2.5"/>
+      <circle fill="currentColor" cx="50" cy="36" r="2.5"/>
+    </symbol>
+  </svg>
+
+  <header>
+    <h1>
+      StagePlot v2
+      <span class="pill"><span class="dot"></span><span id="autosavePill">Autosave on</span></span>
+    </h1>
+    <div class="right">
+      <button class="primary" id="btnPrint">Print</button>
+
+      <button id="btnExportProject">Export project</button>
+      <label class="pill clickable">
+        <span class="dot"></span>Import project
+        <input id="fileImportProject" type="file" accept="application/json" style="display:none;">
+      </label>
+
+      <button id="btnExportLibrary">Export library</button>
+      <label class="pill clickable">
+        <span class="dot"></span>Import library
+        <input id="fileImportLibrary" type="file" accept="application/json" style="display:none;">
+      </label>
+
+      <button class="danger" id="btnReset">Reset</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- Left: Catalog -->
+    <section class="panel catalogPanel">
+      <div class="title">
+        <h2>Item library</h2>
+        <span class="small" id="libCount">0 items</span>
+      </div>
+      <div class="body">
+        <div class="stack">
+          <div class="row">
+            <select id="stagePreset">
+              <option value="small">Stage: Small (16x12)</option>
+              <option value="medium" selected>Stage: Medium (24x16)</option>
+              <option value="large">Stage: Large (32x20)</option>
+              <option value="custom">Stage: Custom</option>
+            </select>
+          </div>
+          <div class="row">
+            <input id="stageW" type="number" min="8" max="80" step="1" value="24" style="width:110px" />
+            <input id="stageD" type="number" min="6" max="60" step="1" value="16" style="width:110px" />
+            <span class="small">W x D</span>
+          </div>
+
+          <div class="row">
+            <input id="search" placeholder="Search (guitar, outlet, riser...)" style="width:100%" />
+          </div>
+          <div class="row">
+            <select id="category" style="width:100%"></select>
+          </div>
+
+          <div class="catalog" id="catalog"></div>
+
+          <div class="small">
+            Tip: import a library JSON to add new item types (outlets, lighting, weird instruments, anything).
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Middle: Stage -->
+    <section class="panel stagePanel">
+      <div class="title">
+        <h2>Stage</h2>
+        <div class="row">
+          <button id="btnCenter">Center selection</button>
+          <button class="danger" id="btnDelete">Delete</button>
+        </div>
+      </div>
+      <div class="stageWrap">
+        <div class="stageMeta">
+          <span class="pill"><span class="dot"></span><span id="stageLabel">24 x 16</span></span>
+          <span class="small">Click an item to edit on the right. Drag to move.</span>
+        </div>
+        <div id="stage" class="stage">
+          <div class="stageEdge"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right: Edit + Lists + Notes (prints as the info column) -->
+    <section class="panel infoPanel">
+      <div class="title">
+        <h2>One-page print info</h2>
+        <span class="small" id="selHint">No item selected</span>
+      </div>
+      <div class="body">
+        <div class="stack">
+
+          <div class="row">
+            <input id="bandName" placeholder="Band name (optional)" style="width:100%" />
+          </div>
+
+          <div class="row">
+            <input id="fLabel" placeholder="Label (ex: Pete - Vox)" style="width:100%" />
+          </div>
+
+          <div class="row">
+            <input id="fType" placeholder="Type" style="width:48%" disabled />
+            <input id="fColor" type="color" value="#4aa3ff" style="width:54px; padding:6px;" />
+            <input id="fInput" placeholder="Input (ex: Ch 1)" style="width:40%" />
+            <input id="fMix" placeholder="Mix (ex: M1)" style="width:30%" />
+          </div>
+
+          <div class="row">
+            <label class="small" style="min-width:70px;">Scale</label>
+            <input id="fScale" type="range" min="0.5" max="2.0" step="0.05" value="1" style="flex:1;" />
+            <span class="pill"><span id="scaleReadout">100%</span></span>
+          </div>
+
+          <div class="row">
+            <textarea id="fNotes" rows="3" placeholder="Item notes (ex: DI after pedals, needs boom, etc)" style="width:100%"></textarea>
+          </div>
+
+          <div class="small">Inputs</div>
+          <div class="scrollBox">
+            <table id="inputsTable">
+              <thead>
+                <tr>
+                  <th style="width:62px">Ch</th>
+                  <th>Source</th>
+                  <th style="width:70px">Mix</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="small">Monitor mixes</div>
+          <div class="scrollBox">
+            <table id="mixTable">
+              <thead>
+                <tr>
+                  <th style="width:70px">Mix</th>
+                  <th>Who</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="small">Show notes</div>
+          <textarea id="showNotes" rows="6" placeholder="Show notes (parking, backline, contact, set length, etc)"></textarea>
+
+          <div class="small mono" id="notesPreview" style="white-space:pre-wrap; padding:10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:12px;"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const $ = (s) => document.querySelector(s);
+    const stageEl = $("#stage");
+
+    const STORAGE_KEY = "stageplot_v2_state";
+    const STORAGE_KEY_LIB = "stageplot_v2_user_library";
+
+    // Built-in default library (extend anytime via Import library)
+    const BUILTIN_LIBRARY = {
+      version: 1,
+      items: [
+        // People / Instruments
+        { type:"Vocal", labelDefault:"Vox", category:"People", w:3.2, h:2.2, sprite:"mic", inputHint:"Ch 1", mixHint:"M1" },
+        { type:"Guitar", labelDefault:"Guitar", category:"Instruments", w:3.2, h:2.2, sprite:"guitar", inputHint:"Ch ?", mixHint:"M?" },
+        { type:"Bass", labelDefault:"Bass", category:"Instruments", w:3.2, h:2.2, sprite:"bass", inputHint:"Ch ?", mixHint:"M?" },
+        { type:"Keys", labelDefault:"Keys", category:"Instruments", w:3.6, h:2.4, sprite:"keys", inputHint:"Ch ?", mixHint:"M?" },
+        { type:"Drums", labelDefault:"Drums", category:"Instruments", w:5.2, h:3.4, sprite:"drums", inputHint:"Multi", mixHint:"M?" },
+
+        // Stage gear
+        { type:"Amp", labelDefault:"Amp", category:"Stage gear", w:2.4, h:2.0, sprite:"amp" },
+        { type:"Wedge", labelDefault:"Wedge", category:"Stage gear", w:2.0, h:1.6, sprite:"wedge", mixHint:"M1" },
+        { type:"IEM", labelDefault:"IEM", category:"Stage gear", w:2.0, h:1.6, sprite:"iem", mixHint:"M1" },
+        { type:"DI", labelDefault:"DI", category:"Stage gear", w:1.8, h:1.4, sprite:"di" },
+        { type:"Mic Stand", labelDefault:"Stand", category:"Stage gear", w:1.8, h:1.4, sprite:"stand" },
+
+        // Electrical / Misc
+        { type:"Power Outlet", labelDefault:"Power", category:"Electrical", w:1.6, h:1.2, sprite:"outlet" },
+        { type:"Riser", labelDefault:"Riser", category:"Stage", w:4.4, h:2.2, sprite:"riser" },
+        { type:"FOH Console", labelDefault:"FOH", category:"Front of house", w:3.6, h:2.0, sprite:"console" }
+      ]
+    };
+
+    function deepClone(x){ return JSON.parse(JSON.stringify(x)); }
+    function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+
+    function normalizeHex(h){
+      if(!h) return "#4aa3ff";
+      if(/^#([0-9a-f]{3})$/i.test(h)){
+        const m = h.slice(1).split("");
+        return "#" + m.map(x=>x+x).join("");
+      }
+      if(/^#([0-9a-f]{6})$/i.test(h)) return h;
+      return "#4aa3ff";
+    }
+
+    function hexToRgba(hex, a){
+      const h = normalizeHex(hex).slice(1);
+      const r = parseInt(h.slice(0,2),16);
+      const g = parseInt(h.slice(2,4),16);
+      const b = parseInt(h.slice(4,6),16);
+      return `rgba(${r},${g},${b},${a})`;
+    }
+
+    function escapeHtml(s){
+      return String(s ?? "").replace(/[&<>"']/g, c => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+      }[c]));
+    }
+
+    function uid(){
+      return Math.random().toString(16).slice(2) + Date.now().toString(16);
+    }
+
+    function loadJSON(key){
+      try{
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : null;
+      }catch(e){ return null; }
+    }
+    function saveJSON(key, value){
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    // Merge libraries: built-in + user
+    function mergedLibrary(){
+      const userLib = loadJSON(STORAGE_KEY_LIB) || { version: 1, items: [] };
+      const map = new Map();
+      for(const it of BUILTIN_LIBRARY.items) map.set(it.type.toLowerCase(), it);
+      for(const it of userLib.items || []) map.set((it.type||"").toLowerCase(), it);
+      const items = [...map.values()];
+      return { version: 1, items };
+    }
+
+    function buildCategoryOptions(lib){
+      const sel = $("#category");
+      const cats = new Set(["All"]);
+      for(const it of lib.items){
+        cats.add(it.category || "Other");
+      }
+      const list = [...cats].sort((a,b)=>{
+        if(a==="All") return -1;
+        if(b==="All") return 1;
+        return a.localeCompare(b);
+      });
+      sel.innerHTML = "";
+      for(const c of list){
+        const opt = document.createElement("option");
+        opt.value = c;
+        opt.textContent = c;
+        sel.appendChild(opt);
+      }
+    }
+
+    // App state
+    const defaults = {
+      stage: { w: 24, d: 16 },
+      bandName: "",
+      notes: "",
+      items: []
+    };
+
+    let state = loadJSON(STORAGE_KEY) || deepClone(defaults);
+    let selectedId = null;
+
+    function save(){
+      saveJSON(STORAGE_KEY, state);
+    }
+
+    function setStageFromInputs(){
+      const w = clamp(parseFloat($("#stageW").value || 24), 8, 80);
+      const d = clamp(parseFloat($("#stageD").value || 16), 6, 60);
+      state.stage.w = w;
+      state.stage.d = d;
+      $("#stageLabel").textContent = `${w} x ${d}`;
+      save();
+      render();
+    }
+
+    function stageToPx(xFt, yFt){
+      const rect = stageEl.getBoundingClientRect();
+      const pad = 16;
+      const usableW = rect.width - pad*2;
+      const usableH = rect.height - pad*2;
+      const sx = usableW / state.stage.w;
+      const sy = usableH / state.stage.d;
+      return { x: pad + xFt * sx, y: pad + yFt * sy, sx, sy, pad, usableW, usableH };
+    }
+
+    function renderSprite(sprite){
+      const id = sprite ? `#spr-${sprite}` : "";
+      return `
+        <svg class="icon" viewBox="0 0 64 64" aria-hidden="true">
+          <use href="${id}"></use>
+        </svg>
+      `;
+    }
+
+    function addFromCatalog(catItem){
+      const it = catItem;
+      const item = {
+        id: uid(),
+        type: it.type,
+        sprite: it.sprite || "mic",
+        x: (state.stage.w * 0.5) - (it.w/2),
+        y: (state.stage.d * 0.55) - (it.h/2),
+        w: it.w,
+        h: it.h,
+        scale: 1.0,
+        label: it.labelDefault || it.type,
+        color: "#4aa3ff",
+        input: it.inputHint || "",
+        mix: it.mixHint || "",
+        notes: ""
+      };
+      state.items.push(item);
+      selectedId = item.id;
+      save();
+      render();
+      syncEditor();
+    }
+
+    function render(){
+      // Stage + band name + notes
+      $("#stageW").value = state.stage.w;
+      $("#stageD").value = state.stage.d;
+      $("#stageLabel").textContent = `${state.stage.w} x ${state.stage.d}`;
+
+      $("#bandName").value = state.bandName || "";
+      $("#showNotes").value = state.notes || "";
+      $("#notesPreview").textContent = state.notes || "";
+
+      // Library and catalog
+      const lib = mergedLibrary();
+      $("#libCount").textContent = `${lib.items.length} items`;
+      const search = ($("#search").value || "").trim().toLowerCase();
+      const cat = $("#category").value || "All";
+
+      const filtered = lib.items.filter(it => {
+        const inCat = (cat === "All") || ((it.category || "Other") === cat);
+        const inSearch = !search || (it.type || "").toLowerCase().includes(search) || (it.category || "").toLowerCase().includes(search);
+        return inCat && inSearch;
+      }).sort((a,b)=> (a.type||"").localeCompare(b.type||""));
+
+      const listEl = $("#catalog");
+      listEl.innerHTML = "";
+      for(const it of filtered){
+        const row = document.createElement("div");
+        row.className = "catItem";
+
+        row.innerHTML = `
+          <div class="catLeft">
+            <div class="catIcon">${renderSprite(it.sprite)}</div>
+            <div class="catText">
+              <div class="catName" title="${escapeHtml(it.type)}">${escapeHtml(it.type)}</div>
+              <div class="catMeta">${escapeHtml(it.category || "Other")} - base ${it.w}x${it.h}</div>
+            </div>
+          </div>
+          <button class="primary">Add</button>
+        `;
+        row.querySelector("button").addEventListener("click", () => addFromCatalog(it));
+        listEl.appendChild(row);
+      }
+
+      // Clear and render stage items
+      stageEl.querySelectorAll(".item").forEach(n => n.remove());
+
+      for(const item of state.items){
+        const div = document.createElement("div");
+        div.className = "item" + (item.id === selectedId ? " selected" : "");
+        div.dataset.id = item.id;
+
+        const p = stageToPx(item.x, item.y);
+        const wFt = item.w * (item.scale || 1);
+        const hFt = item.h * (item.scale || 1);
+
+        const wPx = wFt * p.sx;
+        const hPx = hFt * p.sy;
+
+        div.style.left = `${p.x}px`;
+        div.style.top = `${p.y}px`;
+        div.style.width = `${wPx}px`;
+        div.style.height = `${hPx}px`;
+
+        const c = normalizeHex(item.color || "#4aa3ff");
+        div.style.borderColor = hexToRgba(c, 0.55);
+        div.style.background = hexToRgba(c, 0.14);
+        div.style.color = c;
+
+        div.innerHTML = `
+          <div class="iconWrap">${renderSprite(item.sprite)}</div>
+          <div class="textWrap">
+            <div class="type">${escapeHtml(item.type)}</div>
+            <div class="label" title="${escapeHtml(item.label)}">${escapeHtml(item.label)}</div>
+            <div class="sub">
+              <span>${escapeHtml(item.input || "")}</span>
+              <span>${escapeHtml(item.mix || "")}</span>
+            </div>
+          </div>
+        `;
+
+        div.addEventListener("pointerdown", onDragStart);
+        div.addEventListener("click", (e) => {
+          e.stopPropagation();
+          selectedId = item.id;
+          save();
+          render();
+          syncEditor();
+        });
+
+        stageEl.appendChild(div);
+      }
+
+      rebuildLists();
+    }
+
+    function rebuildLists(){
+      const tbody = $("#inputsTable tbody");
+      tbody.innerHTML = "";
+      const rows = state.items
+        .filter(i => (i.input || "").trim() || (i.type || "").trim())
+        .map(i => ({
+          ch: (i.input || "").trim(),
+          src: `${i.label || i.type}`.trim(),
+          mix: (i.mix || "").trim(),
+        }))
+        .sort((a,b) => (a.ch || "").localeCompare(b.ch || ""));
+
+      for(const r of rows){
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="mono">${escapeHtml(r.ch)}</td>
+          <td>${escapeHtml(r.src)}</td>
+          <td class="mono">${escapeHtml(r.mix)}</td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      const mixMap = new Map();
+      for(const i of state.items){
+        const mix = (i.mix || "").trim();
+        if(!mix) continue;
+        if(!mixMap.has(mix)) mixMap.set(mix, []);
+        mixMap.get(mix).push(i);
+      }
+
+      const mtbody = $("#mixTable tbody");
+      mtbody.innerHTML = "";
+      const mixes = [...mixMap.keys()].sort((a,b)=>a.localeCompare(b));
+      for(const mix of mixes){
+        const who = mixMap.get(mix).map(i => i.label || i.type).join(", ");
+        const notes = mixMap.get(mix).map(i => (i.notes || "").trim()).filter(Boolean).join(" | ");
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="mono">${escapeHtml(mix)}</td>
+          <td>${escapeHtml(who)}</td>
+          <td>${escapeHtml(notes)}</td>
+        `;
+        mtbody.appendChild(tr);
+      }
+    }
+
+    function syncEditor(){
+      const item = state.items.find(i => i.id === selectedId);
+      const hint = $("#selHint");
+      if(!item){
+        hint.textContent = "No item selected";
+        $("#fLabel").value = "";
+        $("#fType").value = "";
+        $("#fColor").value = "#4aa3ff";
+        $("#fInput").value = "";
+        $("#fMix").value = "";
+        $("#fNotes").value = "";
+        $("#fScale").value = 1.0;
+        $("#scaleReadout").textContent = "100%";
+        return;
+      }
+      hint.textContent = `Editing: ${item.type}`;
+      $("#fLabel").value = item.label || "";
+      $("#fType").value = item.type || "";
+      $("#fColor").value = normalizeHex(item.color || "#4aa3ff");
+      $("#fInput").value = item.input || "";
+      $("#fMix").value = item.mix || "";
+      $("#fNotes").value = item.notes || "";
+      $("#fScale").value = clamp(parseFloat(item.scale || 1), 0.5, 2.0);
+      $("#scaleReadout").textContent = `${Math.round(parseFloat($("#fScale").value) * 100)}%`;
+    }
+
+    function updateSelected(patch){
+      const item = state.items.find(i => i.id === selectedId);
+      if(!item) return;
+      Object.assign(item, patch);
+
+      // Keep selection inside bounds after scale changes
+      const wFt = item.w * (item.scale || 1);
+      const hFt = item.h * (item.scale || 1);
+      item.x = clamp(item.x, 0, state.stage.w - wFt);
+      item.y = clamp(item.y, 0, state.stage.d - hFt);
+
+      save();
+      render();
+      syncEditor();
+    }
+
+    // Drag logic (respects scale, keeps inside stage)
+    let drag = null;
+
+    function onDragStart(e){
+      e.preventDefault();
+      e.stopPropagation();
+      const id = e.currentTarget.dataset.id;
+      selectedId = id;
+      syncEditor();
+      render();
+
+      const item = state.items.find(i => i.id === id);
+      if(!item) return;
+
+      drag = {
+        id,
+        startX: e.clientX,
+        startY: e.clientY,
+        itemStartX: item.x,
+        itemStartY: item.y
+      };
+
+      e.currentTarget.setPointerCapture(e.pointerId);
+      e.currentTarget.addEventListener("pointermove", onDragMove);
+      e.currentTarget.addEventListener("pointerup", onDragEnd);
+      e.currentTarget.addEventListener("pointercancel", onDragEnd);
+    }
+
+    function onDragMove(e){
+      if(!drag) return;
+      const item = state.items.find(i => i.id === drag.id);
+      if(!item) return;
+
+      const dx = e.clientX - drag.startX;
+      const dy = e.clientY - drag.startY;
+
+      const rect = stageEl.getBoundingClientRect();
+      const pad = 16;
+      const usableW = rect.width - pad*2;
+      const usableH = rect.height - pad*2;
+      const sx = usableW / state.stage.w;
+      const sy = usableH / state.stage.d;
+
+      let nx = drag.itemStartX + dx / sx;
+      let ny = drag.itemStartY + dy / sy;
+
+      const wFt = item.w * (item.scale || 1);
+      const hFt = item.h * (item.scale || 1);
+
+      nx = clamp(nx, 0, state.stage.w - wFt);
+      ny = clamp(ny, 0, state.stage.d - hFt);
+
+      item.x = nx;
+      item.y = ny;
+
+      render();
+    }
+
+    function onDragEnd(e){
+      const el = e.currentTarget;
+      el.removeEventListener("pointermove", onDragMove);
+      el.removeEventListener("pointerup", onDragEnd);
+      el.removeEventListener("pointercancel", onDragEnd);
+      drag = null;
+      save();
+      render();
+    }
+
+    // Stage click clears selection
+    stageEl.addEventListener("click", () => {
+      selectedId = null;
+      save();
+      render();
+      syncEditor();
+    });
+
+    // Wire controls
+    $("#stagePreset").addEventListener("change", () => {
+      const v = $("#stagePreset").value;
+      if(v === "small"){ $("#stageW").value = 16; $("#stageD").value = 12; }
+      if(v === "medium"){ $("#stageW").value = 24; $("#stageD").value = 16; }
+      if(v === "large"){ $("#stageW").value = 32; $("#stageD").value = 20; }
+      setStageFromInputs();
+    });
+
+    $("#stageW").addEventListener("change", setStageFromInputs);
+    $("#stageD").addEventListener("change", setStageFromInputs);
+
+    // Catalog search and category
+    function refreshCatalog(){
+      render();
+    }
+    $("#search").addEventListener("input", refreshCatalog);
+    $("#category").addEventListener("change", refreshCatalog);
+
+    // Band name + notes
+    $("#bandName").addEventListener("input", () => {
+      state.bandName = $("#bandName").value || "";
+      save();
+    });
+
+    $("#showNotes").addEventListener("input", () => {
+      state.notes = $("#showNotes").value || "";
+      $("#notesPreview").textContent = state.notes || "";
+      save();
+    });
+
+    // Editor inputs
+    $("#fLabel").addEventListener("input", () => updateSelected({ label: $("#fLabel").value }));
+    $("#fColor").addEventListener("input", () => updateSelected({ color: $("#fColor").value }));
+    $("#fInput").addEventListener("input", () => updateSelected({ input: $("#fInput").value }));
+    $("#fMix").addEventListener("input", () => updateSelected({ mix: $("#fMix").value }));
+    $("#fNotes").addEventListener("input", () => updateSelected({ notes: $("#fNotes").value }));
+    $("#fScale").addEventListener("input", () => {
+      $("#scaleReadout").textContent = `${Math.round(parseFloat($("#fScale").value) * 100)}%`;
+      updateSelected({ scale: parseFloat($("#fScale").value) });
+    });
+
+    $("#btnDelete").addEventListener("click", () => {
+      if(!selectedId) return;
+      state.items = state.items.filter(i => i.id !== selectedId);
+      selectedId = null;
+      save();
+      render();
+      syncEditor();
+    });
+
+    $("#btnCenter").addEventListener("click", () => {
+      const item = state.items.find(i => i.id === selectedId);
+      if(!item) return;
+      const wFt = item.w * (item.scale || 1);
+      const hFt = item.h * (item.scale || 1);
+      item.x = (state.stage.w - wFt) * 0.5;
+      item.y = (state.stage.d - hFt) * 0.55;
+      save();
+      render();
+      syncEditor();
+    });
+
+    $("#btnPrint").addEventListener("click", () => window.print());
+
+    // Export and import project
+    $("#btnExportProject").addEventListener("click", () => {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      const safeName = (state.bandName || "stageplot").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g,"");
+      a.download = `${safeName || "stageplot"}-project.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    $("#fileImportProject").addEventListener("change", async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if(!file) return;
+      const text = await file.text();
+      try{
+        const imported = JSON.parse(text);
+        if(!imported.stage || !imported.items) throw new Error("Invalid project file");
+        state = imported;
+        selectedId = null;
+        save();
+        render();
+        syncEditor();
+      }catch(err){
+        alert("Could not import that project JSON.");
+      }finally{
+        $("#fileImportProject").value = "";
+      }
+    });
+
+    // Export and import library (user library only)
+    $("#btnExportLibrary").addEventListener("click", () => {
+      const lib = loadJSON(STORAGE_KEY_LIB) || { version: 1, items: [] };
+      const blob = new Blob([JSON.stringify(lib, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "stageplot-user-library.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    function validateLibrary(obj){
+      if(!obj || typeof obj !== "object") return false;
+      if(!Array.isArray(obj.items)) return false;
+      for(const it of obj.items){
+        if(!it || typeof it !== "object") return false;
+        if(typeof it.type !== "string" || !it.type.trim()) return false;
+        if(typeof it.w !== "number" || typeof it.h !== "number") return false;
+        // sprite is optional but recommended
+      }
+      return true;
+    }
+
+    $("#fileImportLibrary").addEventListener("change", async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if(!file) return;
+      const text = await file.text();
+      try{
+        const imported = JSON.parse(text);
+        if(!validateLibrary(imported)) throw new Error("Invalid library file");
+
+        const existing = loadJSON(STORAGE_KEY_LIB) || { version: 1, items: [] };
+        const map = new Map();
+
+        for(const it of (existing.items || [])){
+          map.set((it.type||"").toLowerCase(), it);
+        }
+        for(const it of (imported.items || [])){
+          map.set((it.type||"").toLowerCase(), it);
+        }
+
+        const merged = { version: 1, items: [...map.values()] };
+        saveJSON(STORAGE_KEY_LIB, merged);
+
+        // Rebuild categories and rerender
+        buildCategoryOptions(mergedLibrary());
+        render();
+      }catch(err){
+        alert("Could not import that library JSON.");
+      }finally{
+        $("#fileImportLibrary").value = "";
+      }
+    });
+
+    $("#btnReset").addEventListener("click", () => {
+      state = deepClone(defaults);
+      selectedId = null;
+      save();
+      render();
+      syncEditor();
+    });
+
+    // Initialize
+    const lib0 = mergedLibrary();
+    buildCategoryOptions(lib0);
+    $("#stagePreset").value = "medium";
+    $("#search").value = "";
+    $("#category").value = "All";
+
+    setStageFromInputs();
+    render();
+    syncEditor();
+
+    // Resize rerender so scaled positioning stays correct
+    let t = null;
+    window.addEventListener("resize", () => {
+      clearTimeout(t);
+      t = setTimeout(render, 60);
+    });
+  </script>
+</body>
+</html>
