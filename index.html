@@ -53,6 +53,18 @@
       flex-wrap:wrap;
     }
 
+    .appTitle{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.logo{
+  width:28px;
+  height:28px;
+  object-fit:contain;
+  display:block;
+}
     button, select, input, textarea{
       font: inherit;
       color:var(--text);
@@ -406,10 +418,19 @@
   </svg>
 
   <header>
-    <h1>
-      StagePlot v2
-      <span class="pill"><span class="dot"></span><span id="autosavePill">Autosave on</span></span>
-    </h1>
+    <header>
+  <h1 class="appTitle">
+    <img
+      src="stageplotlogo.png"
+      alt="StagePlot logo"
+      class="logo"
+    />
+    <span>StagePlot v2</span>
+    <span class="pill">
+      <span class="dot"></span>
+      <span id="autosavePill">Autosave on</span>
+    </span>
+  </h1>
     <div class="right">
       <button class="primary" id="btnPrint">Print</button>
 
