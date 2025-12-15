@@ -52,18 +52,19 @@
       align-items:center;
       flex-wrap:wrap;
     }
-    
-.appTitle{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-.logo{
-  width:28px;
-  height:28px;
-  object-fit:contain;
-  display:block;
-}
+
+    .appTitle{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .logo{
+      width:28px;
+      height:28px;
+      object-fit:contain;
+      display:block;
+    }
+
     button, select, input, textarea{
       font: inherit;
       color:var(--text);
@@ -335,59 +336,49 @@
       /* Try to keep it all one page */
       .panel{ break-inside: avoid; page-break-inside: avoid; }
     }
+
     /* ---------- Responsive / Mobile ---------- */
-@media (max-width: 1100px){
-  .layout{
-    grid-template-columns: 300px 1fr 360px;
-  }
-  .catName{ max-width: 170px; }
-}
+    @media (max-width: 1100px){
+      .layout{ grid-template-columns: 300px 1fr 360px; }
+      .catName{ max-width: 170px; }
+    }
 
-@media (max-width: 980px){
-  /* Stack panels for phones/small tablets */
-  .layout{
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "stage"
-      "info"
-      "catalog";
-    min-height: 0;
-  }
-  .stagePanel{ grid-area: stage; }
-  .infoPanel{ grid-area: info; }
-  .catalogPanel{ grid-area: catalog; }
+    @media (max-width: 980px){
+      .layout{
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "stage"
+          "info"
+          "catalog";
+        min-height: 0;
+      }
+      .stagePanel{ grid-area: stage; }
+      .infoPanel{ grid-area: info; }
+      .catalogPanel{ grid-area: catalog; }
 
-  /* Give the stage room to drag on mobile */
-  .stage{
-    min-height: 62vh;
-  }
+      .stage{ min-height: 62vh; }
+      .catalog{ max-height: 42vh; }
+      .scrollBox{ max-height: 32vh; }
 
-  /* Make side lists less cramped */
-  .catalog{ max-height: 42vh; }
-  .scrollBox{ max-height: 32vh; }
+      header{ padding:12px 12px; }
+      header .right{ width:100%; justify-content:flex-start; }
+    }
 
-  /* Header buttons wrap nicely */
-  header{ padding:12px 12px; }
-  header .right{ width:100%; justify-content:flex-start; }
-}
+    @media (max-width: 520px){
+      button, select, input, textarea{
+        border-radius: 12px;
+        padding: 10px 12px;
+      }
+      .panel .body{ padding:10px; }
+      .stageWrap{ padding:10px; }
+      .item{ padding:10px; min-width: 86px; }
+      .item .label{ max-width: 140px; }
+    }
 
-@media (max-width: 520px){
-  button, select, input, textarea{
-    border-radius: 12px;
-    padding: 10px 12px;
-  }
-  .panel .body{ padding:10px; }
-  .stageWrap{ padding:10px; }
-  .item{
-    padding:10px;
-    min-width: 86px;
-  }
-  .item .label{ max-width: 140px; }
-}
-    .item, .item * {
-  user-select:none;
-  -webkit-user-select:none;
-}
+    .item, .item *{
+      user-select:none;
+      -webkit-user-select:none;
+    }
   </style>
 </head>
 <body>
@@ -467,13 +458,21 @@
       <circle fill="currentColor" cx="44" cy="36" r="2.5"/>
       <circle fill="currentColor" cx="50" cy="36" r="2.5"/>
     </symbol>
+
+    <!-- NEW: Misc gear sprite -->
+    <symbol id="spr-misc" viewBox="0 0 64 64">
+      <path fill="currentColor" d="M14 18h36a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h36V22H14z"/>
+      <path fill="currentColor" d="M20 30h24v4H20v-4zm0 8h16v4H20v-4z" opacity=".6"/>
+      <circle fill="currentColor" cx="46" cy="40" r="3"/>
+    </symbol>
   </svg>
-    <header>
-  <h1 class="appTitle">
-  <img src="stageplotlogo.png" alt="StagePlot" class="logo" />
-  <span>StagePlot v2</span>
-  <span class="pill"><span class="dot"></span><span id="autosavePill">Autosave on</span></span>
-</h1>
+
+  <header>
+    <h1 class="appTitle">
+      <img src="stageplotlogo.png" alt="StagePlot" class="logo" />
+      <span>StagePlot v2</span>
+      <span class="pill"><span class="dot"></span><span id="autosavePill">Autosave on</span></span>
+    </h1>
     <div class="right">
       <button class="primary" id="btnPrint">Print</button>
 
@@ -538,6 +537,12 @@
         <h2>Stage</h2>
         <div class="row">
           <button id="btnCenter">Center selection</button>
+
+          <!-- NEW: Quick misc gear buttons -->
+          <button id="btnAddMiscS">+ Misc 1</button>
+          <button id="btnAddMiscM">+ Misc 2</button>
+          <button id="btnAddMiscL">+ Misc 3</button>
+
           <button class="danger" id="btnDelete">Delete</button>
         </div>
       </div>
@@ -794,8 +799,41 @@
       syncEditor();
     }
 
+    /* ---------- NEW: Quick add Misc Gear (small/medium/large) ---------- */
+    function addMisc(size){
+      // size: "S" | "M" | "L"
+      const presets = {
+        S: { w: 2.2, h: 1.6, label: "Misc 1" },
+        M: { w: 3.2, h: 2.2, label: "Misc 2" },
+        L: { w: 4.4, h: 3.0, label: "Misc 3" },
+      };
+      const p = presets[size] || presets.M;
+
+      const item = {
+        id: uid(),
+        type: "Misc Gear",
+        sprite: "misc",
+        x: (state.stage.w * 0.5) - (p.w/2),
+        y: (state.stage.d * 0.70) - (p.h/2),
+        w: p.w,
+        h: p.h,
+        scale: 1.0,
+        label: p.label,
+        color: "#4aa3ff",
+        input: "",
+        mix: "",
+        notes: ""
+      };
+
+      state.items.push(item);
+      selectedId = item.id;
+      save();
+      render();
+      syncEditor();
+    }
+    /* ------------------------------------------------------------------ */
+
     function render(){
-      // Stage + band name + notes
       $("#stageW").value = state.stage.w;
       $("#stageD").value = state.stage.d;
       $("#stageLabel").textContent = `${state.stage.w} x ${state.stage.d}`;
@@ -804,7 +842,6 @@
       $("#showNotes").value = state.notes || "";
       $("#notesPreview").textContent = state.notes || "";
 
-      // Library and catalog
       const lib = mergedLibrary();
       $("#libCount").textContent = `${lib.items.length} items`;
       const search = ($("#search").value || "").trim().toLowerCase();
@@ -836,7 +873,6 @@
         listEl.appendChild(row);
       }
 
-      // Clear and render stage items
       stageEl.querySelectorAll(".item").forEach(n => n.remove());
 
       for(const item of state.items){
@@ -965,7 +1001,6 @@
       if(!item) return;
       Object.assign(item, patch);
 
-      // Keep selection inside bounds after scale changes
       const wFt = item.w * (item.scale || 1);
       const hFt = item.h * (item.scale || 1);
       item.x = clamp(item.x, 0, state.stage.w - wFt);
@@ -976,32 +1011,31 @@
       syncEditor();
     }
 
-    // Drag logic (respects scale, keeps inside stage)
     let drag = null;
 
     function onDragStart(e){
-  e.preventDefault();
-  e.stopPropagation();
+      e.preventDefault();
+      e.stopPropagation();
 
-  const id = e.currentTarget.dataset.id;
-  selectedId = id;
-  syncEditor();
-  render();
+      const id = e.currentTarget.dataset.id;
+      selectedId = id;
+      syncEditor();
+      render();
 
-  const item = state.items.find(i => i.id === id);
-  if(!item) return;
+      const item = state.items.find(i => i.id === id);
+      if(!item) return;
 
-  drag = {
-    id,
-    startX: e.clientX,
-    startY: e.clientY,
-    itemStartX: item.x,
-    itemStartY: item.y
-  };
+      drag = {
+        id,
+        startX: e.clientX,
+        startY: e.clientY,
+        itemStartX: item.x,
+        itemStartY: item.y
+      };
 
-  window.addEventListener("pointermove", onDragMove);
-  window.addEventListener("pointerup", onDragEnd, { once: true });
-}
+      window.addEventListener("pointermove", onDragMove);
+      window.addEventListener("pointerup", onDragEnd, { once: true });
+    }
 
     function onDragMove(e){
       if(!drag) return;
@@ -1034,13 +1068,12 @@
     }
 
     function onDragEnd(){
-  window.removeEventListener("pointermove", onDragMove);
-  drag = null;
-  save();
-  render();
-}
+      window.removeEventListener("pointermove", onDragMove);
+      drag = null;
+      save();
+      render();
+    }
 
-    // Stage click clears selection
     stageEl.addEventListener("click", () => {
       selectedId = null;
       save();
@@ -1048,7 +1081,6 @@
       syncEditor();
     });
 
-    // Wire controls
     $("#stagePreset").addEventListener("change", () => {
       const v = $("#stagePreset").value;
       if(v === "small"){ $("#stageW").value = 16; $("#stageD").value = 12; }
@@ -1060,14 +1092,10 @@
     $("#stageW").addEventListener("change", setStageFromInputs);
     $("#stageD").addEventListener("change", setStageFromInputs);
 
-    // Catalog search and category
-    function refreshCatalog(){
-      render();
-    }
+    function refreshCatalog(){ render(); }
     $("#search").addEventListener("input", refreshCatalog);
     $("#category").addEventListener("change", refreshCatalog);
 
-    // Band name + notes
     $("#bandName").addEventListener("input", () => {
       state.bandName = $("#bandName").value || "";
       save();
@@ -1079,7 +1107,6 @@
       save();
     });
 
-    // Editor inputs
     $("#fLabel").addEventListener("input", () => updateSelected({ label: $("#fLabel").value }));
     $("#fColor").addEventListener("input", () => updateSelected({ color: $("#fColor").value }));
     $("#fInput").addEventListener("input", () => updateSelected({ input: $("#fInput").value }));
@@ -1089,6 +1116,12 @@
       $("#scaleReadout").textContent = `${Math.round(parseFloat($("#fScale").value) * 100)}%`;
       updateSelected({ scale: parseFloat($("#fScale").value) });
     });
+
+    /* ---------- NEW: wire misc buttons ---------- */
+    $("#btnAddMiscS").addEventListener("click", () => addMisc("S"));
+    $("#btnAddMiscM").addEventListener("click", () => addMisc("M"));
+    $("#btnAddMiscL").addEventListener("click", () => addMisc("L"));
+    /* ------------------------------------------- */
 
     $("#btnDelete").addEventListener("click", () => {
       if(!selectedId) return;
@@ -1113,7 +1146,6 @@
 
     $("#btnPrint").addEventListener("click", () => window.print());
 
-    // Export and import project
     $("#btnExportProject").addEventListener("click", () => {
       const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
@@ -1144,7 +1176,6 @@
       }
     });
 
-    // Export and import library (user library only)
     $("#btnExportLibrary").addEventListener("click", () => {
       const lib = loadJSON(STORAGE_KEY_LIB) || { version: 1, items: [] };
       const blob = new Blob([JSON.stringify(lib, null, 2)], { type: "application/json" });
@@ -1163,7 +1194,6 @@
         if(!it || typeof it !== "object") return false;
         if(typeof it.type !== "string" || !it.type.trim()) return false;
         if(typeof it.w !== "number" || typeof it.h !== "number") return false;
-        // sprite is optional but recommended
       }
       return true;
     }
@@ -1189,7 +1219,6 @@
         const merged = { version: 1, items: [...map.values()] };
         saveJSON(STORAGE_KEY_LIB, merged);
 
-        // Rebuild categories and rerender
         buildCategoryOptions(mergedLibrary());
         render();
       }catch(err){
@@ -1207,7 +1236,6 @@
       syncEditor();
     });
 
-    // Initialize
     const lib0 = mergedLibrary();
     buildCategoryOptions(lib0);
     $("#stagePreset").value = "medium";
@@ -1218,7 +1246,6 @@
     render();
     syncEditor();
 
-    // Resize rerender so scaled positioning stays correct
     let t = null;
     window.addEventListener("resize", () => {
       clearTimeout(t);
