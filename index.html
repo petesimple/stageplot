@@ -52,7 +52,18 @@
       align-items:center;
       flex-wrap:wrap;
     }
-
+    
+.appTitle{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.logo{
+  width:28px;
+  height:28px;
+  object-fit:contain;
+  display:block;
+}
     button, select, input, textarea{
       font: inherit;
       color:var(--text);
@@ -324,6 +335,59 @@
       /* Try to keep it all one page */
       .panel{ break-inside: avoid; page-break-inside: avoid; }
     }
+    /* ---------- Responsive / Mobile ---------- */
+@media (max-width: 1100px){
+  .layout{
+    grid-template-columns: 300px 1fr 360px;
+  }
+  .catName{ max-width: 170px; }
+}
+
+@media (max-width: 980px){
+  /* Stack panels for phones/small tablets */
+  .layout{
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "stage"
+      "info"
+      "catalog";
+    min-height: 0;
+  }
+  .stagePanel{ grid-area: stage; }
+  .infoPanel{ grid-area: info; }
+  .catalogPanel{ grid-area: catalog; }
+
+  /* Give the stage room to drag on mobile */
+  .stage{
+    min-height: 62vh;
+  }
+
+  /* Make side lists less cramped */
+  .catalog{ max-height: 42vh; }
+  .scrollBox{ max-height: 32vh; }
+
+  /* Header buttons wrap nicely */
+  header{ padding:12px 12px; }
+  header .right{ width:100%; justify-content:flex-start; }
+}
+
+@media (max-width: 520px){
+  button, select, input, textarea{
+    border-radius: 12px;
+    padding: 10px 12px;
+  }
+  .panel .body{ padding:10px; }
+  .stageWrap{ padding:10px; }
+  .item{
+    padding:10px;
+    min-width: 86px;
+  }
+  .item .label{ max-width: 140px; }
+}
+    .item, .item * {
+  user-select:none;
+  -webkit-user-select:none;
+}
   </style>
 </head>
 <body>
@@ -405,10 +469,11 @@
     </symbol>
   </svg>
     <header>
-  <h1>
-    StagePlot v2
-    <span class="pill"><span class="dot"></span><span id="autosavePill">Autosave on</span></span>
-  </h1>
+  <h1 class="appTitle">
+  <img src="stageplotlogo.png" alt="StagePlot" class="logo" />
+  <span>StagePlot v2</span>
+  <span class="pill"><span class="dot"></span><span id="autosavePill">Autosave on</span></span>
+</h1>
     <div class="right">
       <button class="primary" id="btnPrint">Print</button>
 
