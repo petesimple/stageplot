@@ -841,13 +841,15 @@
       $("#stageD").value = state.stage.d;
       $("#stageLabel").textContent = `${state.stage.w} x ${state.stage.d}`;
 
-      $("#bandName").value = state.bandName || "";
-      // PRINT-ONLY band name (since inputs are hidden in print)
-const bn = (state.bandName || "").trim();
-const pb = document.querySelector("#printBandName");
-if(pb){
-  pb.textContent = bn ? bn : "StagePlot";
-}
+      $("#bandName").addEventListener("input", () => {
+  state.bandName = $("#bandName").value || "";
+  save();
+
+  // keep print header in sync without rerendering everything
+  const bn = (state.bandName || "").trim();
+  const pb = document.querySelector("#printBandName");
+  if(pb) pb.textContent = bn ? bn : "StagePlot";
+});
       $("#showNotes").value = state.notes || "";
       $("#notesPreview").textContent = state.notes || "";
 
