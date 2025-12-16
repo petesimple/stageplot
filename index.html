@@ -4,11 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0b0d12">
+  <meta name="theme-color" content="#0b0d12">
 
-<link rel="apple-touch-icon" href="icons/icon-192.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>StagePlot v2</title>
   <style>
     :root{
@@ -143,7 +143,6 @@
     .small{ font-size:12px; color: var(--muted); }
     .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
 
-    /* Catalog list */
     .catalog{
       display:flex;
       flex-direction:column;
@@ -190,7 +189,6 @@
     }
     .catMeta{ font-size:12px; color: var(--muted); }
 
-    /* Stage */
     .stageWrap{
       padding:12px;
       height: 100%;
@@ -272,7 +270,6 @@
       box-shadow: 0 0 0 2px rgba(74,163,255,.25), 0 10px 18px rgba(0,0,0,.25);
     }
 
-    /* Tables */
     table{
       width:100%;
       border-collapse: collapse;
@@ -294,7 +291,6 @@
       background: rgba(255,255,255,.03);
     }
 
-    /* Print layout */
     @page { margin: 0.45in; }
     @media print{
       header{ display:none !important; }
@@ -339,11 +335,9 @@
       .scrollBox{ max-height: none; overflow: visible; border:1px solid #ddd; }
       .small{ color:#444; }
 
-      /* Try to keep it all one page */
       .panel{ break-inside: avoid; page-break-inside: avoid; }
     }
 
-    /* ---------- Responsive / Mobile ---------- */
     @media (max-width: 1100px){
       .layout{ grid-template-columns: 300px 1fr 360px; }
       .catName{ max-width: 170px; }
@@ -389,7 +383,6 @@
 </head>
 <body>
 
-  <!-- Sprite sheet (SVG symbols). All shapes use currentColor for clean tinting. -->
   <svg width="0" height="0" style="position:absolute; left:-9999px; top:-9999px;" aria-hidden="true" focusable="false">
     <symbol id="spr-mic" viewBox="0 0 64 64">
       <path fill="currentColor" d="M32 6c-6 0-11 5-11 11v14c0 6 5 11 11 11s11-5 11-11V17c0-6-5-11-11-11zm-7 25V17a7 7 0 0 1 14 0v14a7 7 0 0 1-14 0z"/>
@@ -465,7 +458,6 @@
       <circle fill="currentColor" cx="50" cy="36" r="2.5"/>
     </symbol>
 
-    <!-- NEW: Misc gear sprite -->
     <symbol id="spr-misc" viewBox="0 0 64 64">
       <path fill="currentColor" d="M14 18h36a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h36V22H14z"/>
       <path fill="currentColor" d="M20 30h24v4H20v-4zm0 8h16v4H20v-4z" opacity=".6"/>
@@ -499,7 +491,6 @@
   </header>
 
   <div class="layout">
-    <!-- Left: Catalog -->
     <section class="panel catalogPanel">
       <div class="title">
         <h2>Item library</h2>
@@ -537,14 +528,12 @@
       </div>
     </section>
 
-    <!-- Middle: Stage -->
     <section class="panel stagePanel">
       <div class="title">
         <h2>Stage</h2>
         <div class="row">
           <button id="btnCenter">Center selection</button>
 
-          <!-- NEW: Quick misc gear buttons -->
           <button id="btnAddMiscS">+ Misc 1</button>
           <button id="btnAddMiscM">+ Misc 2</button>
           <button id="btnAddMiscL">+ Misc 3</button>
@@ -563,7 +552,6 @@
       </div>
     </section>
 
-    <!-- Right: Edit + Lists + Notes (prints as the info column) -->
     <section class="panel infoPanel">
       <div class="title">
         <h2>One-page print info</h2>
@@ -571,7 +559,6 @@
       </div>
       <div class="body">
         <div class="stack">
-
           <div class="row">
             <input id="bandName" placeholder="Band name (optional)" style="width:100%" />
           </div>
@@ -641,25 +628,21 @@
     const STORAGE_KEY = "stageplot_v2_state";
     const STORAGE_KEY_LIB = "stageplot_v2_user_library";
 
-    // Built-in default library (extend anytime via Import library)
     const BUILTIN_LIBRARY = {
       version: 1,
       items: [
-        // People / Instruments
         { type:"Vocal", labelDefault:"Vox", category:"People", w:3.2, h:2.2, sprite:"mic", inputHint:"Ch 1", mixHint:"M1" },
         { type:"Guitar", labelDefault:"Guitar", category:"Instruments", w:3.2, h:2.2, sprite:"guitar", inputHint:"Ch ?", mixHint:"M?" },
         { type:"Bass", labelDefault:"Bass", category:"Instruments", w:3.2, h:2.2, sprite:"bass", inputHint:"Ch ?", mixHint:"M?" },
         { type:"Keys", labelDefault:"Keys", category:"Instruments", w:3.6, h:2.4, sprite:"keys", inputHint:"Ch ?", mixHint:"M?" },
         { type:"Drums", labelDefault:"Drums", category:"Instruments", w:5.2, h:3.4, sprite:"drums", inputHint:"Multi", mixHint:"M?" },
 
-        // Stage gear
         { type:"Amp", labelDefault:"Amp", category:"Stage gear", w:2.4, h:2.0, sprite:"amp" },
         { type:"Wedge", labelDefault:"Wedge", category:"Stage gear", w:2.0, h:1.6, sprite:"wedge", mixHint:"M1" },
         { type:"IEM", labelDefault:"IEM", category:"Stage gear", w:2.0, h:1.6, sprite:"iem", mixHint:"M1" },
         { type:"DI", labelDefault:"DI", category:"Stage gear", w:1.8, h:1.4, sprite:"di" },
         { type:"Mic Stand", labelDefault:"Stand", category:"Stage gear", w:1.8, h:1.4, sprite:"stand" },
 
-        // Electrical / Misc
         { type:"Power Outlet", labelDefault:"Power", category:"Electrical", w:1.6, h:1.2, sprite:"outlet" },
         { type:"Riser", labelDefault:"Riser", category:"Stage", w:4.4, h:2.2, sprite:"riser" },
         { type:"FOH Console", labelDefault:"FOH", category:"Front of house", w:3.6, h:2.0, sprite:"console" }
@@ -707,7 +690,6 @@
       localStorage.setItem(key, JSON.stringify(value));
     }
 
-    // Merge libraries: built-in + user
     function mergedLibrary(){
       const userLib = loadJSON(STORAGE_KEY_LIB) || { version: 1, items: [] };
       const map = new Map();
@@ -737,7 +719,6 @@
       }
     }
 
-    // App state
     const defaults = {
       stage: { w: 24, d: 16 },
       bandName: "",
@@ -805,9 +786,7 @@
       syncEditor();
     }
 
-    /* ---------- NEW: Quick add Misc Gear (small/medium/large) ---------- */
     function addMisc(size){
-      // size: "S" | "M" | "L"
       const presets = {
         S: { w: 2.2, h: 1.6, label: "Misc 1" },
         M: { w: 3.2, h: 2.2, label: "Misc 2" },
@@ -837,7 +816,6 @@
       render();
       syncEditor();
     }
-    /* ------------------------------------------------------------------ */
 
     function render(){
       $("#stageW").value = state.stage.w;
@@ -875,7 +853,11 @@
           </div>
           <button class="primary">Add</button>
         `;
-        row.querySelector("button").addEventListener("click", () => addFromCatalog(it));
+        row.querySelector("button").addEventListener("click", (e) => {
+          e.stopPropagation();
+          clearConfirms();
+          addFromCatalog(it);
+        });
         listEl.appendChild(row);
       }
 
@@ -918,6 +900,7 @@
         div.addEventListener("pointerdown", onDragStart);
         div.addEventListener("click", (e) => {
           e.stopPropagation();
+          clearConfirms();
           selectedId = item.id;
           save();
           render();
@@ -1023,6 +1006,8 @@
       e.preventDefault();
       e.stopPropagation();
 
+      clearConfirms();
+
       const id = e.currentTarget.dataset.id;
       selectedId = id;
       syncEditor();
@@ -1080,14 +1065,42 @@
       render();
     }
 
-    stageEl.addEventListener("click", () => {
+    // ---------- NEW: double opt-in safeguards for Delete + Reset ----------
+    let confirmDelete = false;
+    let confirmReset = false;
+
+    function clearConfirms(){
+      confirmDelete = false;
+      confirmReset = false;
+
+      const del = $("#btnDelete");
+      del.textContent = "Delete";
+      del.classList.add("danger");
+
+      const reset = $("#btnReset");
+      reset.textContent = "Reset";
+      reset.classList.add("danger");
+    }
+
+    // Clicking anywhere in the document cancels pending confirmations
+    document.addEventListener("click", () => {
+      clearConfirms();
+    });
+    // --------------------------------------------------------------------
+
+    stageEl.addEventListener("click", (e) => {
+      e.stopPropagation();
       selectedId = null;
+      clearConfirms();
       save();
       render();
       syncEditor();
     });
 
-    $("#stagePreset").addEventListener("change", () => {
+    $("#stagePreset").addEventListener("change", (e) => {
+      e.stopPropagation();
+      clearConfirms();
+
       const v = $("#stagePreset").value;
       if(v === "small"){ $("#stageW").value = 16; $("#stageD").value = 12; }
       if(v === "medium"){ $("#stageW").value = 24; $("#stageD").value = 16; }
@@ -1095,8 +1108,8 @@
       setStageFromInputs();
     });
 
-    $("#stageW").addEventListener("change", setStageFromInputs);
-    $("#stageD").addEventListener("change", setStageFromInputs);
+    $("#stageW").addEventListener("change", () => { clearConfirms(); setStageFromInputs(); });
+    $("#stageD").addEventListener("change", () => { clearConfirms(); setStageFromInputs(); });
 
     function refreshCatalog(){ render(); }
     $("#search").addEventListener("input", refreshCatalog);
@@ -1123,22 +1136,33 @@
       updateSelected({ scale: parseFloat($("#fScale").value) });
     });
 
-    /* ---------- NEW: wire misc buttons ---------- */
-    $("#btnAddMiscS").addEventListener("click", () => addMisc("S"));
-    $("#btnAddMiscM").addEventListener("click", () => addMisc("M"));
-    $("#btnAddMiscL").addEventListener("click", () => addMisc("L"));
-    /* ------------------------------------------- */
+    $("#btnAddMiscS").addEventListener("click", (e) => { e.stopPropagation(); clearConfirms(); addMisc("S"); });
+    $("#btnAddMiscM").addEventListener("click", (e) => { e.stopPropagation(); clearConfirms(); addMisc("M"); });
+    $("#btnAddMiscL").addEventListener("click", (e) => { e.stopPropagation(); clearConfirms(); addMisc("L"); });
 
-    $("#btnDelete").addEventListener("click", () => {
+    $("#btnDelete").addEventListener("click", (e) => {
+      e.stopPropagation();
       if(!selectedId) return;
+
+      if(!confirmDelete){
+        clearConfirms();
+        confirmDelete = true;
+        $("#btnDelete").textContent = "Confirm Delete";
+        return;
+      }
+
       state.items = state.items.filter(i => i.id !== selectedId);
       selectedId = null;
+      clearConfirms();
       save();
       render();
       syncEditor();
     });
 
-    $("#btnCenter").addEventListener("click", () => {
+    $("#btnCenter").addEventListener("click", (e) => {
+      e.stopPropagation();
+      clearConfirms();
+
       const item = state.items.find(i => i.id === selectedId);
       if(!item) return;
       const wFt = item.w * (item.scale || 1);
@@ -1150,9 +1174,16 @@
       syncEditor();
     });
 
-    $("#btnPrint").addEventListener("click", () => window.print());
+    $("#btnPrint").addEventListener("click", (e) => {
+      e.stopPropagation();
+      clearConfirms();
+      window.print();
+    });
 
-    $("#btnExportProject").addEventListener("click", () => {
+    $("#btnExportProject").addEventListener("click", (e) => {
+      e.stopPropagation();
+      clearConfirms();
+
       const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -1172,6 +1203,7 @@
         if(!imported.stage || !imported.items) throw new Error("Invalid project file");
         state = imported;
         selectedId = null;
+        clearConfirms();
         save();
         render();
         syncEditor();
@@ -1182,7 +1214,10 @@
       }
     });
 
-    $("#btnExportLibrary").addEventListener("click", () => {
+    $("#btnExportLibrary").addEventListener("click", (e) => {
+      e.stopPropagation();
+      clearConfirms();
+
       const lib = loadJSON(STORAGE_KEY_LIB) || { version: 1, items: [] };
       const blob = new Blob([JSON.stringify(lib, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
@@ -1226,6 +1261,7 @@
         saveJSON(STORAGE_KEY_LIB, merged);
 
         buildCategoryOptions(mergedLibrary());
+        clearConfirms();
         render();
       }catch(err){
         alert("Could not import that library JSON.");
@@ -1234,9 +1270,19 @@
       }
     });
 
-    $("#btnReset").addEventListener("click", () => {
+    $("#btnReset").addEventListener("click", (e) => {
+      e.stopPropagation();
+
+      if(!confirmReset){
+        clearConfirms();
+        confirmReset = true;
+        $("#btnReset").textContent = "Confirm Reset";
+        return;
+      }
+
       state = deepClone(defaults);
       selectedId = null;
+      clearConfirms();
       save();
       render();
       syncEditor();
@@ -1257,12 +1303,13 @@
       clearTimeout(t);
       t = setTimeout(render, 60);
     });
+
     // PWA: register service worker
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker.js").catch(() => {});
-  });
-}
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+      });
+    }
   </script>
 </body>
 </html>
