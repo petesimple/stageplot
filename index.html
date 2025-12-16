@@ -293,50 +293,75 @@
 
     @page { margin: 0.45in; }
     @media print{
-      header{ display:none !important; }
-      body{ background:#fff; color:#000; }
-      .layout{
-        grid-template-columns: 62% 38%;
-        grid-template-areas:
-          "stage info";
-        padding:0;
-        gap: 12px;
-        min-height: 0;
-      }
-      .panel{
-        box-shadow:none;
-        background:#fff;
-        color:#000;
-        border:1px solid #ddd;
-      }
-      .panel.catalogPanel{ display:none !important; }
+  header{ display:none !important; }
+  body{ background:#fff; color:#000; }
 
-      .stagePanel{ grid-area: stage; }
-      .infoPanel{ grid-area: info; }
+  /* One column: stage on top, info below */
+  .layout{
+    grid-template-columns: 1fr !important;
+    grid-template-areas:
+      "stage"
+      "info" !important;
+    padding:0 !important;
+    gap: 12px !important;
+    min-height: 0 !important;
+  }
 
-      button, select, input, textarea, .pill.clickable{ display:none !important; }
+  .panel{
+    box-shadow:none !important;
+    background:#fff !important;
+    color:#000 !important;
+    border:1px solid #ddd !important;
+  }
 
-      .stage{ min-height: 9.2in; background: #fff; border:1px solid #bbb; }
-      .stage::before{ color:#888; }
-      .stageEdge{ box-shadow:none; }
+  .panel.catalogPanel{ display:none !important; }
 
-      .item{
-        box-shadow:none;
-        background: rgba(0,0,0,.04);
-        border: 1px solid rgba(0,0,0,.22);
-        color:#000;
-      }
-      .item .label{ color:#000; }
-      .item .type, .item .sub{ color: rgba(0,0,0,.70); }
+  .stagePanel{ grid-area: stage; }
+  .infoPanel{ grid-area: info; }
 
-      th, td{ border-bottom: 1px solid #e3e3e3; }
-      th{ color:#444; }
+  /* Hide controls on print */
+  button, select, input, textarea, .pill.clickable{ display:none !important; }
 
-      .scrollBox{ max-height: none; overflow: visible; border:1px solid #ddd; }
-      .small{ color:#444; }
+  /* Give the stage full width and a sane height so it doesn’t clip */
+  .stageWrap{ padding:8px !important; }
+  .stage{
+    width: 100% !important;
+    min-height: 6.8in !important;   /* adjust up/down if you want */
+    height: auto !important;
+    background:#fff !important;
+    border:1px solid #bbb !important;
+    overflow: hidden !important;
+  }
 
-      .panel{ break-inside: avoid; page-break-inside: avoid; }
-    }
+  .stage::before{ color:#888 !important; }
+  .stageEdge{ box-shadow:none !important; }
+
+  /* Print styling for items */
+  .item{
+    box-shadow:none !important;
+    background: rgba(0,0,0,.04) !important;
+    border: 1px solid rgba(0,0,0,.22) !important;
+    color:#000 !important;
+  }
+  .item .label{ color:#000 !important; }
+  .item .type, .item .sub{ color: rgba(0,0,0,.70) !important; }
+
+  th, td{ border-bottom: 1px solid #e3e3e3 !important; }
+  th{ color:#444 !important; }
+
+  /* Let tables expand naturally in the info section */
+  .scrollBox{
+    max-height: none !important;
+    overflow: visible !important;
+    border:1px solid #ddd !important;
+    background: transparent !important;
+  }
+
+  .small{ color:#444 !important; }
+
+  /* Avoid awkward splits where possible */
+  .panel{ break-inside: avoid; page-break-inside: avoid; }
+}
 
     @media (max-width: 1100px){
       .layout{ grid-template-columns: 300px 1fr 360px; }
