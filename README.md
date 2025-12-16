@@ -136,10 +136,4 @@ Use it, remix it, improve it, ship it.
 	•	FOH view toggle
 	•	Dark / light print themes
 
-⸻
 
-If you want, next I can:
-	•	Add screenshots to this README
-	•	Write a GitHub Pages deployment guide
-	•	Add contribution guidelines
-	•	Add a CHANGELOG template
