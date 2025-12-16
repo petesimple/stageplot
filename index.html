@@ -337,14 +337,16 @@
       .stageMeta{ margin-bottom:6px !important; }
 
       .stage{
-        min-height: 0 !important;
-        height: 5.2in !important;     /* a bit shorter so info fits */
-        max-height: 5.2in !important;
-        width: 100% !important;
-        background: #fff !important;
-        border:1px solid #bbb !important;
-        overflow:hidden !important;
-      }
+  min-height: 0 !important;
+  height: 780px !important;      /* Safari likes px more than in */
+  max-height: 780px !important;
+  width: 100% !important;
+  background: #fff !important;
+  border: 2px solid #000 !important;  /* make it obvious */
+  overflow: hidden !important;
+  position: relative !important;
+  display: block !important;
+}
 
       .stage::before{ color:#888 !important; }
       .stageEdge{ box-shadow:none !important; }
@@ -386,6 +388,13 @@
       height: calc(var(--hP) * 1%) !important;
     }
 
+    #stageInner .item{
+  left: calc(var(--xP) * 1%) !important;
+  top: calc(var(--yP) * 1%) !important;
+  width: calc(var(--wP) * 1%) !important;
+  height: calc(var(--hP) * 1%) !important;
+}
+    
     @media (max-width: 520px){
       button, select, input, textarea{
         border-radius: 12px;
@@ -1200,11 +1209,33 @@
       syncEditor();
     });
 
-    $("#btnPrint").addEventListener("click", (e) => {
-      e.stopPropagation();
-      clearConfirms();
-      window.print();
-    });
+    function prepareSafariPrint(){
+  document.body.classList.add("printing");
+  // Force a layout + re-render before Safari snapshots the page
+  render();
+  // Force reflow
+  void stageOuterEl.offsetHeight;
+  void stageInnerEl.offsetHeight;
+}
+
+function cleanupSafariPrint(){
+  document.body.classList.remove("printing");
+  render();
+}
+
+$("#btnPrint").addEventListener("click", (e) => {
+  e.stopPropagation();
+  clearConfirms();
+
+  prepareSafariPrint();
+
+  // Safari: small delay is critical
+  setTimeout(() => {
+    window.print();
+    // Cleanup after print dialog closes (Safari doesn't always fire afterprint)
+    setTimeout(cleanupSafariPrint, 300);
+  }, 120);
+});
 
     $("#btnExportProject").addEventListener("click", (e) => {
       e.stopPropagation();
