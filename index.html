@@ -1336,6 +1336,28 @@
         navigator.serviceWorker.register("./service-worker.js").catch(() => {});
       });
     }
+    function refreshForPrint(){
+  // Force a re-render after print CSS is applied so item positions recompute
+  requestAnimationFrame(() => {
+    render();
+  });
+}
+
+window.addEventListener("beforeprint", refreshForPrint);
+
+// Some browsers don't fire beforeprint reliably - this helps in Chrome/Safari
+const mq = window.matchMedia && window.matchMedia("print");
+if (mq && mq.addEventListener) {
+  mq.addEventListener("change", (e) => {
+    if (e.matches) refreshForPrint();
+    else requestAnimationFrame(() => render()); // back to screen layout
+  });
+} else if (mq && mq.addListener) {
+  mq.addListener((e) => {
+    if (e.matches) refreshForPrint();
+    else requestAnimationFrame(() => render());
+  });
+}
   </script>
 </body>
 </html>
