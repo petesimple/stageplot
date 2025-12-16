@@ -296,6 +296,87 @@
 
     .printOnly{ display:none; }
 
+    /* -------- PRINT PREVIEW FIX (apply print layout before window.print) -------- */
+    body.printing header{ display:none !important; }
+    body.printing{
+      background:#fff !important;
+      color:#000 !important;
+    }
+    body.printing *{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+    body.printing .printOnly{
+      display:block !important;
+      font-size: 16px !important;
+      font-weight: 800 !important;
+      margin: 2px 0 10px 0 !important;
+    }
+
+    body.printing .layout{
+      display:block !important;
+      padding:0 !important;
+      gap:0 !important;
+      min-height: 0 !important;
+      width: 100% !important;
+      max-width: 7.9in !important;
+      margin: 0 auto !important;
+    }
+
+    body.printing .panel{
+      box-shadow:none !important;
+      background:#fff !important;
+      color:#000 !important;
+      border:1px solid #ddd !important;
+      border-radius: 12px !important;
+      margin: 0 0 10px 0 !important;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    body.printing .panel.catalogPanel{ display:none !important; }
+
+    body.printing button,
+    body.printing select,
+    body.printing input,
+    body.printing textarea,
+    body.printing .pill.clickable{ display:none !important; }
+
+    body.printing .stageWrap{ padding:10px !important; }
+    body.printing .stageMeta{ margin-bottom:6px !important; }
+
+    body.printing .stage{
+      min-height: 0 !important;
+      height: 5.9in !important;
+      max-height: 5.9in !important;
+      width: 100% !important;
+      background: #fff !important;
+      border:1px solid #bbb !important;
+      overflow:hidden !important;
+    }
+
+    body.printing .stage::before{ color:#888 !important; }
+    body.printing .stageEdge{ box-shadow:none !important; }
+
+    body.printing .item{
+      box-shadow:none !important;
+      background: rgba(0,0,0,.04) !important;
+      border: 1px solid rgba(0,0,0,.22) !important;
+      color:#000 !important;
+    }
+    body.printing .item .label{ color:#000 !important; }
+    body.printing .item .type,
+    body.printing .item .sub{ color: rgba(0,0,0,.70) !important; }
+
+    body.printing th, body.printing td{ border-bottom: 1px solid #e3e3e3 !important; }
+    body.printing th{ color:#444 !important; }
+
+    body.printing .scrollBox{
+      max-height: none !important;
+      overflow: visible !important;
+      border:1px solid #ddd !important;
+    }
+    body.printing .small{ color:#444 !important; }
+    /* -------------------------------------------------------------------------- */
+
     @media print{
       header{ display:none !important; }
       body{ background:#fff; color:#000; }
@@ -308,7 +389,6 @@
         margin: 2px 0 10px 0 !important;
       }
 
-      /* SINGLE COLUMN: stage first, then info below */
       .layout{
         display:block !important;
         padding:0 !important;
@@ -329,10 +409,8 @@
 
       .panel.catalogPanel{ display:none !important; }
 
-      /* Hide interactive UI in print */
       button, select, input, textarea, .pill.clickable{ display:none !important; }
 
-      /* Stage sizing: KEEP IT SHORT ENOUGH TO ALWAYS FIT */
       .stageWrap{ padding:10px !important; }
       .stageMeta{ margin-bottom:6px !important; }
 
@@ -369,15 +447,6 @@
       .small{ color:#444 !important; }
     }
 
-    @media print{
-      html, body{ width: 100% !important; }
-      .layout{
-        width: 100% !important;
-        max-width: 7.9in !important;
-        margin: 0 auto !important;
-      }
-    }
-
     @media (max-width: 520px){
       button, select, input, textarea{
         border-radius: 12px;
@@ -402,63 +471,76 @@
       <path fill="currentColor" d="M32 6c-6 0-11 5-11 11v14c0 6 5 11 11 11s11-5 11-11V17c0-6-5-11-11-11zm-7 25V17a7 7 0 0 1 14 0v14a7 7 0 0 1-14 0z"/>
       <path fill="currentColor" d="M18 30a2 2 0 0 1 2 2c0 7 5 13 12 13s12-6 12-13a2 2 0 1 1 4 0c0 8-6 15-14 16v6h6a2 2 0 1 1 0 4H24a2 2 0 1 1 0-4h6v-6c-8-1-14-8-14-16a2 2 0 0 1 2-2z"/>
     </symbol>
+
     <symbol id="spr-guitar" viewBox="0 0 64 64">
       <path fill="currentColor" d="M44 6l14 14-4 4-3-3-9 9c2 5 0 12-5 17-6 6-15 7-20 2l-5 5a4 4 0 0 1-6-6l5-5c-5-5-4-14 2-20 5-5 12-7 17-5l9-9-3-3 4-4zm-24 19c-4 4-5 10-1 14s10 3 14-1 5-10 1-14-10-3-14 1z"/>
     </symbol>
+
     <symbol id="spr-bass" viewBox="0 0 64 64">
       <path fill="currentColor" d="M46 6l12 12-4 4-2-2-10 10c3 6 1 13-5 19-7 7-17 8-23 2l-4 4a4 4 0 1 1-6-6l4-4c-6-6-5-16 2-23 6-6 13-8 19-5L39 17l-2-2 4-4zM20 24c-5 5-6 12-2 16s11 3 16-2 6-12 2-16-11-3-16 2z"/>
     </symbol>
+
     <symbol id="spr-keys" viewBox="0 0 64 64">
       <path fill="currentColor" d="M10 18h44a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h44V22H10z"/>
       <path fill="currentColor" d="M14 22h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22z"/>
       <path fill="currentColor" d="M19 22h3v12h-3V22zm8 0h3v12h-3V22zm8 0h3v12h-3V22zm8 0h3v12h-3V22z"/>
     </symbol>
+
     <symbol id="spr-drums" viewBox="0 0 64 64">
       <path fill="currentColor" d="M14 26c0-8 8-14 18-14s18 6 18 14-8 14-18 14-18-6-18-14zm4 0c0 6 6 10 14 10s14-4 14-10-6-10-14-10-14 4-14 10z"/>
       <path fill="currentColor" d="M20 40h24v12a4 4 0 0 1-4 4H24a4 4 0 0 1-4-4V40zm4 4v8h16v-8H24z"/>
       <path fill="currentColor" d="M10 18a2 2 0 0 1 3 0l8 8a2 2 0 0 1-3 3l-8-8a2 2 0 0 1 0-3zm44 0a2 2 0 0 1 0 3l-8 8a2 2 0 1 1-3-3l8-8a2 2 0 0 1 3 0z"/>
     </symbol>
+
     <symbol id="spr-amp" viewBox="0 0 64 64">
       <path fill="currentColor" d="M14 16h36a4 4 0 0 1 4 4v28a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V20a4 4 0 0 1 4-4zm0 4v28h36V20H14z"/>
       <path fill="currentColor" d="M18 24h28v4H18v-4zm0 8h28v4H18v-4zm0 8h18v4H18v-4z"/>
       <circle fill="currentColor" cx="44" cy="42" r="3"/>
     </symbol>
+
     <symbol id="spr-wedge" viewBox="0 0 64 64">
       <path fill="currentColor" d="M10 42l44-16v18a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4v-2z"/>
       <path fill="currentColor" d="M12 40l40-14v3L12 43v-3z" opacity=".5"/>
     </symbol>
+
     <symbol id="spr-iem" viewBox="0 0 64 64">
       <path fill="currentColor" d="M20 28c0-7 5-12 12-12s12 5 12 12v10a2 2 0 1 1-4 0V28c0-4-3-8-8-8s-8 4-8 8v10a2 2 0 1 1-4 0V28z"/>
       <path fill="currentColor" d="M16 40a6 6 0 0 0 12 0v-2h-4v2a2 2 0 0 1-4 0v-2h-4v2zm20 0a6 6 0 0 0 12 0v-2h-4v2a2 2 0 0 1-4 0v-2h-4v2z"/>
     </symbol>
+
     <symbol id="spr-di" viewBox="0 0 64 64">
       <path fill="currentColor" d="M18 18h28a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h28V22H18z"/>
       <path fill="currentColor" d="M22 26h8v4h-8v-4zm0 8h12v4H22v-4z"/>
       <circle fill="currentColor" cx="42" cy="28" r="2"/>
       <circle fill="currentColor" cx="42" cy="36" r="2"/>
     </symbol>
+
     <symbol id="spr-stand" viewBox="0 0 64 64">
       <path fill="currentColor" d="M40 10a2 2 0 0 1 2 2v10a2 2 0 1 1-4 0V12a2 2 0 0 1 2-2z"/>
       <path fill="currentColor" d="M26 22a2 2 0 0 1 3 0l11 11a2 2 0 1 1-3 3L26 25a2 2 0 0 1 0-3z"/>
       <path fill="currentColor" d="M40 32a2 2 0 0 1 2 2v14l6 6a2 2 0 1 1-3 3l-5-5-5 5a2 2 0 1 1-3-3l6-6V34a2 2 0 0 1 2-2z"/>
       <path fill="currentColor" d="M20 52h40a2 2 0 1 1 0 4H20a2 2 0 1 1 0-4z"/>
     </symbol>
+
     <symbol id="spr-outlet" viewBox="0 0 64 64">
       <path fill="currentColor" d="M20 12h24a8 8 0 0 1 8 8v24a8 8 0 0 1-8 8H20a8 8 0 0 1-8-8V20a8 8 0 0 1 8-8zm0 4a4 4 0 0 0-4 4v24a4 4 0 0 0 4 4h24a4 4 0 0 0 4-4V20a4 4 0 0 0-4-4H20z"/>
       <circle fill="currentColor" cx="26" cy="28" r="4"/>
       <circle fill="currentColor" cx="38" cy="28" r="4"/>
       <rect fill="currentColor" x="29" y="36" width="6" height="10" rx="3"/>
     </symbol>
+
     <symbol id="spr-riser" viewBox="0 0 64 64">
       <path fill="currentColor" d="M10 22h44a4 4 0 0 1 4 4v16a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V26a4 4 0 0 1 4-4zm0 4v16h44V26H10z"/>
       <path fill="currentColor" d="M14 30h10v8H14v-8zm13 0h10v8H27v-8zm13 0h10v8H40v-8z" opacity=".55"/>
     </symbol>
+
     <symbol id="spr-console" viewBox="0 0 64 64">
       <path fill="currentColor" d="M10 18h44a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h44V22H10z"/>
       <path fill="currentColor" d="M14 26h36v4H14v-4zm0 8h20v4H14v-4z"/>
       <circle fill="currentColor" cx="44" cy="36" r="2.5"/>
       <circle fill="currentColor" cx="50" cy="36" r="2.5"/>
     </symbol>
+
     <symbol id="spr-misc" viewBox="0 0 64 64">
       <path fill="currentColor" d="M14 18h36a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h36V22H14z"/>
       <path fill="currentColor" d="M20 30h24v4H20v-4zm0 8h16v4H20v-4z" opacity=".6"/>
@@ -560,7 +642,6 @@
       </div>
       <div class="body">
         <div class="stack">
-          <!-- PRINT ONLY: band name header (because inputs are hidden in print) -->
           <div id="printBandName" class="printOnly"></div>
 
           <div class="row">
@@ -747,18 +828,15 @@
       render();
     }
 
-    // FIX: robust sizing for print (getBoundingClientRect can be 0 in print)
     function stageToPx(xFt, yFt){
       const rect = stageEl.getBoundingClientRect();
-      const width = rect.width || stageEl.offsetWidth || 1;
-      const height = rect.height || stageEl.offsetHeight || 1;
-
       const pad = 16;
-      const usableW = Math.max(1, width - pad*2);
-      const usableH = Math.max(1, height - pad*2);
+      const usableW = rect.width - pad*2;
+      const usableH = rect.height - pad*2;
 
-      const sx = usableW / state.stage.w;
-      const sy = usableH / state.stage.d;
+      // guard: if print preview temporarily reports 0, avoid NaNs
+      const sx = (usableW > 0 ? usableW : 1) / state.stage.w;
+      const sy = (usableH > 0 ? usableH : 1) / state.stage.d;
 
       return { x: pad + xFt * sx, y: pad + yFt * sy, sx, sy, pad, usableW, usableH };
     }
@@ -832,18 +910,16 @@
       $("#stageD").value = state.stage.d;
       $("#stageLabel").textContent = `${state.stage.w} x ${state.stage.d}`;
 
-      // FIX: keep band name input + print header in sync (no listeners inside render)
       $("#bandName").value = state.bandName || "";
       const bn = (state.bandName || "").trim();
       const pb = document.querySelector("#printBandName");
-      if(pb) pb.textContent = bn ? bn : "StagePlot";
+      if (pb) pb.textContent = bn ? bn : "StagePlot";
 
       $("#showNotes").value = state.notes || "";
       $("#notesPreview").textContent = state.notes || "";
 
       const lib = mergedLibrary();
       $("#libCount").textContent = `${lib.items.length} items`;
-
       const search = ($("#search").value || "").trim().toLowerCase();
       const cat = $("#category").value || "All";
 
@@ -932,7 +1008,6 @@
     function rebuildLists(){
       const tbody = $("#inputsTable tbody");
       tbody.innerHTML = "";
-
       const rows = state.items
         .filter(i => (i.input || "").trim() || (i.type || "").trim())
         .map(i => ({
@@ -979,7 +1054,6 @@
     function syncEditor(){
       const item = state.items.find(i => i.id === selectedId);
       const hint = $("#selHint");
-
       if(!item){
         hint.textContent = "No item selected";
         $("#fLabel").value = "";
@@ -992,7 +1066,6 @@
         $("#scaleReadout").textContent = "100%";
         return;
       }
-
       hint.textContent = `Editing: ${item.type}`;
       $("#fLabel").value = item.label || "";
       $("#fType").value = item.type || "";
@@ -1007,7 +1080,6 @@
     function updateSelected(patch){
       const item = state.items.find(i => i.id === selectedId);
       if(!item) return;
-
       Object.assign(item, patch);
 
       const wFt = item.w * (item.scale || 1);
@@ -1057,14 +1129,11 @@
       const dy = e.clientY - drag.startY;
 
       const rect = stageEl.getBoundingClientRect();
-      const width = rect.width || stageEl.offsetWidth || 1;
-      const height = rect.height || stageEl.offsetHeight || 1;
-
       const pad = 16;
-      const usableW = Math.max(1, width - pad*2);
-      const usableH = Math.max(1, height - pad*2);
-      const sx = usableW / state.stage.w;
-      const sy = usableH / state.stage.d;
+      const usableW = rect.width - pad*2;
+      const usableH = rect.height - pad*2;
+      const sx = (usableW > 0 ? usableW : 1) / state.stage.w;
+      const sy = (usableH > 0 ? usableH : 1) / state.stage.d;
 
       let nx = drag.itemStartX + dx / sx;
       let ny = drag.itemStartY + dy / sy;
@@ -1137,7 +1206,6 @@
     $("#search").addEventListener("input", refreshCatalog);
     $("#category").addEventListener("change", refreshCatalog);
 
-    // FIX: single bandName listener (updates state + print header)
     $("#bandName").addEventListener("input", () => {
       state.bandName = $("#bandName").value || "";
       save();
@@ -1192,21 +1260,13 @@
 
       const item = state.items.find(i => i.id === selectedId);
       if(!item) return;
-
       const wFt = item.w * (item.scale || 1);
       const hFt = item.h * (item.scale || 1);
       item.x = (state.stage.w - wFt) * 0.5;
       item.y = (state.stage.d - hFt) * 0.55;
-
       save();
       render();
       syncEditor();
-    });
-
-    $("#btnPrint").addEventListener("click", (e) => {
-      e.stopPropagation();
-      clearConfirms();
-      window.print();
     });
 
     $("#btnExportProject").addEventListener("click", (e) => {
@@ -1226,12 +1286,10 @@
     $("#fileImportProject").addEventListener("change", async (e) => {
       const file = e.target.files && e.target.files[0];
       if(!file) return;
-
       const text = await file.text();
       try{
         const imported = JSON.parse(text);
         if(!imported.stage || !imported.items) throw new Error("Invalid project file");
-
         state = imported;
         selectedId = null;
         clearConfirms();
@@ -1273,7 +1331,6 @@
     $("#fileImportLibrary").addEventListener("change", async (e) => {
       const file = e.target.files && e.target.files[0];
       if(!file) return;
-
       const text = await file.text();
       try{
         const imported = JSON.parse(text);
@@ -1343,27 +1400,53 @@
       });
     }
 
-    // FIX: re-render after print CSS applies (helps Chrome/Safari)
+    /* ===================== PRINT FIXES (the 3 fixes) ===================== */
+
+    // Fix 2: apply print layout first, then render, then revert after printing
+    function applyPrintingLayout(on){
+      document.body.classList.toggle("printing", !!on);
+    }
+
     function refreshForPrint(){
+      applyPrintingLayout(true);
       requestAnimationFrame(() => {
-        render();
+        requestAnimationFrame(() => {
+          render();
+        });
       });
     }
 
+    function cleanupAfterPrint(){
+      applyPrintingLayout(false);
+      requestAnimationFrame(() => render());
+    }
+
     window.addEventListener("beforeprint", refreshForPrint);
+    window.addEventListener("afterprint", cleanupAfterPrint);
 
     const mq = window.matchMedia && window.matchMedia("print");
     if (mq && mq.addEventListener) {
       mq.addEventListener("change", (e) => {
         if (e.matches) refreshForPrint();
-        else requestAnimationFrame(() => render());
+        else cleanupAfterPrint();
       });
     } else if (mq && mq.addListener) {
       mq.addListener((e) => {
         if (e.matches) refreshForPrint();
-        else requestAnimationFrame(() => render());
+        else cleanupAfterPrint();
       });
     }
+
+    // Fix 3: print button primes the layout and render before opening print UI
+    $("#btnPrint").addEventListener("click", (e) => {
+      e.stopPropagation();
+      clearConfirms();
+
+      refreshForPrint();
+      setTimeout(() => window.print(), 50);
+    });
+
+    /* ==================================================================== */
   </script>
 </body>
 </html>
