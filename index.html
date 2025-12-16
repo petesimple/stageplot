@@ -386,6 +386,37 @@
       user-select:none;
       -webkit-user-select:none;
     }
+    /* ---------- MOBILE LAYOUT FIX ---------- */
+@media (max-width: 900px){
+  .layout{
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto auto auto;
+  }
+
+  .catalogPanel{
+    order: 1;
+  }
+
+  .stagePanel{
+    order: 2;
+  }
+
+  .infoPanel{
+    order: 3;
+  }
+}
+
+@media (max-width: 520px){
+  .layout{
+    padding:8px !important;
+    gap:8px !important;
+  }
+
+  .stage{
+    min-height: 360px !important;
+  }
+}
+/* -------------------------------------- */
   </style>
 </head>
 
