@@ -31,6 +31,7 @@
       background: radial-gradient(1200px 700px at 50% -10%, #1a2540, var(--bg));
       color:var(--text);
     }
+
     header{
       display:flex;
       align-items:center;
@@ -60,17 +61,8 @@
       flex-wrap:wrap;
     }
 
-    .appTitle{
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-    .logo{
-      width:28px;
-      height:28px;
-      object-fit:contain;
-      display:block;
-    }
+    .appTitle{ display:flex; align-items:center; gap:10px; }
+    .logo{ width:28px; height:28px; object-fit:contain; display:block; }
 
     button, select, input, textarea{
       font: inherit;
@@ -198,6 +190,7 @@
       gap:10px;
     }
     .stageMeta{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+
     .stage{
       flex:1;
       min-height: 540px;
@@ -211,6 +204,7 @@
       position:relative;
       overflow:hidden;
     }
+
     .stage::before{
       content:"AUDIENCE";
       position:absolute;
@@ -222,13 +216,24 @@
       letter-spacing: 2px;
       pointer-events:none;
       user-select:none;
+      z-index:2;
     }
+
     .stageEdge{
       position:absolute;
       inset:0;
       border-radius:16px;
       pointer-events:none;
       box-shadow: inset 0 0 0 2px rgba(74,163,255,.06);
+      z-index:2;
+    }
+
+    /* FIX 1: inner stage area for placing items */
+    .stageInner{
+      position:absolute;
+      inset:16px;
+      border-radius:12px;
+      z-index:1;
     }
 
     .item{
@@ -293,107 +298,23 @@
     }
 
     @page { margin: 0.35in; }
-
     .printOnly{ display:none; }
 
-    /* -------- PRINT PREVIEW FIX (apply print layout before window.print) -------- */
-    body.printing header{ display:none !important; }
-    body.printing{
-      background:#fff !important;
-      color:#000 !important;
-    }
-    body.printing *{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-
-    body.printing .printOnly{
-      display:block !important;
-      font-size: 16px !important;
-      font-weight: 800 !important;
-      margin: 2px 0 10px 0 !important;
-    }
-
-    body.printing .layout{
-      display:block !important;
-      padding:0 !important;
-      gap:0 !important;
-      min-height: 0 !important;
-      width: 100% !important;
-      max-width: 7.9in !important;
-      margin: 0 auto !important;
-    }
-
-    body.printing .panel{
-      box-shadow:none !important;
-      background:#fff !important;
-      color:#000 !important;
-      border:1px solid #ddd !important;
-      border-radius: 12px !important;
-      margin: 0 0 10px 0 !important;
-      break-inside: avoid;
-      page-break-inside: avoid;
-    }
-
-    body.printing .panel.catalogPanel{ display:none !important; }
-
-    body.printing button,
-    body.printing select,
-    body.printing input,
-    body.printing textarea,
-    body.printing .pill.clickable{ display:none !important; }
-
-    body.printing .stageWrap{ padding:10px !important; }
-    body.printing .stageMeta{ margin-bottom:6px !important; }
-
-    body.printing .stage{
-      min-height: 0 !important;
-      height: 5.9in !important;
-      max-height: 5.9in !important;
-      width: 100% !important;
-      background: #fff !important;
-      border:1px solid #bbb !important;
-      overflow:hidden !important;
-    }
-
-    body.printing .stage::before{ color:#888 !important; }
-    body.printing .stageEdge{ box-shadow:none !important; }
-
-    body.printing .item{
-      box-shadow:none !important;
-      background: rgba(0,0,0,.04) !important;
-      border: 1px solid rgba(0,0,0,.22) !important;
-      color:#000 !important;
-    }
-    body.printing .item .label{ color:#000 !important; }
-    body.printing .item .type,
-    body.printing .item .sub{ color: rgba(0,0,0,.70) !important; }
-
-    body.printing th, body.printing td{ border-bottom: 1px solid #e3e3e3 !important; }
-    body.printing th{ color:#444 !important; }
-
-    body.printing .scrollBox{
-      max-height: none !important;
-      overflow: visible !important;
-      border:1px solid #ddd !important;
-    }
-    body.printing .small{ color:#444 !important; }
-    /* -------------------------------------------------------------------------- */
-
+    /* ---------------- PRINT ---------------- */
     @media print{
       header{ display:none !important; }
       body{ background:#fff; color:#000; }
       *{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 
-      .printOnly{
-        display:block !important;
-        font-size: 16px !important;
-        font-weight: 800 !important;
-        margin: 2px 0 10px 0 !important;
-      }
-
+      /* SINGLE COLUMN */
       .layout{
         display:block !important;
         padding:0 !important;
         gap:0 !important;
         min-height: 0 !important;
+        width: 100% !important;
+        max-width: 7.9in !important;
+        margin: 0 auto !important;
       }
 
       .panel{
@@ -409,6 +330,7 @@
 
       .panel.catalogPanel{ display:none !important; }
 
+      /* Hide interactive UI in print */
       button, select, input, textarea, .pill.clickable{ display:none !important; }
 
       .stageWrap{ padding:10px !important; }
@@ -416,8 +338,8 @@
 
       .stage{
         min-height: 0 !important;
-        height: 5.9in !important;
-        max-height: 5.9in !important;
+        height: 5.2in !important;     /* a bit shorter so info fits */
+        max-height: 5.2in !important;
         width: 100% !important;
         background: #fff !important;
         border:1px solid #bbb !important;
@@ -427,12 +349,21 @@
       .stage::before{ color:#888 !important; }
       .stageEdge{ box-shadow:none !important; }
 
-      .item{
+      .stageInner{ inset:10px !important; }
+
+      /* FIX 2: Print-safe positioning (percent based) */
+      .stageInner .item{
         box-shadow:none !important;
         background: rgba(0,0,0,.04) !important;
         border: 1px solid rgba(0,0,0,.22) !important;
         color:#000 !important;
+
+        left: calc(var(--xP) * 1%) !important;
+        top: calc(var(--yP) * 1%) !important;
+        width: calc(var(--wP) * 1%) !important;
+        height: calc(var(--hP) * 1%) !important;
       }
+
       .item .label{ color:#000 !important; }
       .item .type, .item .sub{ color: rgba(0,0,0,.70) !important; }
 
@@ -445,6 +376,14 @@
         border:1px solid #ddd !important;
       }
       .small{ color:#444 !important; }
+    }
+
+    /* Also apply the same percent rules in print preview if we toggle a class */
+    body.printing .stageInner .item{
+      left: calc(var(--xP) * 1%) !important;
+      top: calc(var(--yP) * 1%) !important;
+      width: calc(var(--wP) * 1%) !important;
+      height: calc(var(--hP) * 1%) !important;
     }
 
     @media (max-width: 520px){
@@ -464,6 +403,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <svg width="0" height="0" style="position:absolute; left:-9999px; top:-9999px;" aria-hidden="true" focusable="false">
@@ -629,8 +569,11 @@
           <span class="pill"><span class="dot"></span><span id="stageLabel">24 x 16</span></span>
           <span class="small">Click an item to edit on the right. Drag to move.</span>
         </div>
+
+        <!-- FIX 1: Stage has an inner container -->
         <div id="stage" class="stage">
           <div class="stageEdge"></div>
+          <div id="stageInner" class="stageInner"></div>
         </div>
       </div>
     </section>
@@ -642,8 +585,6 @@
       </div>
       <div class="body">
         <div class="stack">
-          <div id="printBandName" class="printOnly"></div>
-
           <div class="row">
             <input id="bandName" placeholder="Band name (optional)" style="width:100%" />
           </div>
@@ -708,7 +649,8 @@
 
   <script>
     const $ = (s) => document.querySelector(s);
-    const stageEl = $("#stage");
+    const stageOuterEl = $("#stage");
+    const stageInnerEl = $("#stageInner");
 
     const STORAGE_KEY = "stageplot_v2_state";
     const STORAGE_KEY_LIB = "stageplot_v2_user_library";
@@ -814,9 +756,7 @@
     let state = loadJSON(STORAGE_KEY) || deepClone(defaults);
     let selectedId = null;
 
-    function save(){
-      saveJSON(STORAGE_KEY, state);
-    }
+    function save(){ saveJSON(STORAGE_KEY, state); }
 
     function setStageFromInputs(){
       const w = clamp(parseFloat($("#stageW").value || 24), 8, 80);
@@ -828,17 +768,14 @@
       render();
     }
 
+    /* Uses stageInner dimensions for pixel placement on screen */
     function stageToPx(xFt, yFt){
-      const rect = stageEl.getBoundingClientRect();
-      const pad = 16;
-      const usableW = rect.width - pad*2;
-      const usableH = rect.height - pad*2;
-
-      // guard: if print preview temporarily reports 0, avoid NaNs
-      const sx = (usableW > 0 ? usableW : 1) / state.stage.w;
-      const sy = (usableH > 0 ? usableH : 1) / state.stage.d;
-
-      return { x: pad + xFt * sx, y: pad + yFt * sy, sx, sy, pad, usableW, usableH };
+      const rect = stageInnerEl.getBoundingClientRect();
+      const usableW = rect.width;
+      const usableH = rect.height;
+      const sx = usableW / state.stage.w;
+      const sy = usableH / state.stage.d;
+      return { x: xFt * sx, y: yFt * sy, sx, sy, usableW, usableH };
     }
 
     function renderSprite(sprite){
@@ -911,10 +848,6 @@
       $("#stageLabel").textContent = `${state.stage.w} x ${state.stage.d}`;
 
       $("#bandName").value = state.bandName || "";
-      const bn = (state.bandName || "").trim();
-      const pb = document.querySelector("#printBandName");
-      if (pb) pb.textContent = bn ? bn : "StagePlot";
-
       $("#showNotes").value = state.notes || "";
       $("#notesPreview").textContent = state.notes || "";
 
@@ -934,7 +867,6 @@
       for(const it of filtered){
         const row = document.createElement("div");
         row.className = "catItem";
-
         row.innerHTML = `
           <div class="catLeft">
             <div class="catIcon">${renderSprite(it.sprite)}</div>
@@ -953,24 +885,34 @@
         listEl.appendChild(row);
       }
 
-      stageEl.querySelectorAll(".item").forEach(n => n.remove());
+      /* clear items from stageInner */
+      stageInnerEl.querySelectorAll(".item").forEach(n => n.remove());
 
       for(const item of state.items){
         const div = document.createElement("div");
         div.className = "item" + (item.id === selectedId ? " selected" : "");
         div.dataset.id = item.id;
 
-        const p = stageToPx(item.x, item.y);
         const wFt = item.w * (item.scale || 1);
         const hFt = item.h * (item.scale || 1);
 
-        const wPx = wFt * p.sx;
-        const hPx = hFt * p.sy;
+        /* FIX 2: store percent-based layout variables for print */
+        const xP = (item.x / state.stage.w) * 100;
+        const yP = (item.y / state.stage.d) * 100;
+        const wP = (wFt / state.stage.w) * 100;
+        const hP = (hFt / state.stage.d) * 100;
 
+        div.style.setProperty("--xP", xP.toFixed(4));
+        div.style.setProperty("--yP", yP.toFixed(4));
+        div.style.setProperty("--wP", wP.toFixed(4));
+        div.style.setProperty("--hP", hP.toFixed(4));
+
+        /* screen px placement */
+        const p = stageToPx(item.x, item.y);
         div.style.left = `${p.x}px`;
         div.style.top = `${p.y}px`;
-        div.style.width = `${wPx}px`;
-        div.style.height = `${hPx}px`;
+        div.style.width = `${wFt * p.sx}px`;
+        div.style.height = `${hFt * p.sy}px`;
 
         const c = normalizeHex(item.color || "#4aa3ff");
         div.style.borderColor = hexToRgba(c, 0.55);
@@ -999,7 +941,7 @@
           syncEditor();
         });
 
-        stageEl.appendChild(div);
+        stageInnerEl.appendChild(div);
       }
 
       rebuildLists();
@@ -1128,12 +1070,9 @@
       const dx = e.clientX - drag.startX;
       const dy = e.clientY - drag.startY;
 
-      const rect = stageEl.getBoundingClientRect();
-      const pad = 16;
-      const usableW = rect.width - pad*2;
-      const usableH = rect.height - pad*2;
-      const sx = (usableW > 0 ? usableW : 1) / state.stage.w;
-      const sy = (usableH > 0 ? usableH : 1) / state.stage.d;
+      const rect = stageInnerEl.getBoundingClientRect();
+      const sx = rect.width / state.stage.w;
+      const sy = rect.height / state.stage.d;
 
       let nx = drag.itemStartX + dx / sx;
       let ny = drag.itemStartY + dy / sy;
@@ -1157,7 +1096,6 @@
       render();
     }
 
-    // ---------- double opt-in safeguards for Delete + Reset ----------
     let confirmDelete = false;
     let confirmReset = false;
 
@@ -1174,12 +1112,9 @@
       reset.classList.add("danger");
     }
 
-    document.addEventListener("click", () => {
-      clearConfirms();
-    });
-    // ---------------------------------------------------------------
+    document.addEventListener("click", () => { clearConfirms(); });
 
-    stageEl.addEventListener("click", (e) => {
+    stageOuterEl.addEventListener("click", (e) => {
       e.stopPropagation();
       selectedId = null;
       clearConfirms();
@@ -1209,10 +1144,6 @@
     $("#bandName").addEventListener("input", () => {
       state.bandName = $("#bandName").value || "";
       save();
-
-      const bn = (state.bandName || "").trim();
-      const pb = document.querySelector("#printBandName");
-      if (pb) pb.textContent = bn ? bn : "StagePlot";
     });
 
     $("#showNotes").addEventListener("input", () => {
@@ -1267,6 +1198,12 @@
       save();
       render();
       syncEditor();
+    });
+
+    $("#btnPrint").addEventListener("click", (e) => {
+      e.stopPropagation();
+      clearConfirms();
+      window.print();
     });
 
     $("#btnExportProject").addEventListener("click", (e) => {
@@ -1393,60 +1330,37 @@
       t = setTimeout(render, 60);
     });
 
-    // PWA: register service worker
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker.register("./service-worker.js").catch(() => {});
       });
     }
 
-    /* ===================== PRINT FIXES (the 3 fixes) ===================== */
-
-    // Fix 2: apply print layout first, then render, then revert after printing
-    function applyPrintingLayout(on){
-      document.body.classList.toggle("printing", !!on);
+    /* FIX 3: Reliable print refresh + printing class */
+    function enterPrintMode(){
+      document.body.classList.add("printing");
+      requestAnimationFrame(() => render());
     }
-
-    function refreshForPrint(){
-      applyPrintingLayout(true);
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          render();
-        });
-      });
-    }
-
-    function cleanupAfterPrint(){
-      applyPrintingLayout(false);
+    function exitPrintMode(){
+      document.body.classList.remove("printing");
       requestAnimationFrame(() => render());
     }
 
-    window.addEventListener("beforeprint", refreshForPrint);
-    window.addEventListener("afterprint", cleanupAfterPrint);
+    window.addEventListener("beforeprint", enterPrintMode);
+    window.addEventListener("afterprint", exitPrintMode);
 
     const mq = window.matchMedia && window.matchMedia("print");
     if (mq && mq.addEventListener) {
       mq.addEventListener("change", (e) => {
-        if (e.matches) refreshForPrint();
-        else cleanupAfterPrint();
+        if (e.matches) enterPrintMode();
+        else exitPrintMode();
       });
     } else if (mq && mq.addListener) {
       mq.addListener((e) => {
-        if (e.matches) refreshForPrint();
-        else cleanupAfterPrint();
+        if (e.matches) enterPrintMode();
+        else exitPrintMode();
       });
     }
-
-    // Fix 3: print button primes the layout and render before opening print UI
-    $("#btnPrint").addEventListener("click", (e) => {
-      e.stopPropagation();
-      clearConfirms();
-
-      refreshForPrint();
-      setTimeout(() => window.print(), 50);
-    });
-
-    /* ==================================================================== */
   </script>
 </body>
 </html>
