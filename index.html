@@ -292,18 +292,18 @@
     }
 
     @page { margin: 0.45in; }
-    @media print{
+    @page { margin: 0.35in; }
+
+@media print{
   header{ display:none !important; }
   body{ background:#fff; color:#000; }
+  *{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 
-  /* One column: stage on top, info below */
+  /* SINGLE COLUMN: stage first, then info below */
   .layout{
-    grid-template-columns: 1fr !important;
-    grid-template-areas:
-      "stage"
-      "info" !important;
+    display:block !important;
     padding:0 !important;
-    gap: 12px !important;
+    gap:0 !important;
     min-height: 0 !important;
   }
 
@@ -312,31 +312,34 @@
     background:#fff !important;
     color:#000 !important;
     border:1px solid #ddd !important;
+    border-radius: 12px !important;
+    margin: 0 0 10px 0 !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 
   .panel.catalogPanel{ display:none !important; }
 
-  .stagePanel{ grid-area: stage; }
-  .infoPanel{ grid-area: info; }
-
-  /* Hide controls on print */
+  /* Hide interactive UI in print */
   button, select, input, textarea, .pill.clickable{ display:none !important; }
 
-  /* Give the stage full width and a sane height so it doesn’t clip */
-  .stageWrap{ padding:8px !important; }
+  /* Stage sizing: KEEP IT SHORT ENOUGH TO ALWAYS FIT */
+  .stageWrap{ padding:10px !important; }
+  .stageMeta{ margin-bottom:6px !important; }
+
   .stage{
+    min-height: 0 !important;
+    height: 5.9in !important;      /* tweak if needed: 5.6in - 6.2in */
+    max-height: 5.9in !important;
     width: 100% !important;
-    min-height: 6.8in !important;   /* adjust up/down if you want */
-    height: auto !important;
-    background:#fff !important;
+    background: #fff !important;
     border:1px solid #bbb !important;
-    overflow: hidden !important;
+    overflow:hidden !important;
   }
 
   .stage::before{ color:#888 !important; }
   .stageEdge{ box-shadow:none !important; }
 
-  /* Print styling for items */
   .item{
     box-shadow:none !important;
     background: rgba(0,0,0,.04) !important;
@@ -349,45 +352,13 @@
   th, td{ border-bottom: 1px solid #e3e3e3 !important; }
   th{ color:#444 !important; }
 
-  /* Let tables expand naturally in the info section */
   .scrollBox{
     max-height: none !important;
     overflow: visible !important;
     border:1px solid #ddd !important;
-    background: transparent !important;
   }
-
   .small{ color:#444 !important; }
-
-  /* Avoid awkward splits where possible */
-  .panel{ break-inside: avoid; page-break-inside: avoid; }
 }
-
-    @media (max-width: 1100px){
-      .layout{ grid-template-columns: 300px 1fr 360px; }
-      .catName{ max-width: 170px; }
-    }
-
-    @media (max-width: 980px){
-      .layout{
-        grid-template-columns: 1fr;
-        grid-template-areas:
-          "stage"
-          "info"
-          "catalog";
-        min-height: 0;
-      }
-      .stagePanel{ grid-area: stage; }
-      .infoPanel{ grid-area: info; }
-      .catalogPanel{ grid-area: catalog; }
-
-      .stage{ min-height: 62vh; }
-      .catalog{ max-height: 42vh; }
-      .scrollBox{ max-height: 32vh; }
-
-      header{ padding:12px 12px; }
-      header .right{ width:100%; justify-content:flex-start; }
-    }
 
     @media (max-width: 520px){
       button, select, input, textarea{
