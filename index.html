@@ -359,6 +359,18 @@
   }
   .small{ color:#444 !important; }
 }
+    @media print{
+  html, body{
+    width: 100% !important;
+  }
+
+  /* Center the whole print content */
+  .layout{
+    width: 100% !important;
+    max-width: 7.9in !important;   /* safe for US Letter with margins */
+    margin: 0 auto !important;     /* THIS centers it */
+  }
+}
 
     @media (max-width: 520px){
       button, select, input, textarea{
