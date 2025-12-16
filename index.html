@@ -9,6 +9,7 @@
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
   <title>StagePlot v2</title>
 
   <style>
@@ -31,7 +32,6 @@
       background: radial-gradient(1200px 700px at 50% -10%, #1a2540, var(--bg));
       color:var(--text);
     }
-
     header{
       display:flex;
       align-items:center;
@@ -61,8 +61,17 @@
       flex-wrap:wrap;
     }
 
-    .appTitle{ display:flex; align-items:center; gap:10px; }
-    .logo{ width:28px; height:28px; object-fit:contain; display:block; }
+    .appTitle{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .logo{
+      width:28px;
+      height:28px;
+      object-fit:contain;
+      display:block;
+    }
 
     button, select, input, textarea{
       font: inherit;
@@ -190,7 +199,6 @@
       gap:10px;
     }
     .stageMeta{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
-
     .stage{
       flex:1;
       min-height: 540px;
@@ -204,7 +212,6 @@
       position:relative;
       overflow:hidden;
     }
-
     .stage::before{
       content:"AUDIENCE";
       position:absolute;
@@ -216,24 +223,13 @@
       letter-spacing: 2px;
       pointer-events:none;
       user-select:none;
-      z-index:2;
     }
-
     .stageEdge{
       position:absolute;
       inset:0;
       border-radius:16px;
       pointer-events:none;
       box-shadow: inset 0 0 0 2px rgba(74,163,255,.06);
-      z-index:2;
-    }
-
-    /* FIX 1: inner stage area for placing items */
-    .stageInner{
-      position:absolute;
-      inset:16px;
-      border-radius:12px;
-      z-index:1;
     }
 
     .item{
@@ -298,15 +294,20 @@
     }
 
     @page { margin: 0.35in; }
+
     .printOnly{ display:none; }
 
-    /* ---------------- PRINT ---------------- */
+    /* ---- PRINT ---- */
     @media print{
       header{ display:none !important; }
       body{ background:#fff; color:#000; }
       *{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 
-      /* SINGLE COLUMN */
+      .printOnly{
+        display:block !important;
+      }
+
+      /* SINGLE COLUMN: stage first, then info below */
       .layout{
         display:block !important;
         padding:0 !important;
@@ -333,41 +334,31 @@
       /* Hide interactive UI in print */
       button, select, input, textarea, .pill.clickable{ display:none !important; }
 
+      /* IMPORTANT: Safari often fails printing absolutely-positioned stage items.
+         So we print the SVG snapshot instead. */
+      #stage{ display:none !important; }
+
       .stageWrap{ padding:10px !important; }
       .stageMeta{ margin-bottom:6px !important; }
 
-      .stage{
-  min-height: 0 !important;
-  height: 780px !important;      /* Safari likes px more than in */
-  max-height: 780px !important;
-  width: 100% !important;
-  background: #fff !important;
-  border: 2px solid #000 !important;  /* make it obvious */
-  overflow: hidden !important;
-  position: relative !important;
-  display: block !important;
-}
-
-      .stage::before{ color:#888 !important; }
-      .stageEdge{ box-shadow:none !important; }
-
-      .stageInner{ inset:10px !important; }
-
-      /* FIX 2: Print-safe positioning (percent based) */
-      .stageInner .item{
-        box-shadow:none !important;
-        background: rgba(0,0,0,.04) !important;
-        border: 1px solid rgba(0,0,0,.22) !important;
-        color:#000 !important;
-
-        left: calc(var(--xP) * 1%) !important;
-        top: calc(var(--yP) * 1%) !important;
-        width: calc(var(--wP) * 1%) !important;
-        height: calc(var(--hP) * 1%) !important;
+      #printBandName{
+        font-size: 16px !important;
+        font-weight: 800 !important;
+        margin: 2px 0 10px 0 !important;
       }
 
-      .item .label{ color:#000 !important; }
-      .item .type, .item .sub{ color: rgba(0,0,0,.70) !important; }
+      #printStageBox{
+        border:1px solid #bbb !important;
+        border-radius: 12px !important;
+        overflow:hidden !important;
+        background:#fff !important;
+      }
+
+      #printStageSvg{
+        width:100% !important;
+        height: 5.9in !important;   /* tweak 5.6-6.2 if needed */
+        display:block !important;
+      }
 
       th, td{ border-bottom: 1px solid #e3e3e3 !important; }
       th{ color:#444 !important; }
@@ -380,21 +371,6 @@
       .small{ color:#444 !important; }
     }
 
-    /* Also apply the same percent rules in print preview if we toggle a class */
-    body.printing .stageInner .item{
-      left: calc(var(--xP) * 1%) !important;
-      top: calc(var(--yP) * 1%) !important;
-      width: calc(var(--wP) * 1%) !important;
-      height: calc(var(--hP) * 1%) !important;
-    }
-
-    #stageInner .item{
-  left: calc(var(--xP) * 1%) !important;
-  top: calc(var(--yP) * 1%) !important;
-  width: calc(var(--wP) * 1%) !important;
-  height: calc(var(--hP) * 1%) !important;
-}
-    
     @media (max-width: 520px){
       button, select, input, textarea{
         border-radius: 12px;
@@ -415,81 +391,69 @@
 
 <body>
 
+  <!-- sprites -->
   <svg width="0" height="0" style="position:absolute; left:-9999px; top:-9999px;" aria-hidden="true" focusable="false">
     <symbol id="spr-mic" viewBox="0 0 64 64">
       <path fill="currentColor" d="M32 6c-6 0-11 5-11 11v14c0 6 5 11 11 11s11-5 11-11V17c0-6-5-11-11-11zm-7 25V17a7 7 0 0 1 14 0v14a7 7 0 0 1-14 0z"/>
       <path fill="currentColor" d="M18 30a2 2 0 0 1 2 2c0 7 5 13 12 13s12-6 12-13a2 2 0 1 1 4 0c0 8-6 15-14 16v6h6a2 2 0 1 1 0 4H24a2 2 0 1 1 0-4h6v-6c-8-1-14-8-14-16a2 2 0 0 1 2-2z"/>
     </symbol>
-
     <symbol id="spr-guitar" viewBox="0 0 64 64">
       <path fill="currentColor" d="M44 6l14 14-4 4-3-3-9 9c2 5 0 12-5 17-6 6-15 7-20 2l-5 5a4 4 0 0 1-6-6l5-5c-5-5-4-14 2-20 5-5 12-7 17-5l9-9-3-3 4-4zm-24 19c-4 4-5 10-1 14s10 3 14-1 5-10 1-14-10-3-14 1z"/>
     </symbol>
-
     <symbol id="spr-bass" viewBox="0 0 64 64">
       <path fill="currentColor" d="M46 6l12 12-4 4-2-2-10 10c3 6 1 13-5 19-7 7-17 8-23 2l-4 4a4 4 0 1 1-6-6l4-4c-6-6-5-16 2-23 6-6 13-8 19-5L39 17l-2-2 4-4zM20 24c-5 5-6 12-2 16s11 3 16-2 6-12 2-16-11-3-16 2z"/>
     </symbol>
-
     <symbol id="spr-keys" viewBox="0 0 64 64">
       <path fill="currentColor" d="M10 18h44a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h44V22H10z"/>
       <path fill="currentColor" d="M14 22h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22z"/>
       <path fill="currentColor" d="M19 22h3v12h-3V22zm8 0h3v12h-3V22zm8 0h3v12h-3V22zm8 0h3v12h-3V22z"/>
     </symbol>
-
     <symbol id="spr-drums" viewBox="0 0 64 64">
       <path fill="currentColor" d="M14 26c0-8 8-14 18-14s18 6 18 14-8 14-18 14-18-6-18-14zm4 0c0 6 6 10 14 10s14-4 14-10-6-10-14-10-14 4-14 10z"/>
       <path fill="currentColor" d="M20 40h24v12a4 4 0 0 1-4 4H24a4 4 0 0 1-4-4V40zm4 4v8h16v-8H24z"/>
       <path fill="currentColor" d="M10 18a2 2 0 0 1 3 0l8 8a2 2 0 0 1-3 3l-8-8a2 2 0 0 1 0-3zm44 0a2 2 0 0 1 0 3l-8 8a2 2 0 1 1-3-3l8-8a2 2 0 0 1 3 0z"/>
     </symbol>
-
     <symbol id="spr-amp" viewBox="0 0 64 64">
       <path fill="currentColor" d="M14 16h36a4 4 0 0 1 4 4v28a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V20a4 4 0 0 1 4-4zm0 4v28h36V20H14z"/>
       <path fill="currentColor" d="M18 24h28v4H18v-4zm0 8h28v4H18v-4zm0 8h18v4H18v-4z"/>
       <circle fill="currentColor" cx="44" cy="42" r="3"/>
     </symbol>
-
     <symbol id="spr-wedge" viewBox="0 0 64 64">
       <path fill="currentColor" d="M10 42l44-16v18a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4v-2z"/>
       <path fill="currentColor" d="M12 40l40-14v3L12 43v-3z" opacity=".5"/>
     </symbol>
-
     <symbol id="spr-iem" viewBox="0 0 64 64">
       <path fill="currentColor" d="M20 28c0-7 5-12 12-12s12 5 12 12v10a2 2 0 1 1-4 0V28c0-4-3-8-8-8s-8 4-8 8v10a2 2 0 1 1-4 0V28z"/>
       <path fill="currentColor" d="M16 40a6 6 0 0 0 12 0v-2h-4v2a2 2 0 0 1-4 0v-2h-4v2zm20 0a6 6 0 0 0 12 0v-2h-4v2a2 2 0 0 1-4 0v-2h-4v2z"/>
     </symbol>
-
     <symbol id="spr-di" viewBox="0 0 64 64">
       <path fill="currentColor" d="M18 18h28a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h28V22H18z"/>
       <path fill="currentColor" d="M22 26h8v4h-8v-4zm0 8h12v4H22v-4z"/>
       <circle fill="currentColor" cx="42" cy="28" r="2"/>
       <circle fill="currentColor" cx="42" cy="36" r="2"/>
     </symbol>
-
     <symbol id="spr-stand" viewBox="0 0 64 64">
       <path fill="currentColor" d="M40 10a2 2 0 0 1 2 2v10a2 2 0 1 1-4 0V12a2 2 0 0 1 2-2z"/>
       <path fill="currentColor" d="M26 22a2 2 0 0 1 3 0l11 11a2 2 0 1 1-3 3L26 25a2 2 0 0 1 0-3z"/>
       <path fill="currentColor" d="M40 32a2 2 0 0 1 2 2v14l6 6a2 2 0 1 1-3 3l-5-5-5 5a2 2 0 1 1-3-3l6-6V34a2 2 0 0 1 2-2z"/>
       <path fill="currentColor" d="M20 52h40a2 2 0 1 1 0 4H20a2 2 0 1 1 0-4z"/>
     </symbol>
-
     <symbol id="spr-outlet" viewBox="0 0 64 64">
       <path fill="currentColor" d="M20 12h24a8 8 0 0 1 8 8v24a8 8 0 0 1-8 8H20a8 8 0 0 1-8-8V20a8 8 0 0 1 8-8zm0 4a4 4 0 0 0-4 4v24a4 4 0 0 0 4 4h24a4 4 0 0 0 4-4V20a4 4 0 0 0-4-4H20z"/>
       <circle fill="currentColor" cx="26" cy="28" r="4"/>
       <circle fill="currentColor" cx="38" cy="28" r="4"/>
       <rect fill="currentColor" x="29" y="36" width="6" height="10" rx="3"/>
     </symbol>
-
     <symbol id="spr-riser" viewBox="0 0 64 64">
       <path fill="currentColor" d="M10 22h44a4 4 0 0 1 4 4v16a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V26a4 4 0 0 1 4-4zm0 4v16h44V26H10z"/>
       <path fill="currentColor" d="M14 30h10v8H14v-8zm13 0h10v8H27v-8zm13 0h10v8H40v-8z" opacity=".55"/>
     </symbol>
-
     <symbol id="spr-console" viewBox="0 0 64 64">
       <path fill="currentColor" d="M10 18h44a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h44V22H10z"/>
       <path fill="currentColor" d="M14 26h36v4H14v-4zm0 8h20v4H14v-4z"/>
       <circle fill="currentColor" cx="44" cy="36" r="2.5"/>
       <circle fill="currentColor" cx="50" cy="36" r="2.5"/>
     </symbol>
-
     <symbol id="spr-misc" viewBox="0 0 64 64">
       <path fill="currentColor" d="M14 18h36a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h36V22H14z"/>
       <path fill="currentColor" d="M20 30h24v4H20v-4zm0 8h16v4H20v-4z" opacity=".6"/>
@@ -573,16 +537,22 @@
           <button class="danger" id="btnDelete">Delete</button>
         </div>
       </div>
+
       <div class="stageWrap">
         <div class="stageMeta">
           <span class="pill"><span class="dot"></span><span id="stageLabel">24 x 16</span></span>
           <span class="small">Click an item to edit on the right. Drag to move.</span>
         </div>
 
-        <!-- FIX 1: Stage has an inner container -->
+        <!-- PRINT-ONLY: this is the stage plot that Safari will actually print -->
+        <div id="printBandName" class="printOnly"></div>
+        <div id="printStageBox" class="printOnly">
+          <svg id="printStageSvg" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+
+        <!-- SCREEN-ONLY stage -->
         <div id="stage" class="stage">
           <div class="stageEdge"></div>
-          <div id="stageInner" class="stageInner"></div>
         </div>
       </div>
     </section>
@@ -658,8 +628,7 @@
 
   <script>
     const $ = (s) => document.querySelector(s);
-    const stageOuterEl = $("#stage");
-    const stageInnerEl = $("#stageInner");
+    const stageEl = $("#stage");
 
     const STORAGE_KEY = "stageplot_v2_state";
     const STORAGE_KEY_LIB = "stageplot_v2_user_library";
@@ -765,7 +734,9 @@
     let state = loadJSON(STORAGE_KEY) || deepClone(defaults);
     let selectedId = null;
 
-    function save(){ saveJSON(STORAGE_KEY, state); }
+    function save(){
+      saveJSON(STORAGE_KEY, state);
+    }
 
     function setStageFromInputs(){
       const w = clamp(parseFloat($("#stageW").value || 24), 8, 80);
@@ -777,14 +748,14 @@
       render();
     }
 
-    /* Uses stageInner dimensions for pixel placement on screen */
     function stageToPx(xFt, yFt){
-      const rect = stageInnerEl.getBoundingClientRect();
-      const usableW = rect.width;
-      const usableH = rect.height;
+      const rect = stageEl.getBoundingClientRect();
+      const pad = 16;
+      const usableW = rect.width - pad*2;
+      const usableH = rect.height - pad*2;
       const sx = usableW / state.stage.w;
       const sy = usableH / state.stage.d;
-      return { x: xFt * sx, y: yFt * sy, sx, sy, usableW, usableH };
+      return { x: pad + xFt * sx, y: pad + yFt * sy, sx, sy, pad, usableW, usableH };
     }
 
     function renderSprite(sprite){
@@ -851,12 +822,128 @@
       syncEditor();
     }
 
+    // -------- PRINT SVG (Safari-proof) --------
+    function svgEl(name, attrs = {}, text = null){
+      const el = document.createElementNS("http://www.w3.org/2000/svg", name);
+      for(const [k,v] of Object.entries(attrs)){
+        el.setAttribute(k, String(v));
+      }
+      if(text !== null) el.textContent = text;
+      return el;
+    }
+
+    function renderPrintStageSvg(){
+      const svg = document.getElementById("printStageSvg");
+      if(!svg) return;
+
+      const W = Math.max(1, Number(state.stage.w || 24));
+      const D = Math.max(1, Number(state.stage.d || 16));
+
+      while(svg.firstChild) svg.removeChild(svg.firstChild);
+
+      svg.setAttribute("viewBox", `0 0 ${W} ${D}`);
+      svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+
+      // background
+      svg.appendChild(svgEl("rect", { x:0, y:0, width:W, height:D, fill:"#ffffff" }));
+
+      // grid (every 2ft)
+      const grid = svgEl("g", { stroke:"#eaeaea", "stroke-width":"0.03" });
+      for(let x=0; x<=W; x+=2){
+        grid.appendChild(svgEl("line", { x1:x, y1:0, x2:x, y2:D }));
+      }
+      for(let y=0; y<=D; y+=2){
+        grid.appendChild(svgEl("line", { x1:0, y1:y, x2:W, y2:y }));
+      }
+      svg.appendChild(grid);
+
+      // border
+      svg.appendChild(svgEl("rect", { x:0.05, y:0.05, width:W-0.1, height:D-0.1, fill:"none", stroke:"#333", "stroke-width":"0.06" }));
+
+      // audience label
+      svg.appendChild(svgEl("text", {
+        x: W/2,
+        y: 0.8,
+        "text-anchor":"middle",
+        "font-family":"system-ui, -apple-system, Segoe UI, Roboto, sans-serif",
+        "font-size":"0.6",
+        fill:"#777",
+        "letter-spacing":"0.12"
+      }, "AUDIENCE"));
+
+      // items
+      const itemsG = svgEl("g", {});
+      for(const it of (state.items || [])){
+        const scale = Number(it.scale || 1);
+        const x = Number(it.x || 0);
+        const y = Number(it.y || 0);
+        const w = Number(it.w || 2) * scale;
+        const h = Number(it.h || 2) * scale;
+
+        const label = (it.label || it.type || "Item").toString();
+        const type = (it.type || "").toString();
+        const input = (it.input || "").toString();
+        const mix = (it.mix || "").toString();
+
+        const group = svgEl("g", {});
+        group.appendChild(svgEl("rect", {
+          x, y, width:w, height:h,
+          rx:0.35, ry:0.35,
+          fill:"#f6f6f6",
+          stroke:"#222",
+          "stroke-width":"0.06"
+        }));
+
+        group.appendChild(svgEl("text", {
+          x: x + 0.25,
+          y: y + 0.65,
+          "text-anchor":"start",
+          "font-family":"system-ui, -apple-system, Segoe UI, Roboto, sans-serif",
+          "font-size":"0.55",
+          fill:"#111",
+          "font-weight":"700"
+        }, label.length > 22 ? (label.slice(0, 21) + "…") : label));
+
+        if(type){
+          group.appendChild(svgEl("text", {
+            x: x + 0.25,
+            y: y + 1.15,
+            "text-anchor":"start",
+            "font-family":"system-ui, -apple-system, Segoe UI, Roboto, sans-serif",
+            "font-size":"0.42",
+            fill:"#444"
+          }, type.toUpperCase()));
+        }
+
+        const sub = [input, mix].filter(Boolean).join("   ");
+        if(sub){
+          group.appendChild(svgEl("text", {
+            x: x + 0.25,
+            y: y + Math.min(h - 0.25, 1.65),
+            "text-anchor":"start",
+            "font-family":"ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+            "font-size":"0.42",
+            fill:"#333"
+          }, sub));
+        }
+
+        itemsG.appendChild(group);
+      }
+      svg.appendChild(itemsG);
+    }
+    // -----------------------------------------
+
     function render(){
       $("#stageW").value = state.stage.w;
       $("#stageD").value = state.stage.d;
       $("#stageLabel").textContent = `${state.stage.w} x ${state.stage.d}`;
 
+      // band name + print header sync (Fix #2)
       $("#bandName").value = state.bandName || "";
+      const bn = (state.bandName || "").trim();
+      const pb = document.querySelector("#printBandName");
+      if(pb) pb.textContent = bn ? bn : "StagePlot";
+
       $("#showNotes").value = state.notes || "";
       $("#notesPreview").textContent = state.notes || "";
 
@@ -876,6 +963,7 @@
       for(const it of filtered){
         const row = document.createElement("div");
         row.className = "catItem";
+
         row.innerHTML = `
           <div class="catLeft">
             <div class="catIcon">${renderSprite(it.sprite)}</div>
@@ -894,34 +982,24 @@
         listEl.appendChild(row);
       }
 
-      /* clear items from stageInner */
-      stageInnerEl.querySelectorAll(".item").forEach(n => n.remove());
+      stageEl.querySelectorAll(".item").forEach(n => n.remove());
 
       for(const item of state.items){
         const div = document.createElement("div");
         div.className = "item" + (item.id === selectedId ? " selected" : "");
         div.dataset.id = item.id;
 
+        const p = stageToPx(item.x, item.y);
         const wFt = item.w * (item.scale || 1);
         const hFt = item.h * (item.scale || 1);
 
-        /* FIX 2: store percent-based layout variables for print */
-        const xP = (item.x / state.stage.w) * 100;
-        const yP = (item.y / state.stage.d) * 100;
-        const wP = (wFt / state.stage.w) * 100;
-        const hP = (hFt / state.stage.d) * 100;
+        const wPx = wFt * p.sx;
+        const hPx = hFt * p.sy;
 
-        div.style.setProperty("--xP", xP.toFixed(4));
-        div.style.setProperty("--yP", yP.toFixed(4));
-        div.style.setProperty("--wP", wP.toFixed(4));
-        div.style.setProperty("--hP", hP.toFixed(4));
-
-        /* screen px placement */
-        const p = stageToPx(item.x, item.y);
         div.style.left = `${p.x}px`;
         div.style.top = `${p.y}px`;
-        div.style.width = `${wFt * p.sx}px`;
-        div.style.height = `${hFt * p.sy}px`;
+        div.style.width = `${wPx}px`;
+        div.style.height = `${hPx}px`;
 
         const c = normalizeHex(item.color || "#4aa3ff");
         div.style.borderColor = hexToRgba(c, 0.55);
@@ -950,7 +1028,7 @@
           syncEditor();
         });
 
-        stageInnerEl.appendChild(div);
+        stageEl.appendChild(div);
       }
 
       rebuildLists();
@@ -1079,9 +1157,12 @@
       const dx = e.clientX - drag.startX;
       const dy = e.clientY - drag.startY;
 
-      const rect = stageInnerEl.getBoundingClientRect();
-      const sx = rect.width / state.stage.w;
-      const sy = rect.height / state.stage.d;
+      const rect = stageEl.getBoundingClientRect();
+      const pad = 16;
+      const usableW = rect.width - pad*2;
+      const usableH = rect.height - pad*2;
+      const sx = usableW / state.stage.w;
+      const sy = usableH / state.stage.d;
 
       let nx = drag.itemStartX + dx / sx;
       let ny = drag.itemStartY + dy / sy;
@@ -1105,6 +1186,7 @@
       render();
     }
 
+    // double opt-in for Delete + Reset
     let confirmDelete = false;
     let confirmReset = false;
 
@@ -1121,9 +1203,11 @@
       reset.classList.add("danger");
     }
 
-    document.addEventListener("click", () => { clearConfirms(); });
+    document.addEventListener("click", () => {
+      clearConfirms();
+    });
 
-    stageOuterEl.addEventListener("click", (e) => {
+    stageEl.addEventListener("click", (e) => {
       e.stopPropagation();
       selectedId = null;
       clearConfirms();
@@ -1150,9 +1234,13 @@
     $("#search").addEventListener("input", refreshCatalog);
     $("#category").addEventListener("change", refreshCatalog);
 
+    // band name listener (Fix #2, and NOT inside render)
     $("#bandName").addEventListener("input", () => {
       state.bandName = $("#bandName").value || "";
       save();
+      const bn = (state.bandName || "").trim();
+      const pb = document.querySelector("#printBandName");
+      if(pb) pb.textContent = bn ? bn : "StagePlot";
     });
 
     $("#showNotes").addEventListener("input", () => {
@@ -1209,33 +1297,14 @@
       syncEditor();
     });
 
-    function prepareSafariPrint(){
-  document.body.classList.add("printing");
-  // Force a layout + re-render before Safari snapshots the page
-  render();
-  // Force reflow
-  void stageOuterEl.offsetHeight;
-  void stageInnerEl.offsetHeight;
-}
-
-function cleanupSafariPrint(){
-  document.body.classList.remove("printing");
-  render();
-}
-
-$("#btnPrint").addEventListener("click", (e) => {
-  e.stopPropagation();
-  clearConfirms();
-
-  prepareSafariPrint();
-
-  // Safari: small delay is critical
-  setTimeout(() => {
-    window.print();
-    // Cleanup after print dialog closes (Safari doesn't always fire afterprint)
-    setTimeout(cleanupSafariPrint, 300);
-  }, 120);
-});
+    // Fix #1 + #3: build print SVG RIGHT BEFORE printing
+    $("#btnPrint").addEventListener("click", (e) => {
+      e.stopPropagation();
+      clearConfirms();
+      renderPrintStageSvg();
+      // small delay helps Safari commit layout for print
+      setTimeout(() => window.print(), 30);
+    });
 
     $("#btnExportProject").addEventListener("click", (e) => {
       e.stopPropagation();
@@ -1355,41 +1424,34 @@ $("#btnPrint").addEventListener("click", (e) => {
     render();
     syncEditor();
 
+    // keep stage live on resize
     let t = null;
     window.addEventListener("resize", () => {
       clearTimeout(t);
       t = setTimeout(render, 60);
     });
 
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./service-worker.js").catch(() => {});
-      });
+    // Fix #3: also render SVG when entering print mode
+    function refreshForPrint(){
+      renderPrintStageSvg();
     }
-
-    /* FIX 3: Reliable print refresh + printing class */
-    function enterPrintMode(){
-      document.body.classList.add("printing");
-      requestAnimationFrame(() => render());
-    }
-    function exitPrintMode(){
-      document.body.classList.remove("printing");
-      requestAnimationFrame(() => render());
-    }
-
-    window.addEventListener("beforeprint", enterPrintMode);
-    window.addEventListener("afterprint", exitPrintMode);
+    window.addEventListener("beforeprint", refreshForPrint);
 
     const mq = window.matchMedia && window.matchMedia("print");
     if (mq && mq.addEventListener) {
       mq.addEventListener("change", (e) => {
-        if (e.matches) enterPrintMode();
-        else exitPrintMode();
+        if (e.matches) refreshForPrint();
       });
     } else if (mq && mq.addListener) {
       mq.addListener((e) => {
-        if (e.matches) enterPrintMode();
-        else exitPrintMode();
+        if (e.matches) refreshForPrint();
+      });
+    }
+
+    // PWA SW
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js").catch(() => {});
       });
     }
   </script>
