@@ -294,11 +294,20 @@
     @page { margin: 0.45in; }
     @page { margin: 0.35in; }
 
+    .printOnly{ display:none; }
+    
 @media print{
   header{ display:none !important; }
   body{ background:#fff; color:#000; }
   *{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 
+  .printOnly{
+  display:block !important;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  margin: 2px 0 10px 0 !important;
+}
+  
   /* SINGLE COLUMN: stage first, then info below */
   .layout{
     display:block !important;
@@ -567,6 +576,8 @@
       </div>
       <div class="body">
         <div class="stack">
+          <!-- PRINT ONLY: band name header (because inputs are hidden in print) -->
+<div id="printBandName" class="printOnly"></div>
           <div class="row">
             <input id="bandName" placeholder="Band name (optional)" style="width:100%" />
           </div>
