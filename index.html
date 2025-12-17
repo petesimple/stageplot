@@ -23,24 +23,16 @@
       --danger:#ff5a6a;
       --ok:#40d98a;
       --grid:rgba(255,255,255,.06);
-
-      /* dynamic header height (set by JS) */
-      --headerH: 74px;
+      --select: rgba(74,163,255,.22);
+      --selectLine: rgba(74,163,255,.65);
     }
-
     *{box-sizing:border-box}
-
-    html, body{
-      height: 100%;
-    }
-
     body{
       margin:0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
       background: radial-gradient(1200px 700px at 50% -10%, #1a2540, var(--bg));
       color:var(--text);
     }
-
     header{
       display:flex;
       align-items:center;
@@ -119,28 +111,19 @@
     .pill.clickable{ cursor:pointer; }
     .dot{ width:8px; height:8px; border-radius:50%; background: var(--accent); display:inline-block; }
 
-    /* FIX: layout uses remaining viewport height under sticky header */
     .layout{
       display:grid;
       grid-template-columns: 340px 1fr 380px;
       gap:12px;
       padding:12px;
-
-      /* use dvh for modern browsers, fallback included */
-      min-height: calc(100vh - var(--headerH));
-      height: calc(100vh - var(--headerH));
-      height: calc(100dvh - var(--headerH));
+      min-height: calc(100vh - 70px);
     }
-
     .panel{
       background: linear-gradient(180deg, rgba(18,24,38,.9), rgba(12,16,26,.9));
       border:1px solid var(--line);
       border-radius:16px;
       overflow:hidden;
       box-shadow: 0 12px 30px rgba(0,0,0,.35);
-
-      /* allow children to flex/scroll inside */
-      min-height: 0;
     }
     .panel .title{
       padding:12px 12px 10px 12px;
@@ -150,7 +133,6 @@
       justify-content:space-between;
       gap:10px;
       flex-wrap:wrap;
-      flex: 0 0 auto;
     }
     .panel .title h2{
       margin:0;
@@ -160,13 +142,7 @@
       letter-spacing:.2px;
       text-transform: uppercase;
     }
-
-    .panel .body{
-      padding:12px;
-      min-height: 0;
-      overflow:auto; /* side panels can scroll if needed */
-    }
-
+    .panel .body{ padding:12px; }
     .stack{ display:flex; flex-direction:column; gap:10px; }
     .row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
     .small{ font-size:12px; color: var(--muted); }
@@ -218,34 +194,17 @@
     }
     .catMeta{ font-size:12px; color: var(--muted); }
 
-    /* FIX: center stage panel is true flex column and stage expands without being clipped */
-    .stagePanel{
-      display:flex;
-      flex-direction:column;
-      min-height: 0;
-    }
-
     .stageWrap{
       padding:12px;
       height: 100%;
-      min-height: 0;
       display:flex;
       flex-direction:column;
       gap:10px;
-      flex: 1 1 auto;
     }
-    .stageMeta{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-      flex: 0 0 auto;
-    }
-
+    .stageMeta{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
     .stage{
-      flex: 1 1 auto;
-      min-height: 0; /* critical */
+      flex:1;
+      min-height: 540px;
       background:
         linear-gradient(var(--grid) 1px, transparent 1px),
         linear-gradient(90deg, var(--grid) 1px, transparent 1px),
@@ -256,8 +215,9 @@
       position:relative;
       overflow:hidden;
       contain: layout paint;
+      user-select:none;
+      -webkit-user-select:none;
     }
-
     .stage::before{
       content:"AUDIENCE";
       position:absolute;
@@ -276,6 +236,15 @@
       border-radius:16px;
       pointer-events:none;
       box-shadow: inset 0 0 0 2px rgba(74,163,255,.06);
+    }
+
+    .marquee{
+      position:absolute;
+      border:1px solid var(--selectLine);
+      background: var(--select);
+      border-radius:10px;
+      pointer-events:none;
+      z-index:5;
     }
 
     .item{
@@ -315,11 +284,15 @@
     .item .label{ font-size:13px; font-weight:700; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width: 180px; color: rgba(233,238,251,.96); }
     .item .sub{ font-size:11px; color: rgba(233,238,251,.60); margin-top:3px; display:flex; gap:8px; }
     .item.selected{
-      border-color: rgba(74,163,255,.9);
-      box-shadow: 0 0 0 2px rgba(74,163,255,.25), 0 10px 18px rgba(0,0,0,.25);
+      border-color: rgba(74,163,255,.55);
+      box-shadow: 0 0 0 2px rgba(74,163,255,.18), 0 10px 18px rgba(0,0,0,.25);
+    }
+    .item.primary{
+      border-color: rgba(74,163,255,.95);
+      box-shadow: 0 0 0 2px rgba(74,163,255,.26), 0 10px 18px rgba(0,0,0,.25);
     }
 
-    /* Resize + rotate handles (only rendered for selected item) */
+    /* Resize + rotate handles (only rendered for primary item) */
     .handles{ position:absolute; inset:0; pointer-events:none; }
     .handle{
       position:absolute;
@@ -395,20 +368,18 @@
       body{ background:#fff; color:#000; }
       *{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 
-      /* show print-only blocks */
-      .printOnly{ display:block !important; }
+      .printOnly{
+        display:block !important;
+        font-size: 16px !important;
+        font-weight: 800 !important;
+        margin: 2px 0 10px 0 !important;
+      }
 
-      /* hide app chrome and interactive stage */
-      .panel.catalogPanel{ display:none !important; }
-      button, select, input, textarea, .pill.clickable{ display:none !important; }
-
-      /* remove grid layout */
       .layout{
         display:block !important;
         padding:0 !important;
         gap:0 !important;
         min-height: 0 !important;
-        height:auto !important;
         width: 100% !important;
         max-width: 7.9in !important;
         margin: 0 auto !important;
@@ -425,13 +396,38 @@
         page-break-inside: avoid;
       }
 
-      /* IMPORTANT: hide the live HTML stage and show the SVG print stage instead */
-      #stage{ display:none !important; }
-      #printStageSvgWrap{ display:block !important; }
+      .panel.catalogPanel{ display:none !important; }
+
+      button, select, input, textarea, .pill.clickable{ display:none !important; }
 
       .stageWrap{ padding:10px !important; }
       .stageMeta{ margin-bottom:6px !important; }
 
+      .stage{
+        min-height: 0 !important;
+        height: 5.9in !important;
+        max-height: 5.9in !important;
+        width: 100% !important;
+        background: #fff !important;
+        border:1px solid #bbb !important;
+        overflow:hidden !important;
+        contain: none !important;
+      }
+
+      .stage::before{ color:#888 !important; }
+      .stageEdge{ box-shadow:none !important; }
+      .marquee{ display:none !important; }
+
+      .item{
+        box-shadow:none !important;
+        background: rgba(0,0,0,.04) !important;
+        border: 1px solid rgba(0,0,0,.22) !important;
+        color:#000 !important;
+      }
+      .item .label{ color:#000 !important; }
+      .item .type, .item .sub{ color: rgba(0,0,0,.70) !important; }
+
+      .handles{ display:none !important; }
       th, td{ border-bottom: 1px solid #e3e3e3 !important; }
       th{ color:#444 !important; }
 
@@ -448,8 +444,6 @@
       .layout{
         display:flex;
         flex-direction:column;
-        height:auto;
-        min-height:auto;
       }
       .panel{ width: 100%; }
       .stage{ min-height: 520px; }
@@ -472,68 +466,80 @@
 <body>
 
   <svg width="0" height="0" style="position:absolute; left:-9999px; top:-9999px;" aria-hidden="true" focusable="false">
-    <!-- symbols unchanged -->
     <symbol id="spr-mic" viewBox="0 0 64 64">
       <path fill="currentColor" d="M32 6c-6 0-11 5-11 11v14c0 6 5 11 11 11s11-5 11-11V17c0-6-5-11-11-11zm-7 25V17a7 7 0 0 1 14 0v14a7 7 0 0 1-14 0z"/>
       <path fill="currentColor" d="M18 30a2 2 0 0 1 2 2c0 7 5 13 12 13s12-6 12-13a2 2 0 1 1 4 0c0 8-6 15-14 16v6h6a2 2 0 1 1 0 4H24a2 2 0 1 1 0-4h6v-6c-8-1-14-8-14-16a2 2 0 0 1 2-2z"/>
     </symbol>
+
     <symbol id="spr-guitar" viewBox="0 0 64 64">
       <path fill="currentColor" d="M44 6l14 14-4 4-3-3-9 9c2 5 0 12-5 17-6 6-15 7-20 2l-5 5a4 4 0 0 1-6-6l5-5c-5-5-4-14 2-20 5-5 12-7 17-5l9-9-3-3 4-4zm-24 19c-4 4-5 10-1 14s10 3 14-1 5-10 1-14-10-3-14 1z"/>
     </symbol>
+
     <symbol id="spr-bass" viewBox="0 0 64 64">
       <path fill="currentColor" d="M46 6l12 12-4 4-2-2-10 10c3 6 1 13-5 19-7 7-17 8-23 2l-4 4a4 4 0 1 1-6-6l4-4c-6-6-5-16 2-23 6-6 13-8 19-5L39 17l-2-2 4-4zM20 24c-5 5-6 12-2 16s11 3 16-2 6-12 2-16-11-3-16 2z"/>
     </symbol>
+
     <symbol id="spr-keys" viewBox="0 0 64 64">
       <path fill="currentColor" d="M10 18h44a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h44V22H10z"/>
       <path fill="currentColor" d="M14 22h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22z"/>
       <path fill="currentColor" d="M19 22h3v12h-3V22zm8 0h3v12h-3V22zm8 0h3v12h-3V22zm8 0h3v12h-3V22z"/>
     </symbol>
+
     <symbol id="spr-drums" viewBox="0 0 64 64">
       <path fill="currentColor" d="M14 26c0-8 8-14 18-14s18 6 18 14-8 14-18 14-18-6-18-14zm4 0c0 6 6 10 14 10s14-4 14-10-6-10-14-10-14 4-14 10z"/>
       <path fill="currentColor" d="M20 40h24v12a4 4 0 0 1-4 4H24a4 4 0 0 1-4-4V40zm4 4v8h16v-8H24z"/>
       <path fill="currentColor" d="M10 18a2 2 0 0 1 3 0l8 8a2 2 0 0 1-3 3l-8-8a2 2 0 0 1 0-3zm44 0a2 2 0 0 1 0 3l-8 8a2 2 0 1 1-3-3l8-8a2 2 0 0 1 3 0z"/>
     </symbol>
+
     <symbol id="spr-amp" viewBox="0 0 64 64">
       <path fill="currentColor" d="M14 16h36a4 4 0 0 1 4 4v28a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V20a4 4 0 0 1 4-4zm0 4v28h36V20H14z"/>
       <path fill="currentColor" d="M18 24h28v4H18v-4zm0 8h28v4H18v-4zm0 8h18v4H18v-4z"/>
       <circle fill="currentColor" cx="44" cy="42" r="3"/>
     </symbol>
+
     <symbol id="spr-wedge" viewBox="0 0 64 64">
       <path fill="currentColor" d="M10 42l44-16v18a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4v-2z"/>
       <path fill="currentColor" d="M12 40l40-14v3L12 43v-3z" opacity=".5"/>
     </symbol>
+
     <symbol id="spr-iem" viewBox="0 0 64 64">
       <path fill="currentColor" d="M20 28c0-7 5-12 12-12s12 5 12 12v10a2 2 0 1 1-4 0V28c0-4-3-8-8-8s-8 4-8 8v10a2 2 0 1 1-4 0V28z"/>
       <path fill="currentColor" d="M16 40a6 6 0 0 0 12 0v-2h-4v2a2 2 0 0 1-4 0v-2h-4v2zm20 0a6 6 0 0 0 12 0v-2h-4v2a2 2 0 0 1-4 0v-2h-4v2z"/>
     </symbol>
+
     <symbol id="spr-di" viewBox="0 0 64 64">
       <path fill="currentColor" d="M18 18h28a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h28V22H18z"/>
       <path fill="currentColor" d="M22 26h8v4h-8v-4zm0 8h12v4H22v-4z"/>
       <circle fill="currentColor" cx="42" cy="28" r="2"/>
       <circle fill="currentColor" cx="42" cy="36" r="2"/>
     </symbol>
+
     <symbol id="spr-stand" viewBox="0 0 64 64">
       <path fill="currentColor" d="M40 10a2 2 0 0 1 2 2v10a2 2 0 1 1-4 0V12a2 2 0 0 1 2-2z"/>
-      <path fill="currentColor" d="M26 22a2 2 0 0 1 3 0l11 11a2 2 0 0 1-3 3L26 25a2 2 0 0 1 0-3z"/>
+      <path fill="currentColor" d="M26 22a2 2 0 0 1 3 0l11 11a2 2 0 1 1-3 3L26 25a2 2 0 0 1 0-3z"/>
       <path fill="currentColor" d="M40 32a2 2 0 0 1 2 2v14l6 6a2 2 0 1 1-3 3l-5-5-5 5a2 2 0 1 1-3-3l6-6V34a2 2 0 0 1 2-2z"/>
       <path fill="currentColor" d="M20 52h40a2 2 0 1 1 0 4H20a2 2 0 1 1 0-4z"/>
     </symbol>
+
     <symbol id="spr-outlet" viewBox="0 0 64 64">
       <path fill="currentColor" d="M20 12h24a8 8 0 0 1 8 8v24a8 8 0 0 1-8 8H20a8 8 0 0 1-8-8V20a8 8 0 0 1 8-8zm0 4a4 4 0 0 0-4 4v24a4 4 0 0 0 4 4h24a4 4 0 0 0 4-4V20a4 4 0 0 0-4-4H20z"/>
       <circle fill="currentColor" cx="26" cy="28" r="4"/>
       <circle fill="currentColor" cx="38" cy="28" r="4"/>
       <rect fill="currentColor" x="29" y="36" width="6" height="10" rx="3"/>
     </symbol>
+
     <symbol id="spr-riser" viewBox="0 0 64 64">
       <path fill="currentColor" d="M10 22h44a4 4 0 0 1 4 4v16a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V26a4 4 0 0 1 4-4zm0 4v16h44V26H10z"/>
       <path fill="currentColor" d="M14 30h10v8H14v-8zm13 0h10v8H27v-8zm13 0h10v8H40v-8z" opacity=".55"/>
     </symbol>
+
     <symbol id="spr-console" viewBox="0 0 64 64">
       <path fill="currentColor" d="M10 18h44a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h44V22H10z"/>
       <path fill="currentColor" d="M14 26h36v4H14v-4zm0 8h20v4H14v-4z"/>
       <circle fill="currentColor" cx="44" cy="36" r="2.5"/>
       <circle fill="currentColor" cx="50" cy="36" r="2.5"/>
     </symbol>
+
     <symbol id="spr-misc" viewBox="0 0 64 64">
       <path fill="currentColor" d="M14 18h36a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h36V22H14z"/>
       <path fill="currentColor" d="M20 30h24v4H20v-4zm0 8h16v4H20v-4z" opacity=".6"/>
@@ -541,7 +547,7 @@
     </symbol>
   </svg>
 
-  <header id="appHeader">
+  <header>
     <h1 class="appTitle">
       <img src="stageplotlogo.png" alt="StagePlot" class="logo" />
       <span>StagePlot v2</span>
@@ -598,9 +604,9 @@
           <div class="catalog" id="catalog"></div>
 
           <div class="small">
-            Tip: import a library JSON to add new item types (outlets, lighting, weird instruments, anything).
-            </br>
-            <center>ver 1.2.4</center>
+            Tip: Shift click or Cmd on Mac or Ctrl on Windows to multi select. Drag on empty stage to box select.
+            <br>
+            <center>ver 1.3.0</center>
           </div>
         </div>
       </div>
@@ -620,7 +626,6 @@
           <button class="danger" id="btnDelete">Delete</button>
         </div>
       </div>
-
       <div class="stageWrap">
         <div class="stageMeta">
           <span class="pill"><span class="dot"></span><span id="stageLabel">24 x 16</span></span>
@@ -628,18 +633,9 @@
             Click an item to edit. Drag to move. Shift + Arrow nudges 0.25 ft. Drag dots to resize. Drag blue dot to rotate (Shift snaps 15 degrees).
           </span>
         </div>
-
-        <!-- live stage (screen only) -->
         <div id="stage" class="stage">
           <div class="stageEdge"></div>
         </div>
-
-        <!-- print-only SVG stage (generated before print) -->
-        <div id="printStageSvgWrap" class="printOnly" style="display:none; border:1px solid #bbb; border-radius:12px; padding:6px;">
-          <div class="printOnly" style="font-size:16px; font-weight:800; margin: 2px 0 10px 0;" id="printBandName"></div>
-          <div id="printStageSvg"></div>
-        </div>
-
       </div>
     </section>
 
@@ -650,12 +646,14 @@
       </div>
       <div class="body">
         <div class="stack">
+          <div id="printBandName" class="printOnly"></div>
+
           <div class="row">
             <input id="bandName" placeholder="Band name (optional)" style="width:100%" />
           </div>
 
           <div class="row">
-            <input id="fLabel" placeholder="Label (ex: Pete - Vox)" style="width:100%" />
+            <input id="fLabel" placeholder="Label (ex: Pete Vox)" style="width:100%" />
           </div>
 
           <div class="row">
@@ -824,15 +822,49 @@
     };
 
     let state = loadJSON(STORAGE_KEY) || deepClone(defaults);
-    let selectedId = null;
+
+    // Multi select state
+    let selectedIds = new Set();
+    let primaryId = null;
 
     function save(){ saveJSON(STORAGE_KEY, state); }
 
-    function setHeaderVar(){
-      const h = $("#appHeader");
-      if(!h) return;
-      const px = Math.ceil(h.getBoundingClientRect().height);
-      document.documentElement.style.setProperty("--headerH", px + "px");
+    function hasModifier(e){
+      return !!(e && (e.shiftKey || e.metaKey || e.ctrlKey));
+    }
+
+    function setPrimary(id){
+      primaryId = id || null;
+      if(primaryId && !selectedIds.has(primaryId)){
+        selectedIds.add(primaryId);
+      }
+    }
+
+    function clearSelection(){
+      selectedIds.clear();
+      primaryId = null;
+    }
+
+    function toggleSelect(id){
+      if(selectedIds.has(id)){
+        selectedIds.delete(id);
+        if(primaryId === id){
+          const next = selectedIds.values().next();
+          primaryId = next && !next.done ? next.value : null;
+        }
+      }else{
+        selectedIds.add(id);
+        primaryId = id;
+      }
+    }
+
+    function selectOnly(id){
+      selectedIds = new Set([id]);
+      primaryId = id;
+    }
+
+    function selectedItems(){
+      return state.items.filter(i => selectedIds.has(i.id));
     }
 
     function setStageFromInputs(){
@@ -853,6 +885,21 @@
       const sx = usableW / state.stage.w;
       const sy = usableH / state.stage.d;
       return { x: pad + xFt * sx, y: pad + yFt * sy, sx, sy, pad, usableW, usableH, rect };
+    }
+
+    function pxToStage(clientX, clientY){
+      const rect = stageEl.getBoundingClientRect();
+      const pad = 16;
+      const usableW = rect.width - pad*2;
+      const usableH = rect.height - pad*2;
+
+      const xIn = clamp(clientX - rect.left - pad, 0, usableW);
+      const yIn = clamp(clientY - rect.top - pad, 0, usableH);
+
+      const sx = usableW / state.stage.w;
+      const sy = usableH / state.stage.d;
+
+      return { xFt: xIn / sx, yFt: yIn / sy, rect, pad, usableW, usableH, sx, sy };
     }
 
     function getStageScale(){
@@ -921,7 +968,7 @@
         notes: ""
       };
       state.items.push(item);
-      selectedId = item.id;
+      selectOnly(item.id);
       save();
       render();
       syncEditor();
@@ -953,15 +1000,13 @@
       };
 
       state.items.push(item);
-      selectedId = item.id;
+      selectOnly(item.id);
       save();
       render();
       syncEditor();
     }
 
     function render(){
-      setHeaderVar();
-
       $("#stageW").value = state.stage.w;
       $("#stageD").value = state.stage.d;
       $("#stageLabel").textContent = `${state.stage.w} x ${state.stage.d}`;
@@ -995,7 +1040,7 @@
             <div class="catIcon">${renderSprite(it.sprite)}</div>
             <div class="catText">
               <div class="catName" title="${escapeHtml(it.type)}">${escapeHtml(it.type)}</div>
-              <div class="catMeta">${escapeHtml(it.category || "Other")} - base ${it.w}x${it.h}</div>
+              <div class="catMeta">${escapeHtml(it.category || "Other")} base ${it.w}x${it.h}</div>
             </div>
           </div>
           <button class="primary">Add</button>
@@ -1010,11 +1055,25 @@
 
       stageEl.querySelectorAll(".item").forEach(n => n.remove());
 
+      // If primaryId is gone, repair it
+      if(primaryId && !state.items.some(i => i.id === primaryId)){
+        primaryId = null;
+      }
+      // If selectedIds contain dead ids, clean them
+      const alive = new Set(state.items.map(i => i.id));
+      selectedIds = new Set([...selectedIds].filter(id => alive.has(id)));
+      if(!primaryId && selectedIds.size){
+        primaryId = selectedIds.values().next().value;
+      }
+
       for(const item of state.items){
         if(item.rot == null) item.rot = 0;
 
         const div = document.createElement("div");
-        div.className = "item" + (item.id === selectedId ? " selected" : "");
+        const isSel = selectedIds.has(item.id);
+        const isPrimary = item.id === primaryId;
+
+        div.className = "item" + (isSel ? " selected" : "") + (isPrimary ? " primary" : "");
         div.dataset.id = item.id;
 
         const p = stageToPx(item.x, item.y);
@@ -1047,12 +1106,13 @@
           </div>
         `;
 
-        if(item.id === selectedId){
+        // Primary overlays only
+        if(isPrimary){
           const overlay = document.createElement("div");
           overlay.className = "handles";
           overlay.innerHTML = `
             <div class="rotStem"></div>
-            <div class="rotHandle" data-rot="1" title="Rotate (Shift snaps 15 degrees)"></div>
+            <div class="rotHandle" data-rot="1" title="Rotate (Shift snaps 15°)"></div>
 
             <div class="handle nw" data-h="nw"></div>
             <div class="handle n"  data-h="n"></div>
@@ -1071,15 +1131,7 @@
           overlay.querySelector(".rotHandle").addEventListener("pointerdown", onRotateStart);
         }
 
-        div.addEventListener("pointerdown", onDragStart);
-        div.addEventListener("click", (e) => {
-          e.stopPropagation();
-          clearConfirms();
-          selectedId = item.id;
-          save();
-          render();
-          syncEditor();
-        });
+        div.addEventListener("pointerdown", onItemPointerDown);
 
         stageEl.appendChild(div);
       }
@@ -1089,9 +1141,11 @@
     }
 
     function updateActionButtons(){
-      const hasSel = !!state.items.find(i => i.id === selectedId);
-      $("#btnResetRot").disabled = !hasSel;
-      $("#btnDuplicate").disabled = !hasSel;
+      const count = selectedIds.size;
+      $("#btnResetRot").disabled = !(primaryId && state.items.find(i => i.id === primaryId));
+      $("#btnDuplicate").disabled = (count === 0);
+      $("#btnCenter").disabled = (count === 0);
+      $("#btnDelete").disabled = (count === 0);
     }
 
     function rebuildLists(){
@@ -1140,11 +1194,39 @@
       }
     }
 
+    function setEditorEnabled(on){
+      ["#fLabel","#fColor","#fInput","#fMix","#fNotes","#fScale","#btnResetRot"].forEach(sel => {
+        const el = $(sel);
+        if(!el) return;
+        el.disabled = !on;
+      });
+    }
+
     function syncEditor(){
-      const item = state.items.find(i => i.id === selectedId);
       const hint = $("#selHint");
+
+      if(selectedIds.size > 1){
+        hint.textContent = `${selectedIds.size} items selected`;
+        setEditorEnabled(false);
+
+        $("#fLabel").value = "";
+        $("#fType").value = "Multiple";
+        $("#fColor").value = "#4aa3ff";
+        $("#fInput").value = "";
+        $("#fMix").value = "";
+        $("#fNotes").value = "";
+        $("#fScale").value = 1.0;
+        $("#scaleReadout").textContent = "100%";
+        $("#rotReadout").textContent = "0°";
+        updateActionButtons();
+        return;
+      }
+
+      const item = primaryId ? state.items.find(i => i.id === primaryId) : null;
       if(!item){
         hint.textContent = "No item selected";
+        setEditorEnabled(false);
+
         $("#fLabel").value = "";
         $("#fType").value = "";
         $("#fColor").value = "#4aa3ff";
@@ -1157,6 +1239,8 @@
         updateActionButtons();
         return;
       }
+
+      setEditorEnabled(true);
       hint.textContent = `Editing: ${item.type}`;
       $("#fLabel").value = item.label || "";
       $("#fType").value = item.type || "";
@@ -1171,12 +1255,12 @@
     }
 
     function updateSelected(patch){
-      const item = state.items.find(i => i.id === selectedId);
+      if(selectedIds.size !== 1) return;
+      const item = primaryId ? state.items.find(i => i.id === primaryId) : null;
       if(!item) return;
+
       Object.assign(item, patch);
-
       if(item.rot == null) item.rot = 0;
-
       enforceBounds(item);
 
       save();
@@ -1184,9 +1268,11 @@
       syncEditor();
     }
 
-    // Dragging the item (move)
+    // Dragging items (move). Supports moving multi selection as a group.
     let drag = null;
-    function onDragStart(e){
+
+    function onItemPointerDown(e){
+      // If clicked on a handle, let that handler run
       if(e.target && (e.target.closest(".handle") || e.target.closest(".rotHandle"))) return;
 
       e.preventDefault();
@@ -1195,39 +1281,62 @@
       clearConfirms();
 
       const id = e.currentTarget.dataset.id;
-      selectedId = id;
-      syncEditor();
-      render();
 
-      const item = state.items.find(i => i.id === id);
-      if(!item) return;
+      const mod = hasModifier(e);
+
+      if(mod){
+        toggleSelect(id);
+      }else{
+        if(!selectedIds.has(id)) selectOnly(id);
+        else setPrimary(id);
+      }
+
+      // If nothing selected, bail
+      if(selectedIds.size === 0){
+        save();
+        render();
+        syncEditor();
+        return;
+      }
+
+      // Prepare group drag
+      const start = pxToStage(e.clientX, e.clientY);
+      const group = selectedItems().map(it => ({
+        id: it.id,
+        startX: it.x,
+        startY: it.y
+      }));
 
       drag = {
-        id,
-        startX: e.clientX,
-        startY: e.clientY,
-        itemStartX: item.x,
-        itemStartY: item.y
+        startClientX: e.clientX,
+        startClientY: e.clientY,
+        startXFt: start.xFt,
+        startYFt: start.yFt,
+        group
       };
 
       window.addEventListener("pointermove", onDragMove);
       window.addEventListener("pointerup", onDragEnd, { once: true });
+
+      save();
+      render();
+      syncEditor();
     }
 
     function onDragMove(e){
       if(!drag) return;
-      const item = state.items.find(i => i.id === drag.id);
-      if(!item) return;
 
-      const dx = e.clientX - drag.startX;
-      const dy = e.clientY - drag.startY;
+      const now = pxToStage(e.clientX, e.clientY);
+      const dxFt = now.xFt - drag.startXFt;
+      const dyFt = now.yFt - drag.startYFt;
 
-      const { sx, sy } = getStageScale();
-
-      item.x = drag.itemStartX + dx / sx;
-      item.y = drag.itemStartY + dy / sy;
-
-      enforceBounds(item);
+      for(const g of drag.group){
+        const item = state.items.find(i => i.id === g.id);
+        if(!item) continue;
+        item.x = g.startX + dxFt;
+        item.y = g.startY + dyFt;
+        enforceBounds(item);
+      }
       render();
     }
 
@@ -1239,7 +1348,132 @@
       syncEditor();
     }
 
-    // Resizing
+    // Marquee selection (drag on empty stage)
+    let marquee = null;
+
+    function hitTestItemInRect(item, rectFt){
+      // Use axis aligned footprint (ignores rotation) but it feels correct for selection
+      const wFt = item.w * (item.scale || 1);
+      const hFt = item.h * (item.scale || 1);
+      const ix1 = item.x;
+      const iy1 = item.y;
+      const ix2 = item.x + wFt;
+      const iy2 = item.y + hFt;
+
+      const rx1 = rectFt.x1;
+      const ry1 = rectFt.y1;
+      const rx2 = rectFt.x2;
+      const ry2 = rectFt.y2;
+
+      return !(ix2 < rx1 || ix1 > rx2 || iy2 < ry1 || iy1 > ry2);
+    }
+
+    function rectFromTwoPoints(a, b){
+      const x1 = Math.min(a.xFt, b.xFt);
+      const y1 = Math.min(a.yFt, b.yFt);
+      const x2 = Math.max(a.xFt, b.xFt);
+      const y2 = Math.max(a.yFt, b.yFt);
+      return { x1, y1, x2, y2 };
+    }
+
+    function ensureMarqueeDiv(){
+      let el = stageEl.querySelector(".marquee");
+      if(!el){
+        el = document.createElement("div");
+        el.className = "marquee";
+        stageEl.appendChild(el);
+      }
+      return el;
+    }
+
+    function removeMarqueeDiv(){
+      const el = stageEl.querySelector(".marquee");
+      if(el) el.remove();
+    }
+
+    function updateMarqueeDiv(rectFt){
+      const p1 = stageToPx(rectFt.x1, rectFt.y1);
+      const p2 = stageToPx(rectFt.x2, rectFt.y2);
+
+      const left = Math.min(p1.x, p2.x);
+      const top = Math.min(p1.y, p2.y);
+      const width = Math.abs(p2.x - p1.x);
+      const height = Math.abs(p2.y - p1.y);
+
+      const el = ensureMarqueeDiv();
+      el.style.left = `${left}px`;
+      el.style.top = `${top}px`;
+      el.style.width = `${width}px`;
+      el.style.height = `${height}px`;
+    }
+
+    stageEl.addEventListener("pointerdown", (e) => {
+      // Only start marquee when clicking on empty stage
+      if(e.target && e.target.closest(".item")) return;
+      if(e.target && e.target.closest(".handle")) return;
+      if(e.target && e.target.closest(".rotHandle")) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      clearConfirms();
+
+      const start = pxToStage(e.clientX, e.clientY);
+      marquee = {
+        start,
+        mod: hasModifier(e),
+        startedAt: { x: e.clientX, y: e.clientY }
+      };
+
+      updateMarqueeDiv({ x1:start.xFt, y1:start.yFt, x2:start.xFt, y2:start.yFt });
+
+      window.addEventListener("pointermove", onMarqueeMove);
+      window.addEventListener("pointerup", onMarqueeEnd, { once: true });
+    });
+
+    function onMarqueeMove(e){
+      if(!marquee) return;
+
+      const now = pxToStage(e.clientX, e.clientY);
+      const rectFt = rectFromTwoPoints(marquee.start, now);
+      updateMarqueeDiv(rectFt);
+
+      const hit = state.items.filter(it => hitTestItemInRect(it, rectFt)).map(it => it.id);
+
+      if(marquee.mod){
+        // add to existing
+        const next = new Set(selectedIds);
+        hit.forEach(id => next.add(id));
+        selectedIds = next;
+        if(hit.length) primaryId = hit[hit.length - 1];
+      }else{
+        selectedIds = new Set(hit);
+        primaryId = hit.length ? hit[hit.length - 1] : null;
+      }
+
+      render();
+      syncEditor();
+    }
+
+    function onMarqueeEnd(e){
+      window.removeEventListener("pointermove", onMarqueeMove);
+      marquee = null;
+      removeMarqueeDiv();
+
+      // If it was just a click (tiny move), treat as deselect when no modifier
+      // This makes "click unused space to deselect" feel right.
+      const dx = Math.abs((e && e.clientX || 0) - (marquee?.startedAt?.x || 0));
+      const dy = Math.abs((e && e.clientY || 0) - (marquee?.startedAt?.y || 0));
+      if(!hasModifier(e) && (dx < 2 && dy < 2)){
+        clearSelection();
+      }
+
+      save();
+      render();
+      syncEditor();
+    }
+
+    // Resizing (primary only)
     let resize = null;
     const MIN_W_FT = 0.8;
     const MIN_H_FT = 0.6;
@@ -1253,7 +1487,7 @@
       if(!id) return;
 
       clearConfirms();
-      selectedId = id;
+      selectOnly(id);
 
       const item = state.items.find(i => i.id === id);
       if(!item) return;
@@ -1271,12 +1505,16 @@
         startW: wFt,
         startH: hFt,
         startXFt: item.x,
-        startYFt: item.y
+        startYFt: item.y,
+        startScale: item.scale || 1
       };
 
       e.currentTarget.setPointerCapture(e.pointerId);
       window.addEventListener("pointermove", onResizeMove);
       window.addEventListener("pointerup", onResizeEnd, { once: true });
+
+      render();
+      syncEditor();
     }
 
     function onResizeMove(e){
@@ -1294,6 +1532,7 @@
       let y = resize.startYFt;
 
       const s = item.scale || 1;
+
       const dxBase = dxFt / s;
       const dyBase = dyFt / s;
 
@@ -1325,7 +1564,7 @@
       syncEditor();
     }
 
-    // Rotation
+    // Rotation (primary only)
     let rotate = null;
     function onRotateStart(e){
       e.preventDefault();
@@ -1336,7 +1575,7 @@
       if(!id) return;
 
       clearConfirms();
-      selectedId = id;
+      selectOnly(id);
 
       const item = state.items.find(i => i.id === id);
       if(!item) return;
@@ -1357,6 +1596,9 @@
       e.currentTarget.setPointerCapture(e.pointerId);
       window.addEventListener("pointermove", onRotateMove);
       window.addEventListener("pointerup", onRotateEnd, { once: true });
+
+      render();
+      syncEditor();
     }
 
     function onRotateMove(e){
@@ -1390,7 +1632,7 @@
       syncEditor();
     }
 
-    // Delete + Reset double-confirm
+    // Delete + Reset double confirm
     let confirmDelete = false;
     let confirmReset = false;
 
@@ -1408,15 +1650,6 @@
     }
 
     document.addEventListener("click", () => { clearConfirms(); });
-
-    stageEl.addEventListener("click", (e) => {
-      e.stopPropagation();
-      selectedId = null;
-      clearConfirms();
-      save();
-      render();
-      syncEditor();
-    });
 
     $("#stagePreset").addEventListener("change", (e) => {
       e.stopPropagation();
@@ -1439,6 +1672,7 @@
     $("#bandName").addEventListener("input", () => {
       state.bandName = $("#bandName").value || "";
       save();
+
       const bn = (state.bandName || "").trim();
       const pb = document.querySelector("#printBandName");
       if (pb) pb.textContent = bn ? bn : "StagePlot";
@@ -1463,6 +1697,7 @@
     $("#btnResetRot").addEventListener("click", (e) => {
       e.stopPropagation();
       clearConfirms();
+      if(selectedIds.size !== 1) return;
       updateSelected({ rot: 0 });
     });
 
@@ -1472,7 +1707,7 @@
 
     $("#btnDelete").addEventListener("click", (e) => {
       e.stopPropagation();
-      if(!selectedId) return;
+      if(selectedIds.size === 0) return;
 
       if(!confirmDelete){
         clearConfirms();
@@ -1481,44 +1716,75 @@
         return;
       }
 
-      state.items = state.items.filter(i => i.id !== selectedId);
-      selectedId = null;
+      const kill = new Set(selectedIds);
+      state.items = state.items.filter(i => !kill.has(i.id));
+      clearSelection();
       clearConfirms();
       save();
       render();
       syncEditor();
     });
+
+    function groupBounds(items){
+      // Uses axis aligned bounding box of their current unrotated footprints
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      for(const it of items){
+        const wFt = it.w * (it.scale || 1);
+        const hFt = it.h * (it.scale || 1);
+        minX = Math.min(minX, it.x);
+        minY = Math.min(minY, it.y);
+        maxX = Math.max(maxX, it.x + wFt);
+        maxY = Math.max(maxY, it.y + hFt);
+      }
+      if(!isFinite(minX)) return null;
+      return { minX, minY, maxX, maxY, w: (maxX - minX), h: (maxY - minY) };
+    }
 
     $("#btnCenter").addEventListener("click", (e) => {
       e.stopPropagation();
       clearConfirms();
 
-      const item = state.items.find(i => i.id === selectedId);
-      if(!item) return;
-      const wFt = item.w * (item.scale || 1);
-      const hFt = item.h * (item.scale || 1);
-      item.x = (state.stage.w - wFt) * 0.5;
-      item.y = (state.stage.d - hFt) * 0.55;
-      enforceBounds(item);
+      const items = selectedItems();
+      if(items.length === 0) return;
+
+      const b = groupBounds(items);
+      if(!b) return;
+
+      const targetLeft = (state.stage.w - b.w) * 0.5;
+      const targetTop  = (state.stage.d - b.h) * 0.55;
+
+      const dx = targetLeft - b.minX;
+      const dy = targetTop - b.minY;
+
+      for(const it of items){
+        it.x += dx;
+        it.y += dy;
+        enforceBounds(it);
+      }
+
       save();
       render();
       syncEditor();
     });
 
-    // Duplicate / Copy-Paste
-    let clipboardItem = null;
-
+    // Duplicate supports multi
     function duplicateSelected(){
-      const item = state.items.find(i => i.id === selectedId);
-      if(!item) return;
+      const items = selectedItems();
+      if(items.length === 0) return;
 
-      const copy = deepClone(item);
-      copy.id = uid();
-      copy.x = clamp((item.x + 0.5), 0, state.stage.w - (item.w * (item.scale || 1)));
-      copy.y = clamp((item.y + 0.5), 0, state.stage.d - (item.h * (item.scale || 1)));
+      const clones = items.map(it => {
+        const copy = deepClone(it);
+        copy.id = uid();
+        copy.x = copy.x + 0.5;
+        copy.y = copy.y + 0.5;
+        enforceBounds(copy);
+        return copy;
+      });
 
-      state.items.push(copy);
-      selectedId = copy.id;
+      for(const c of clones) state.items.push(c);
+
+      selectedIds = new Set(clones.map(c => c.id));
+      primaryId = clones.length ? clones[clones.length - 1].id : null;
 
       save();
       render();
@@ -1531,104 +1797,9 @@
       duplicateSelected();
     });
 
-    // PRINT FIX: build an SVG print snapshot of the stage so print never goes blank
-    function buildPrintSvg(){
-      const w = state.stage.w;
-      const d = state.stage.d;
-
-      // 7.4in wide (letter w margins), height chosen to fit nicely
-      const targetWIn = 7.4;
-      const targetHIn = 4.9;
-
-      const wPx = Math.round(targetWIn * 96);
-      const hPx = Math.round(targetHIn * 96);
-
-      const padPx = 18;
-
-      const usableW = wPx - padPx * 2;
-      const usableH = hPx - padPx * 2;
-      const sx = usableW / w;
-      const sy = usableH / d;
-
-      function esc(s){ return escapeHtml(s); }
-
-      const items = (state.items || []).map(it => {
-        const scale = it.scale || 1;
-        const wFt = it.w * scale;
-        const hFt = it.h * scale;
-
-        const x = padPx + (it.x * sx);
-        const y = padPx + (it.y * sy);
-        const iw = wFt * sx;
-        const ih = hFt * sy;
-
-        const cx = x + iw / 2;
-        const cy = y + ih / 2;
-        const rot = (it.rot || 0);
-
-        const label = (it.label || it.type || "").trim();
-        const type = (it.type || "").trim();
-        const sub = `${(it.input || "").trim()} ${(it.mix || "").trim()}`.trim();
-
-        return `
-          <g transform="rotate(${rot} ${cx} ${cy})">
-            <rect x="${x}" y="${y}" width="${iw}" height="${ih}" rx="14" ry="14"
-              fill="rgba(0,0,0,0.04)" stroke="rgba(0,0,0,0.28)" stroke-width="1.2"/>
-            <text x="${x + 10}" y="${y + 18}" font-size="10" fill="rgba(0,0,0,0.65)" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
-              ${esc(type.toUpperCase())}
-            </text>
-            <text x="${x + 10}" y="${y + 36}" font-size="14" font-weight="700" fill="#000"
-              font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
-              ${esc(label)}
-            </text>
-            ${sub ? `
-              <text x="${x + 10}" y="${y + 54}" font-size="11" fill="rgba(0,0,0,0.6)"
-                font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace">
-                ${esc(sub)}
-              </text>
-            ` : ""}
-          </g>
-        `;
-      }).join("");
-
-      const svg = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="${wPx}" height="${hPx}" viewBox="0 0 ${wPx} ${hPx}">
-          <defs>
-            <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
-              <path d="M 32 0 L 0 0 0 32" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>
-            </pattern>
-          </defs>
-
-          <rect x="0" y="0" width="${wPx}" height="${hPx}" fill="#fff"/>
-          <rect x="0" y="0" width="${wPx}" height="${hPx}" fill="url(#grid)" opacity="1"/>
-
-          <text x="${wPx/2}" y="18" text-anchor="middle" font-size="11" fill="rgba(0,0,0,0.35)"
-            font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" letter-spacing="2">
-            AUDIENCE
-          </text>
-
-          <rect x="1" y="1" width="${wPx-2}" height="${hPx-2}" rx="14" ry="14"
-            fill="none" stroke="rgba(0,0,0,0.25)" stroke-width="1.2"/>
-
-          ${items}
-
-          <text x="${wPx-8}" y="${hPx-10}" text-anchor="end" font-size="10" fill="rgba(0,0,0,0.4)"
-            font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace">
-            Stage ${w} x ${d} ft
-          </text>
-        </svg>
-      `;
-
-      $("#printStageSvg").innerHTML = svg;
-    }
-
     $("#btnPrint").addEventListener("click", (e) => {
       e.stopPropagation();
       clearConfirms();
-
-      // build the print SVG snapshot right before printing
-      buildPrintSvg();
-
       window.print();
     });
 
@@ -1659,7 +1830,7 @@
           if(it.rot == null) it.rot = 0;
         }
 
-        selectedId = null;
+        clearSelection();
         clearConfirms();
         save();
         render();
@@ -1738,7 +1909,7 @@
       }
 
       state = deepClone(defaults);
-      selectedId = null;
+      clearSelection();
       clearConfirms();
       save();
       render();
@@ -1757,47 +1928,24 @@
     window.addEventListener("keydown", (e) => {
       if(isTypingTarget(document.activeElement)) return;
 
-      const item = state.items.find(i => i.id === selectedId);
-
+      // Duplicate hotkey (Cmd/Ctrl + D)
       if((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === "d")){
         e.preventDefault();
-        if(item) duplicateSelected();
+        duplicateSelected();
         return;
       }
 
-      if((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === "c")){
-        if(item){
-          e.preventDefault();
-          clipboardItem = deepClone(item);
-        }
-        return;
-      }
-
-      if((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === "v")){
-        if(clipboardItem){
-          e.preventDefault();
-          const copy = deepClone(clipboardItem);
-          copy.id = uid();
-          copy.x = clamp(copy.x + 0.5, 0, state.stage.w - (copy.w * (copy.scale || 1)));
-          copy.y = clamp(copy.y + 0.5, 0, state.stage.d - (copy.h * (copy.scale || 1)));
-          enforceBounds(copy);
-          state.items.push(copy);
-          selectedId = copy.id;
-          save();
-          render();
-          syncEditor();
-        }
-        return;
-      }
-
-      if(item && e.shiftKey && ["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"].includes(e.key)){
+      // Nudge: Shift + Arrow = 0.25 ft
+      if(e.shiftKey && ["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"].includes(e.key) && selectedIds.size){
         e.preventDefault();
         const step = 0.25;
-        if(e.key === "ArrowLeft") item.x -= step;
-        if(e.key === "ArrowRight") item.x += step;
-        if(e.key === "ArrowUp") item.y -= step;
-        if(e.key === "ArrowDown") item.y += step;
-        enforceBounds(item);
+        for(const it of selectedItems()){
+          if(e.key === "ArrowLeft") it.x -= step;
+          if(e.key === "ArrowRight") it.x += step;
+          if(e.key === "ArrowUp") it.y -= step;
+          if(e.key === "ArrowDown") it.y += step;
+          enforceBounds(it);
+        }
         save();
         render();
         syncEditor();
@@ -1811,7 +1959,6 @@
     $("#search").value = "";
     $("#category").value = "All";
 
-    setHeaderVar();
     setStageFromInputs();
     render();
     syncEditor();
@@ -1820,16 +1967,21 @@
     window.addEventListener("resize", () => {
       clearTimeout(t);
       t = setTimeout(() => {
-        setHeaderVar();
         render();
         syncEditor();
       }, 60);
     });
 
-    // Ensure print svg is present even if user uses browser print shortcut
+    // Print: re render so positions recompute after print CSS
     function refreshForPrint(){
-      buildPrintSvg();
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          render();
+          requestAnimationFrame(() => render());
+        }, 60);
+      });
     }
+
     window.addEventListener("beforeprint", refreshForPrint);
 
     const mq = window.matchMedia && window.matchMedia("print");
