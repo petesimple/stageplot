@@ -90,6 +90,8 @@
     button.primary{ background: rgba(74,163,255,.14); border-color: rgba(74,163,255,.6); }
     button.danger{ background: rgba(255,90,106,.12); border-color: rgba(255,90,106,.5); }
     button.ok{ background: rgba(64,217,138,.12); border-color: rgba(64,217,138,.5); }
+    button.ghost{ background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.10); }
+    button:disabled{ opacity:.55; cursor:not-allowed; }
 
     .pill{
       display:inline-flex;
@@ -210,6 +212,7 @@
       border-radius:16px;
       position:relative;
       overflow:hidden;
+      contain: layout paint;
     }
     .stage::before{
       content:"AUDIENCE";
@@ -245,6 +248,7 @@
       display:flex;
       gap:8px;
       align-items:center;
+      transform-origin: center center;
     }
     .item .iconWrap{
       width:34px;
@@ -271,11 +275,56 @@
       box-shadow: 0 0 0 2px rgba(74,163,255,.25), 0 10px 18px rgba(0,0,0,.25);
     }
 
-    table{
-      width:100%;
-      border-collapse: collapse;
-      font-size:12px;
+    /* Resize + rotate handles (only rendered for selected item) */
+    .handles{ position:absolute; inset:0; pointer-events:none; }
+    .handle{
+      position:absolute;
+      width:12px;
+      height:12px;
+      border-radius:999px;
+      background: rgba(233,238,251,.92);
+      border:1px solid rgba(0,0,0,.45);
+      box-shadow: 0 4px 10px rgba(0,0,0,.25);
+      pointer-events:auto;
+      touch-action:none;
     }
+    .handle.n { left:50%; top:-6px; transform:translateX(-50%); cursor:ns-resize; }
+    .handle.s { left:50%; bottom:-6px; transform:translateX(-50%); cursor:ns-resize; }
+    .handle.e { right:-6px; top:50%; transform:translateY(-50%); cursor:ew-resize; }
+    .handle.w { left:-6px; top:50%; transform:translateY(-50%); cursor:ew-resize; }
+    .handle.ne{ right:-6px; top:-6px; cursor:nesw-resize; }
+    .handle.nw{ left:-6px; top:-6px; cursor:nwse-resize; }
+    .handle.se{ right:-6px; bottom:-6px; cursor:nwse-resize; }
+    .handle.sw{ left:-6px; bottom:-6px; cursor:nesw-resize; }
+
+    .rotHandle{
+      position:absolute;
+      left:50%;
+      top:-28px;
+      width:14px;
+      height:14px;
+      border-radius:999px;
+      background: rgba(74,163,255,.95);
+      border:1px solid rgba(0,0,0,.45);
+      box-shadow: 0 6px 14px rgba(0,0,0,.25);
+      transform: translateX(-50%);
+      pointer-events:auto;
+      touch-action:none;
+      cursor:grab;
+    }
+    .rotStem{
+      position:absolute;
+      left:50%;
+      top:-18px;
+      width:2px;
+      height:14px;
+      background: rgba(74,163,255,.65);
+      transform: translateX(-50%);
+      pointer-events:none;
+      border-radius:999px;
+    }
+
+    table{ width:100%; border-collapse: collapse; font-size:12px; }
     th, td{
       text-align:left;
       padding:8px 8px;
@@ -292,9 +341,11 @@
       background: rgba(255,255,255,.03);
     }
 
-    @page { margin: 0.35in; }
     .printOnly{ display:none; }
 
+    @page { margin: 0.35in; }
+
+    /* Print */
     @media print{
       header{ display:none !important; }
       body{ background:#fff; color:#000; }
@@ -312,6 +363,9 @@
         padding:0 !important;
         gap:0 !important;
         min-height: 0 !important;
+        width: 100% !important;
+        max-width: 7.9in !important;
+        margin: 0 auto !important;
       }
 
       .panel{
@@ -354,6 +408,7 @@
       .item .label{ color:#000 !important; }
       .item .type, .item .sub{ color: rgba(0,0,0,.70) !important; }
 
+      .handles{ display:none !important; }
       th, td{ border-bottom: 1px solid #e3e3e3 !important; }
       th{ color:#444 !important; }
 
@@ -365,20 +420,17 @@
       .small{ color:#444 !important; }
     }
 
-    @media print{
-      html, body{ width: 100% !important; }
+    /* Responsive layout (fix mobile collapse) */
+    @media (max-width: 1100px){
       .layout{
-        width: 100% !important;
-        max-width: 7.9in !important;
-        margin: 0 auto !important;
+        display:flex;
+        flex-direction:column;
       }
+      .panel{ width: 100%; }
+      .stage{ min-height: 520px; }
     }
-
     @media (max-width: 520px){
-      button, select, input, textarea{
-        border-radius: 12px;
-        padding: 10px 12px;
-      }
+      button, select, input, textarea{ border-radius: 12px; padding: 10px 12px; }
       .panel .body{ padding:10px; }
       .stageWrap{ padding:10px; }
       .item{ padding:10px; min-width: 86px; }
@@ -445,7 +497,7 @@
 
     <symbol id="spr-stand" viewBox="0 0 64 64">
       <path fill="currentColor" d="M40 10a2 2 0 0 1 2 2v10a2 2 0 1 1-4 0V12a2 2 0 0 1 2-2z"/>
-      <path fill="currentColor" d="M26 22a2 2 0 0 1 3 0l11 11a2 2 0 0 1-3 3L26 25a2 2 0 0 1 0-3z"/>
+      <path fill="currentColor" d="M26 22a2 2 0 0 1 3 0l11 11a2 2 0 1 1-3 3L26 25a2 2 0 0 1 0-3z"/>
       <path fill="currentColor" d="M40 32a2 2 0 0 1 2 2v14l6 6a2 2 0 1 1-3 3l-5-5-5 5a2 2 0 1 1-3-3l6-6V34a2 2 0 0 1 2-2z"/>
       <path fill="currentColor" d="M20 52h40a2 2 0 1 1 0 4H20a2 2 0 1 1 0-4z"/>
     </symbol>
@@ -534,8 +586,6 @@
 
           <div class="small">
             Tip: import a library JSON to add new item types (outlets, lighting, weird instruments, anything).
-          </br>
-            <center>ver 1.2.1</center>
           </div>
         </div>
       </div>
@@ -546,7 +596,7 @@
         <h2>Stage</h2>
         <div class="row">
           <button id="btnCenter">Center selection</button>
-          <button id="btnDuplicate">Duplicate</button>
+          <button class="ghost" id="btnDuplicate" title="Duplicate selected (Cmd/Ctrl+D)">Duplicate</button>
 
           <button id="btnAddMiscS">+ Misc 1</button>
           <button id="btnAddMiscM">+ Misc 2</button>
@@ -558,7 +608,11 @@
       <div class="stageWrap">
         <div class="stageMeta">
           <span class="pill"><span class="dot"></span><span id="stageLabel">24 x 16</span></span>
-          <span class="small">Click an item to edit on the right. Drag to move.</span>
+          <span class="small">
+            Click an item to edit. Drag to move. Shift + Arrow nudges 0.25 ft. Drag dots to resize. Drag blue dot to rotate (Shift snaps 15 degrees).
+          </br>
+            <center>ver 1.2.2</center>
+          </span>
         </div>
         <div id="stage" class="stage">
           <div class="stageEdge"></div>
@@ -594,6 +648,12 @@
             <label class="small" style="min-width:70px;">Scale</label>
             <input id="fScale" type="range" min="0.5" max="2.0" step="0.05" value="1" style="flex:1;" />
             <span class="pill"><span id="scaleReadout">100%</span></span>
+          </div>
+
+          <div class="row">
+            <label class="small" style="min-width:70px;">Rotation</label>
+            <button class="ghost" id="btnResetRot" type="button">Reset rotation</button>
+            <span class="pill"><span id="rotReadout">0°</span></span>
           </div>
 
           <div class="row">
@@ -745,9 +805,7 @@
     let state = loadJSON(STORAGE_KEY) || deepClone(defaults);
     let selectedId = null;
 
-    function save(){
-      saveJSON(STORAGE_KEY, state);
-    }
+    function save(){ saveJSON(STORAGE_KEY, state); }
 
     function setStageFromInputs(){
       const w = clamp(parseFloat($("#stageW").value || 24), 8, 80);
@@ -766,7 +824,17 @@
       const usableH = rect.height - pad*2;
       const sx = usableW / state.stage.w;
       const sy = usableH / state.stage.d;
-      return { x: pad + xFt * sx, y: pad + yFt * sy, sx, sy, pad, usableW, usableH };
+      return { x: pad + xFt * sx, y: pad + yFt * sy, sx, sy, pad, usableW, usableH, rect };
+    }
+
+    function getStageScale(){
+      const rect = stageEl.getBoundingClientRect();
+      const pad = 16;
+      const usableW = rect.width - pad*2;
+      const usableH = rect.height - pad*2;
+      const sx = usableW / state.stage.w;
+      const sy = usableH / state.stage.d;
+      return { rect, pad, usableW, usableH, sx, sy };
     }
 
     function renderSprite(sprite){
@@ -776,6 +844,34 @@
           <use href="${id}"></use>
         </svg>
       `;
+    }
+
+    function rotatedAABB(w, h, deg){
+      const r = (deg || 0) * Math.PI / 180;
+      const c = Math.cos(r), s = Math.sin(r);
+      const bw = Math.abs(w*c) + Math.abs(h*s);
+      const bh = Math.abs(w*s) + Math.abs(h*c);
+      return { bw, bh };
+    }
+
+    function enforceBounds(item){
+      const wFt = item.w * (item.scale || 1);
+      const hFt = item.h * (item.scale || 1);
+      const rot = item.rot || 0;
+
+      const { bw, bh } = rotatedAABB(wFt, hFt, rot);
+
+      let cx = item.x + wFt/2;
+      let cy = item.y + hFt/2;
+
+      cx = clamp(cx, bw/2, state.stage.w - bw/2);
+      cy = clamp(cy, bh/2, state.stage.d - bh/2);
+
+      item.x = cx - wFt/2;
+      item.y = cy - hFt/2;
+
+      item.x = clamp(item.x, 0, state.stage.w - wFt);
+      item.y = clamp(item.y, 0, state.stage.d - hFt);
     }
 
     function addFromCatalog(catItem){
@@ -789,6 +885,7 @@
         w: it.w,
         h: it.h,
         scale: 1.0,
+        rot: 0,
         label: it.labelDefault || it.type,
         color: "#4aa3ff",
         input: it.inputHint || "",
@@ -819,6 +916,7 @@
         w: p.w,
         h: p.h,
         scale: 1.0,
+        rot: 0,
         label: p.label,
         color: "#4aa3ff",
         input: "",
@@ -862,7 +960,6 @@
       for(const it of filtered){
         const row = document.createElement("div");
         row.className = "catItem";
-
         row.innerHTML = `
           <div class="catLeft">
             <div class="catIcon">${renderSprite(it.sprite)}</div>
@@ -884,6 +981,8 @@
       stageEl.querySelectorAll(".item").forEach(n => n.remove());
 
       for(const item of state.items){
+        if(item.rot == null) item.rot = 0;
+
         const div = document.createElement("div");
         div.className = "item" + (item.id === selectedId ? " selected" : "");
         div.dataset.id = item.id;
@@ -904,6 +1003,7 @@
         div.style.borderColor = hexToRgba(c, 0.55);
         div.style.background = hexToRgba(c, 0.14);
         div.style.color = c;
+        div.style.transform = `rotate(${item.rot || 0}deg)`;
 
         div.innerHTML = `
           <div class="iconWrap">${renderSprite(item.sprite)}</div>
@@ -916,6 +1016,31 @@
             </div>
           </div>
         `;
+
+        // Selected overlays: resize handles + rotate handle
+        if(item.id === selectedId){
+          const overlay = document.createElement("div");
+          overlay.className = "handles";
+          overlay.innerHTML = `
+            <div class="rotStem"></div>
+            <div class="rotHandle" data-rot="1" title="Rotate (Shift snaps 15°)"></div>
+
+            <div class="handle nw" data-h="nw"></div>
+            <div class="handle n"  data-h="n"></div>
+            <div class="handle ne" data-h="ne"></div>
+            <div class="handle e"  data-h="e"></div>
+            <div class="handle se" data-h="se"></div>
+            <div class="handle s"  data-h="s"></div>
+            <div class="handle sw" data-h="sw"></div>
+            <div class="handle w"  data-h="w"></div>
+          `;
+          div.appendChild(overlay);
+
+          overlay.querySelectorAll(".handle").forEach(h => {
+            h.addEventListener("pointerdown", onResizeStart);
+          });
+          overlay.querySelector(".rotHandle").addEventListener("pointerdown", onRotateStart);
+        }
 
         div.addEventListener("pointerdown", onDragStart);
         div.addEventListener("click", (e) => {
@@ -931,6 +1056,13 @@
       }
 
       rebuildLists();
+      updateActionButtons();
+    }
+
+    function updateActionButtons(){
+      const hasSel = !!state.items.find(i => i.id === selectedId);
+      $("#btnResetRot").disabled = !hasSel;
+      $("#btnDuplicate").disabled = !hasSel;
     }
 
     function rebuildLists(){
@@ -992,6 +1124,8 @@
         $("#fNotes").value = "";
         $("#fScale").value = 1.0;
         $("#scaleReadout").textContent = "100%";
+        $("#rotReadout").textContent = "0°";
+        updateActionButtons();
         return;
       }
       hint.textContent = `Editing: ${item.type}`;
@@ -1003,6 +1137,8 @@
       $("#fNotes").value = item.notes || "";
       $("#fScale").value = clamp(parseFloat(item.scale || 1), 0.5, 2.0);
       $("#scaleReadout").textContent = `${Math.round(parseFloat($("#fScale").value) * 100)}%`;
+      $("#rotReadout").textContent = `${Math.round((item.rot || 0))}°`;
+      updateActionButtons();
     }
 
     function updateSelected(patch){
@@ -1010,19 +1146,22 @@
       if(!item) return;
       Object.assign(item, patch);
 
-      const wFt = item.w * (item.scale || 1);
-      const hFt = item.h * (item.scale || 1);
-      item.x = clamp(item.x, 0, state.stage.w - wFt);
-      item.y = clamp(item.y, 0, state.stage.d - hFt);
+      // safety defaults
+      if(item.rot == null) item.rot = 0;
+
+      enforceBounds(item);
 
       save();
       render();
       syncEditor();
     }
 
+    // Dragging the item (move)
     let drag = null;
-
     function onDragStart(e){
+      // If clicked on a handle, let that handler run instead
+      if(e.target && (e.target.closest(".handle") || e.target.closest(".rotHandle"))) return;
+
       e.preventDefault();
       e.stopPropagation();
 
@@ -1056,25 +1195,12 @@
       const dx = e.clientX - drag.startX;
       const dy = e.clientY - drag.startY;
 
-      const rect = stageEl.getBoundingClientRect();
-      const pad = 16;
-      const usableW = rect.width - pad*2;
-      const usableH = rect.height - pad*2;
-      const sx = usableW / state.stage.w;
-      const sy = usableH / state.stage.d;
+      const { sx, sy } = getStageScale();
 
-      let nx = drag.itemStartX + dx / sx;
-      let ny = drag.itemStartY + dy / sy;
+      item.x = drag.itemStartX + dx / sx;
+      item.y = drag.itemStartY + dy / sy;
 
-      const wFt = item.w * (item.scale || 1);
-      const hFt = item.h * (item.scale || 1);
-
-      nx = clamp(nx, 0, state.stage.w - wFt);
-      ny = clamp(ny, 0, state.stage.d - hFt);
-
-      item.x = nx;
-      item.y = ny;
-
+      enforceBounds(item);
       render();
     }
 
@@ -1083,9 +1209,170 @@
       drag = null;
       save();
       render();
+      syncEditor();
     }
 
-    // Double opt-in safeguards for Delete + Reset
+    // Resizing
+    let resize = null;
+    const MIN_W_FT = 0.8;
+    const MIN_H_FT = 0.6;
+
+    function onResizeStart(e){
+      e.preventDefault();
+      e.stopPropagation();
+
+      const wrap = e.currentTarget.closest(".item");
+      const id = wrap && wrap.dataset && wrap.dataset.id;
+      if(!id) return;
+
+      clearConfirms();
+      selectedId = id;
+
+      const item = state.items.find(i => i.id === id);
+      if(!item) return;
+
+      const handle = e.currentTarget.dataset.h;
+
+      const wFt = item.w; // base
+      const hFt = item.h;
+
+      resize = {
+        id,
+        handle,
+        startX: e.clientX,
+        startY: e.clientY,
+        startW: wFt,
+        startH: hFt,
+        startXFt: item.x,
+        startYFt: item.y,
+        startScale: item.scale || 1
+      };
+
+      e.currentTarget.setPointerCapture(e.pointerId);
+      window.addEventListener("pointermove", onResizeMove);
+      window.addEventListener("pointerup", onResizeEnd, { once: true });
+    }
+
+    function onResizeMove(e){
+      if(!resize) return;
+      const item = state.items.find(i => i.id === resize.id);
+      if(!item) return;
+
+      const { sx, sy } = getStageScale();
+      const dxFt = (e.clientX - resize.startX) / sx;
+      const dyFt = (e.clientY - resize.startY) / sy;
+
+      // we resize BASE dimensions (w/h), scale stays as-is
+      let w = resize.startW;
+      let h = resize.startH;
+      let x = resize.startXFt;
+      let y = resize.startYFt;
+
+      const s = item.scale || 1;
+
+      // Handle logic affects the scaled footprint, so convert dx/dy in feet to base by dividing by scale
+      const dxBase = dxFt / s;
+      const dyBase = dyFt / s;
+
+      const hh = resize.handle;
+
+      if(hh.includes("e")) w = resize.startW + dxBase;
+      if(hh.includes("s")) h = resize.startH + dyBase;
+      if(hh.includes("w")) { w = resize.startW - dxBase; x = resize.startXFt + dxFt; }
+      if(hh.includes("n")) { h = resize.startH - dyBase; y = resize.startYFt + dyFt; }
+
+      w = Math.max(MIN_W_FT, w);
+      h = Math.max(MIN_H_FT, h);
+
+      item.w = w;
+      item.h = h;
+      item.x = x;
+      item.y = y;
+
+      enforceBounds(item);
+      render();
+      syncEditor();
+    }
+
+    function onResizeEnd(){
+      window.removeEventListener("pointermove", onResizeMove);
+      resize = null;
+      save();
+      render();
+      syncEditor();
+    }
+
+    // Rotation
+    let rotate = null;
+    function onRotateStart(e){
+      e.preventDefault();
+      e.stopPropagation();
+
+      const wrap = e.currentTarget.closest(".item");
+      const id = wrap && wrap.dataset && wrap.dataset.id;
+      if(!id) return;
+
+      clearConfirms();
+      selectedId = id;
+
+      const item = state.items.find(i => i.id === id);
+      if(!item) return;
+
+      const { rect, pad, sx, sy } = getStageScale();
+
+      const wFt = item.w * (item.scale || 1);
+      const hFt = item.h * (item.scale || 1);
+
+      const cxFt = item.x + wFt/2;
+      const cyFt = item.y + hFt/2;
+
+      const cxPx = rect.left + pad + cxFt * sx;
+      const cyPx = rect.top + pad + cyFt * sy;
+
+      rotate = {
+        id,
+        cxPx,
+        cyPx
+      };
+
+      e.currentTarget.setPointerCapture(e.pointerId);
+      window.addEventListener("pointermove", onRotateMove);
+      window.addEventListener("pointerup", onRotateEnd, { once: true });
+    }
+
+    function onRotateMove(e){
+      if(!rotate) return;
+      const item = state.items.find(i => i.id === rotate.id);
+      if(!item) return;
+
+      const dx = e.clientX - rotate.cxPx;
+      const dy = e.clientY - rotate.cyPx;
+
+      let deg = Math.atan2(dy, dx) * 180 / Math.PI + 90; // +90 so "up" is 0-ish
+      // normalize
+      while(deg < 0) deg += 360;
+      while(deg >= 360) deg -= 360;
+
+      if(e.shiftKey){
+        deg = Math.round(deg / 15) * 15;
+      }
+
+      item.rot = deg;
+      enforceBounds(item);
+
+      render();
+      syncEditor();
+    }
+
+    function onRotateEnd(){
+      window.removeEventListener("pointermove", onRotateMove);
+      rotate = null;
+      save();
+      render();
+      syncEditor();
+    }
+
+    // Delete + Reset double-confirm
     let confirmDelete = false;
     let confirmReset = false;
 
@@ -1102,9 +1389,7 @@
       reset.classList.add("danger");
     }
 
-    document.addEventListener("click", () => {
-      clearConfirms();
-    });
+    document.addEventListener("click", () => { clearConfirms(); });
 
     stageEl.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -1136,6 +1421,7 @@
     $("#bandName").addEventListener("input", () => {
       state.bandName = $("#bandName").value || "";
       save();
+
       const bn = (state.bandName || "").trim();
       const pb = document.querySelector("#printBandName");
       if (pb) pb.textContent = bn ? bn : "StagePlot";
@@ -1155,6 +1441,12 @@
     $("#fScale").addEventListener("input", () => {
       $("#scaleReadout").textContent = `${Math.round(parseFloat($("#fScale").value) * 100)}%`;
       updateSelected({ scale: parseFloat($("#fScale").value) });
+    });
+
+    $("#btnResetRot").addEventListener("click", (e) => {
+      e.stopPropagation();
+      clearConfirms();
+      updateSelected({ rot: 0 });
     });
 
     $("#btnAddMiscS").addEventListener("click", (e) => { e.stopPropagation(); clearConfirms(); addMisc("S"); });
@@ -1190,9 +1482,36 @@
       const hFt = item.h * (item.scale || 1);
       item.x = (state.stage.w - wFt) * 0.5;
       item.y = (state.stage.d - hFt) * 0.55;
+      enforceBounds(item);
       save();
       render();
       syncEditor();
+    });
+
+    // Duplicate / Copy-Paste
+    let clipboardItem = null;
+
+    function duplicateSelected(){
+      const item = state.items.find(i => i.id === selectedId);
+      if(!item) return;
+
+      const copy = deepClone(item);
+      copy.id = uid();
+      copy.x = clamp((item.x + 0.5), 0, state.stage.w - (item.w * (item.scale || 1)));
+      copy.y = clamp((item.y + 0.5), 0, state.stage.d - (item.h * (item.scale || 1)));
+
+      state.items.push(copy);
+      selectedId = copy.id;
+
+      save();
+      render();
+      syncEditor();
+    }
+
+    $("#btnDuplicate").addEventListener("click", (e) => {
+      e.stopPropagation();
+      clearConfirms();
+      duplicateSelected();
     });
 
     $("#btnPrint").addEventListener("click", (e) => {
@@ -1223,6 +1542,12 @@
         const imported = JSON.parse(text);
         if(!imported.stage || !imported.items) throw new Error("Invalid project file");
         state = imported;
+
+        // ensure rot exists
+        for(const it of (state.items || [])){
+          if(it.rot == null) it.rot = 0;
+        }
+
         selectedId = null;
         clearConfirms();
         save();
@@ -1309,91 +1634,71 @@
       syncEditor();
     });
 
-    // ---- Copy / Paste / Duplicate support ----
-    let clipboardItem = null;
-
-    function isTypingInField(){
-      const el = document.activeElement;
+    // Keyboard: nudge + copy/paste + duplicate
+    function isTypingTarget(el){
       if(!el) return false;
-      const tag = (el.tagName || "").toLowerCase();
-      return tag === "input" || tag === "textarea" || tag === "select" || el.isContentEditable;
-    }
-
-    function cloneItemForPaste(src){
-      const copy = deepClone(src);
-      copy.id = uid();
-
-      const wFt = (copy.w || 0) * (copy.scale || 1);
-      const hFt = (copy.h || 0) * (copy.scale || 1);
-
-      copy.x = clamp((src.x ?? 0) + 0.6, 0, state.stage.w - wFt);
-      copy.y = clamp((src.y ?? 0) + 0.6, 0, state.stage.d - hFt);
-
-      return copy;
-    }
-
-    function copySelected(){
-      const item = state.items.find(i => i.id === selectedId);
-      if(!item) return;
-      clipboardItem = deepClone(item);
-    }
-
-    function pasteClipboard(){
-      if(!clipboardItem) return;
-      const newItem = cloneItemForPaste(clipboardItem);
-      state.items.push(newItem);
-      selectedId = newItem.id;
-      save();
-      render();
-      syncEditor();
-    }
-
-    function duplicateSelected(){
-      const item = state.items.find(i => i.id === selectedId);
-      if(!item) return;
-      clipboardItem = deepClone(item);
-      pasteClipboard();
-    }
-
-    const dupBtn = $("#btnDuplicate");
-    if (dupBtn){
-      dupBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        clearConfirms();
-        duplicateSelected();
-      });
+      const t = (el.tagName || "").toLowerCase();
+      if(t === "input" || t === "textarea" || t === "select") return true;
+      if(el.isContentEditable) return true;
+      return false;
     }
 
     window.addEventListener("keydown", (e) => {
-      if (isTypingInField()) return;
+      // ignore if typing
+      if(isTypingTarget(document.activeElement)) return;
 
-      const key = (e.key || "").toLowerCase();
-      const mod = e.metaKey || e.ctrlKey;
+      const item = state.items.find(i => i.id === selectedId);
 
-      if (!mod) return;
-
-      if (key === "c") {
-        if (!selectedId) return;
+      // Duplicate hotkey (Cmd/Ctrl + D)
+      if((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === "d")){
         e.preventDefault();
-        copySelected();
+        if(item) duplicateSelected();
+        return;
       }
 
-      if (key === "v") {
-        if (!clipboardItem) return;
-        e.preventDefault();
-        clearConfirms();
-        pasteClipboard();
+      // Copy (Cmd/Ctrl + C)
+      if((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === "c")){
+        if(item){
+          e.preventDefault();
+          clipboardItem = deepClone(item);
+        }
+        return;
       }
 
-      if (key === "d") {
-        if (!selectedId) return;
+      // Paste (Cmd/Ctrl + V)
+      if((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === "v")){
+        if(clipboardItem){
+          e.preventDefault();
+          const copy = deepClone(clipboardItem);
+          copy.id = uid();
+          copy.x = clamp(copy.x + 0.5, 0, state.stage.w - (copy.w * (copy.scale || 1)));
+          copy.y = clamp(copy.y + 0.5, 0, state.stage.d - (copy.h * (copy.scale || 1)));
+          enforceBounds(copy);
+          state.items.push(copy);
+          selectedId = copy.id;
+          save();
+          render();
+          syncEditor();
+        }
+        return;
+      }
+
+      // Nudge: Shift + Arrow = 0.25 ft
+      if(item && e.shiftKey && ["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"].includes(e.key)){
         e.preventDefault();
-        clearConfirms();
-        duplicateSelected();
+        const step = 0.25;
+        if(e.key === "ArrowLeft") item.x -= step;
+        if(e.key === "ArrowRight") item.x += step;
+        if(e.key === "ArrowUp") item.y -= step;
+        if(e.key === "ArrowDown") item.y += step;
+        enforceBounds(item);
+        save();
+        render();
+        syncEditor();
       }
     });
-    // -----------------------------------------
 
+    // init
     const lib0 = mergedLibrary();
     buildCategoryOptions(lib0);
     $("#stagePreset").value = "medium";
@@ -1407,24 +1712,17 @@
     let t = null;
     window.addEventListener("resize", () => {
       clearTimeout(t);
-      t = setTimeout(render, 60);
+      t = setTimeout(() => {
+        render();
+        syncEditor();
+      }, 60);
     });
 
-    // PWA: register service worker
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./service-worker.js").catch(() => {});
-      });
-    }
-
+    // Print: re-render so positions recompute after print CSS
     function refreshForPrint(){
-      requestAnimationFrame(() => {
-        render();
-      });
+      requestAnimationFrame(() => { render(); });
     }
-
     window.addEventListener("beforeprint", refreshForPrint);
-
     const mq = window.matchMedia && window.matchMedia("print");
     if (mq && mq.addEventListener) {
       mq.addEventListener("change", (e) => {
@@ -1435,6 +1733,13 @@
       mq.addListener((e) => {
         if (e.matches) refreshForPrint();
         else requestAnimationFrame(() => render());
+      });
+    }
+
+    // PWA: register service worker
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js").catch(() => {});
       });
     }
   </script>
