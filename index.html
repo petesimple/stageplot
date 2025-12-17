@@ -394,6 +394,9 @@
         background: #fff !important;
         border:1px solid #bbb !important;
         overflow:hidden !important;
+
+        /* Fix 2 - print engines can choke on contain and skip painting children */
+        contain: none !important;
       }
 
       .stage::before{ color:#888 !important; }
@@ -586,8 +589,6 @@
 
           <div class="small">
             Tip: import a library JSON to add new item types (outlets, lighting, weird instruments, anything).
-            </br>
-            <center>ver 1.2.2</center>
           </div>
         </div>
       </div>
@@ -612,6 +613,8 @@
           <span class="pill"><span class="dot"></span><span id="stageLabel">24 x 16</span></span>
           <span class="small">
             Click an item to edit. Drag to move. Shift + Arrow nudges 0.25 ft. Drag dots to resize. Drag blue dot to rotate (Shift snaps 15 degrees).
+          </br>
+            <center>ver 1.2.2</center>
           </span>
         </div>
         <div id="stage" class="stage">
@@ -1719,10 +1722,18 @@
     });
 
     // Print: re-render so positions recompute after print CSS
+    // Fix 1 - double-pass re-render after print styles apply (handles 0x0 rect timing)
     function refreshForPrint(){
-      requestAnimationFrame(() => { render(); });
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          render();
+          requestAnimationFrame(() => render());
+        }, 60);
+      });
     }
+
     window.addEventListener("beforeprint", refreshForPrint);
+
     const mq = window.matchMedia && window.matchMedia("print");
     if (mq && mq.addEventListener) {
       mq.addEventListener("change", (e) => {
