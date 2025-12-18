@@ -292,6 +292,7 @@
       box-shadow: 0 0 0 2px rgba(74,163,255,.26), 0 10px 18px rgba(0,0,0,.25);
     }
 
+    /* Resize + rotate handles (only rendered for primary item) */
     .handles{ position:absolute; inset:0; pointer-events:none; }
     .handle{
       position:absolute;
@@ -361,6 +362,7 @@
 
     @page { margin: 0.35in; }
 
+    /* Print */
     @media print{
       header{ display:none !important; }
       body{ background:#fff; color:#000; }
@@ -379,7 +381,7 @@
         gap:0 !important;
         min-height: 0 !important;
         width: 100% !important;
-        max-width: 7.9in !important;
+        max-width: 960px !important;
         margin: 0 auto !important;
       }
 
@@ -403,9 +405,10 @@
 
       .stage{
         min-height: 0 !important;
-        height: 5.9in !important;
-        max-height: 5.9in !important;
-        width: 100% !important;
+        width: 960px !important;
+        height: 720px !important;
+        max-width: 960px !important;
+        max-height: 720px !important;
         background: #fff !important;
         border:1px solid #bbb !important;
         overflow:hidden !important;
@@ -437,6 +440,35 @@
       .small{ color:#444 !important; }
     }
 
+    /* Print fix: force real pixel size and stable layout before print dialog opens */
+    body.printing .layout{
+      display:block !important;
+      padding:0 !important;
+      gap:0 !important;
+      min-height: 0 !important;
+      width: 100% !important;
+      max-width: 960px !important;
+      margin: 0 auto !important;
+    }
+    body.printing header{ display:none !important; }
+    body.printing .panel{ box-shadow:none !important; }
+    body.printing .panel.catalogPanel{ display:none !important; }
+
+    body.printing .stage{
+      width: 960px !important;
+      height: 720px !important;
+      min-height: 720px !important;
+      max-height: 720px !important;
+      background:#fff !important;
+      border:1px solid #bbb !important;
+      overflow:hidden !important;
+    }
+
+    body.printing .item{
+      box-shadow:none !important;
+    }
+
+    /* Responsive layout (fix mobile collapse) */
     @media (max-width: 1100px){
       .layout{
         display:flex;
@@ -513,7 +545,7 @@
 
     <symbol id="spr-stand" viewBox="0 0 64 64">
       <path fill="currentColor" d="M40 10a2 2 0 0 1 2 2v10a2 2 0 1 1-4 0V12a2 2 0 0 1 2-2z"/>
-      <path fill="currentColor" d="M26 22a2 2 0 0 1 3 0l11 11a2 2 0 0 1-3 3L26 25a2 2 0 0 1 0-3z"/>
+      <path fill="currentColor" d="M26 22a2 2 0 0 1 3 0l11 11a2 2 0 1 1-3 3L26 25a2 2 0 0 1 0-3z"/>
       <path fill="currentColor" d="M40 32a2 2 0 0 1 2 2v14l6 6a2 2 0 1 1-3 3l-5-5-5 5a2 2 0 1 1-3-3l6-6V34a2 2 0 0 1 2-2z"/>
       <path fill="currentColor" d="M20 52h40a2 2 0 1 1 0 4H20a2 2 0 1 1 0-4z"/>
     </symbol>
@@ -603,7 +635,7 @@
           <div class="small">
             Tip: Shift click or Cmd on Mac or Ctrl on Windows to multi select. Drag on empty stage to box select.
             <br>
-            <center>ver 1.3.2</center>
+            <center>ver 1.3.3</center>
             <br>
             <center><a href="https://petesimple.github.io/stageplot/guide.html">USER GUIDE</a></center>
           </div>
@@ -876,16 +908,27 @@
       render();
     }
 
-    // PRINT SAFE SCALE FUNCTIONS
-    function stageToPx(xFt, yFt){
+    /* Print-safe sizing (fixes stage disappearing in print) */
+    const PRINT_FALLBACK = { w: 960, h: 720 };
+
+    function getStageSizePx(){
       const rect = stageEl.getBoundingClientRect();
-      const w = stageEl.clientWidth || rect.width;
-      const h = stageEl.clientHeight || rect.height;
+      let w = stageEl.clientWidth || rect.width || stageEl.offsetWidth || 0;
+      let h = stageEl.clientHeight || rect.height || stageEl.offsetHeight || 0;
+
+      if (w < 50 || h < 50) {
+        w = PRINT_FALLBACK.w;
+        h = PRINT_FALLBACK.h;
+      }
+      return { w, h, rect };
+    }
+
+    function stageToPx(xFt, yFt){
+      const { w, h, rect } = getStageSizePx();
 
       const pad = 16;
       const usableW = Math.max(1, w - pad*2);
       const usableH = Math.max(1, h - pad*2);
-
       const sx = usableW / state.stage.w;
       const sy = usableH / state.stage.d;
 
@@ -893,9 +936,7 @@
     }
 
     function pxToStage(clientX, clientY){
-      const rect = stageEl.getBoundingClientRect();
-      const w = stageEl.clientWidth || rect.width;
-      const h = stageEl.clientHeight || rect.height;
+      const { w, h, rect } = getStageSizePx();
 
       const pad = 16;
       const usableW = Math.max(1, w - pad*2);
@@ -911,9 +952,7 @@
     }
 
     function getStageScale(){
-      const rect = stageEl.getBoundingClientRect();
-      const w = stageEl.clientWidth || rect.width;
-      const h = stageEl.clientHeight || rect.height;
+      const { w, h, rect } = getStageSizePx();
 
       const pad = 16;
       const usableW = Math.max(1, w - pad*2);
@@ -1122,7 +1161,7 @@
           overlay.className = "handles";
           overlay.innerHTML = `
             <div class="rotStem"></div>
-            <div class="rotHandle" data-rot="1" title="Rotate (Shift snaps 15°)"></div>
+            <div class="rotHandle" data-rot="1" title="Rotate (Shift snaps 15 degrees)"></div>
 
             <div class="handle nw" data-h="nw"></div>
             <div class="handle n"  data-h="n"></div>
@@ -1142,7 +1181,6 @@
         }
 
         div.addEventListener("pointerdown", onItemPointerDown);
-
         stageEl.appendChild(div);
       }
 
@@ -1290,7 +1328,6 @@
       clearConfirms();
 
       const id = e.currentTarget.dataset.id;
-
       const mod = hasModifier(e);
 
       if(mod){
@@ -1459,20 +1496,18 @@
       syncEditor();
     }
 
-    // FIXED: click empty space to deselect works again, and no marquee null timing bug
     function onMarqueeEnd(e){
       window.removeEventListener("pointermove", onMarqueeMove);
 
-      const startedAt = marquee && marquee.startedAt ? marquee.startedAt : null;
-      const hadModifier = marquee && marquee.mod;
+      const startedAt = marquee && marquee.startedAt ? marquee.startedAt : { x: 0, y: 0 };
+      const mod = marquee && marquee.mod;
 
       marquee = null;
       removeMarqueeDiv();
 
-      const dx = startedAt ? Math.abs((e && e.clientX || 0) - startedAt.x) : 999;
-      const dy = startedAt ? Math.abs((e && e.clientY || 0) - startedAt.y) : 999;
-
-      if(!hadModifier && !hasModifier(e) && dx < 2 && dy < 2){
+      const dx = Math.abs((e && e.clientX || 0) - startedAt.x);
+      const dy = Math.abs((e && e.clientY || 0) - startedAt.y);
+      if(!mod && !hasModifier(e) && (dx < 2 && dy < 2)){
         clearSelection();
       }
 
@@ -1803,11 +1838,31 @@
       duplicateSelected();
     });
 
+    /* Print: force stable layout before opening print dialog */
+    function preparePrintLayout(){
+      document.body.classList.add("printing");
+      stageEl.getBoundingClientRect();
+      render();
+      requestAnimationFrame(() => render());
+    }
+
+    function cleanupPrintLayout(){
+      document.body.classList.remove("printing");
+      requestAnimationFrame(() => render());
+    }
+
     $("#btnPrint").addEventListener("click", (e) => {
       e.stopPropagation();
       clearConfirms();
-      window.print();
+
+      preparePrintLayout();
+
+      setTimeout(() => {
+        window.print();
+      }, 60);
     });
+
+    window.addEventListener("afterprint", cleanupPrintLayout);
 
     $("#btnExportProject").addEventListener("click", (e) => {
       e.stopPropagation();
@@ -1955,6 +2010,7 @@
       }
     });
 
+    // init
     const lib0 = mergedLibrary();
     buildCategoryOptions(lib0);
     $("#stagePreset").value = "medium";
@@ -1974,30 +2030,7 @@
       }, 60);
     });
 
-    function refreshForPrint(){
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-          render();
-          requestAnimationFrame(() => render());
-        }, 60);
-      });
-    }
-
-    window.addEventListener("beforeprint", refreshForPrint);
-
-    const mq = window.matchMedia && window.matchMedia("print");
-    if (mq && mq.addEventListener) {
-      mq.addEventListener("change", (e) => {
-        if (e.matches) refreshForPrint();
-        else requestAnimationFrame(() => render());
-      });
-    } else if (mq && mq.addListener) {
-      mq.addListener((e) => {
-        if (e.matches) refreshForPrint();
-        else requestAnimationFrame(() => render());
-      });
-    }
-
+    // PWA: register service worker
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker.register("./service-worker.js").catch(() => {});
