@@ -125,7 +125,10 @@
       overflow:hidden;
       box-shadow: 0 12px 30px rgba(0,0,0,.35);
     }
-    .panel .title{
+
+    /* Panel headers + bodies - now supports <summary class="title"> and .body */
+    .panel .title,
+    .panel summary.title{
       padding:12px 12px 10px 12px;
       border-bottom:1px solid var(--line);
       display:flex;
@@ -134,7 +137,8 @@
       gap:10px;
       flex-wrap:wrap;
     }
-    .panel .title h2{
+    .panel .title h2,
+    .panel summary.title h2{
       margin:0;
       font-size:13px;
       color: var(--muted);
@@ -143,6 +147,7 @@
       text-transform: uppercase;
     }
     .panel .body{ padding:12px; }
+
     .stack{ display:flex; flex-direction:column; gap:10px; }
     .row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
     .small{ font-size:12px; color: var(--muted); }
@@ -362,6 +367,36 @@
 
     @page { margin: 0.35in; }
 
+    /* Accordion styling */
+    details.accordion{ display:block; }
+    details.accordion > summary::-webkit-details-marker{ display:none; }
+    details.accordion > summary.title{
+      list-style:none;
+      cursor:pointer;
+      user-select:none;
+    }
+    .accRight{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .chev{
+      width:28px;
+      height:28px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color: rgba(233,238,251,.85);
+      flex:0 0 auto;
+    }
+    details.accordion[open] .chev{
+      transform: rotate(180deg);
+    }
+    .chev svg{ width:16px; height:16px; display:block; }
+
     /* Print */
     @media print{
       header{ display:none !important; }
@@ -399,6 +434,10 @@
       .panel.catalogPanel{ display:none !important; }
 
       button, select, input, textarea, .pill.clickable{ display:none !important; }
+
+      /* IMPORTANT: ensure accordion content is visible in print */
+      details.accordion > summary{ display:none !important; }
+      details.accordion .body{ display:block !important; padding:10px !important; }
 
       .stageWrap{ padding:10px !important; }
       .stageMeta{ margin-bottom:6px !important; }
@@ -454,6 +493,10 @@
     body.printing .panel{ box-shadow:none !important; }
     body.printing .panel.catalogPanel{ display:none !important; }
 
+    /* IMPORTANT: ensure accordion content is visible during printing mode too */
+    body.printing details.accordion > summary{ display:none !important; }
+    body.printing details.accordion .body{ display:block !important; }
+
     body.printing .stage{
       width: 960px !important;
       height: 720px !important;
@@ -468,7 +511,7 @@
       box-shadow:none !important;
     }
 
-    /* Responsive layout (fix mobile collapse) */
+    /* Responsive layout (mobile) */
     @media (max-width: 1100px){
       .layout{
         display:flex;
@@ -483,6 +526,13 @@
       .stageWrap{ padding:10px; }
       .item{ padding:10px; min-width: 86px; }
       .item .label{ max-width: 140px; }
+    }
+
+    /* Keep desktop from accidentally collapsing */
+    @media (min-width: 1101px){
+      details.accordion > summary.title{
+        cursor:default;
+      }
     }
 
     .item, .item *{
@@ -574,6 +624,10 @@
       <path fill="currentColor" d="M20 30h24v4H20v-4zm0 8h16v4H20v-4z" opacity=".6"/>
       <circle fill="currentColor" cx="46" cy="40" r="3"/>
     </symbol>
+
+    <symbol id="spr-chev" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M12 15.5 5.5 9a1 1 0 0 1 1.4-1.4l5.1 5.1 5.1-5.1A1 1 0 1 1 18.5 9L12 15.5z"/>
+    </symbol>
   </svg>
 
   <header>
@@ -602,47 +656,57 @@
   </header>
 
   <div class="layout">
+    <!-- LIBRARY (accordion on mobile) -->
     <section class="panel catalogPanel">
-      <div class="title">
-        <h2>Item library</h2>
-        <span class="small" id="libCount">0 items</span>
-      </div>
-      <div class="body">
-        <div class="stack">
-          <div class="row">
-            <select id="stagePreset">
-              <option value="small">Stage: Small (16x12)</option>
-              <option value="medium" selected>Stage: Medium (24x16)</option>
-              <option value="large">Stage: Large (32x20)</option>
-              <option value="custom">Stage: Custom</option>
-            </select>
+      <details class="accordion" id="accLibrary" open>
+        <summary class="title">
+          <h2>Item library</h2>
+          <div class="accRight">
+            <span class="small" id="libCount">0 items</span>
+            <span class="chev" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><use href="#spr-chev"></use></svg>
+            </span>
           </div>
-          <div class="row">
-            <input id="stageW" type="number" min="8" max="80" step="1" value="24" style="width:110px" />
-            <input id="stageD" type="number" min="6" max="60" step="1" value="16" style="width:110px" />
-            <span class="small">W x D</span>
-          </div>
+        </summary>
 
-          <div class="row">
-            <input id="search" placeholder="Search (guitar, outlet, riser...)" style="width:100%" />
-          </div>
-          <div class="row">
-            <select id="category" style="width:100%"></select>
-          </div>
+        <div class="body">
+          <div class="stack">
+            <div class="row">
+              <select id="stagePreset">
+                <option value="small">Stage: Small (16x12)</option>
+                <option value="medium" selected>Stage: Medium (24x16)</option>
+                <option value="large">Stage: Large (32x20)</option>
+                <option value="custom">Stage: Custom</option>
+              </select>
+            </div>
+            <div class="row">
+              <input id="stageW" type="number" min="8" max="80" step="1" value="24" style="width:110px" />
+              <input id="stageD" type="number" min="6" max="60" step="1" value="16" style="width:110px" />
+              <span class="small">W x D</span>
+            </div>
 
-          <div class="catalog" id="catalog"></div>
+            <div class="row">
+              <input id="search" placeholder="Search (guitar, outlet, riser...)" style="width:100%" />
+            </div>
+            <div class="row">
+              <select id="category" style="width:100%"></select>
+            </div>
 
-          <div class="small">
-            Tip: Shift click or Cmd on Mac or Ctrl on Windows to multi select. Drag on empty stage to box select.
-            <br>
-            <center>ver 1.3.3</center>
-            <br>
-            <center><a href="https://petesimple.github.io/stageplot/guide.html">USER GUIDE</a></center>
+            <div class="catalog" id="catalog"></div>
+
+            <div class="small">
+              Tip: Shift click or Cmd on Mac or Ctrl on Windows to multi select. Drag on empty stage to box select.
+              <br>
+              <center>ver 1.3.3</center>
+              <br>
+              <center><a href="https://petesimple.github.io/stageplot/guide.html">USER GUIDE</a></center>
+            </div>
           </div>
         </div>
-      </div>
+      </details>
     </section>
 
+    <!-- STAGE (not accordion) -->
     <section class="panel stagePanel">
       <div class="title">
         <h2>Stage</h2>
@@ -670,80 +734,89 @@
       </div>
     </section>
 
+    <!-- INFO (accordion on mobile) -->
     <section class="panel infoPanel">
-      <div class="title">
-        <h2>One-page print info</h2>
-        <span class="small" id="selHint">No item selected</span>
-      </div>
-      <div class="body">
-        <div class="stack">
-          <div id="printBandName" class="printOnly"></div>
-
-          <div class="row">
-            <input id="bandName" placeholder="Band name (optional)" style="width:100%" />
+      <details class="accordion" id="accInfo" open>
+        <summary class="title">
+          <h2>One-page print info</h2>
+          <div class="accRight">
+            <span class="small" id="selHint">No item selected</span>
+            <span class="chev" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><use href="#spr-chev"></use></svg>
+            </span>
           </div>
+        </summary>
 
-          <div class="row">
-            <input id="fLabel" placeholder="Label (ex: Pete Vox)" style="width:100%" />
+        <div class="body">
+          <div class="stack">
+            <div id="printBandName" class="printOnly"></div>
+
+            <div class="row">
+              <input id="bandName" placeholder="Band name (optional)" style="width:100%" />
+            </div>
+
+            <div class="row">
+              <input id="fLabel" placeholder="Label (ex: Pete Vox)" style="width:100%" />
+            </div>
+
+            <div class="row">
+              <input id="fType" placeholder="Type" style="width:48%" disabled />
+              <input id="fColor" type="color" value="#4aa3ff" style="width:54px; padding:6px;" />
+              <input id="fInput" placeholder="Input (ex: Ch 1)" style="width:40%" />
+              <input id="fMix" placeholder="Mix (ex: M1)" style="width:30%" />
+            </div>
+
+            <div class="row">
+              <label class="small" style="min-width:70px;">Scale</label>
+              <input id="fScale" type="range" min="0.5" max="2.0" step="0.05" value="1" style="flex:1;" />
+              <span class="pill"><span id="scaleReadout">100%</span></span>
+            </div>
+
+            <div class="row">
+              <label class="small" style="min-width:70px;">Rotation</label>
+              <button class="ghost" id="btnResetRot" type="button">Reset rotation</button>
+              <span class="pill"><span id="rotReadout">0°</span></span>
+            </div>
+
+            <div class="row">
+              <textarea id="fNotes" rows="3" placeholder="Item notes (ex: DI after pedals, needs boom, etc)" style="width:100%"></textarea>
+            </div>
+
+            <div class="small">Inputs</div>
+            <div class="scrollBox">
+              <table id="inputsTable">
+                <thead>
+                  <tr>
+                    <th style="width:62px">Ch</th>
+                    <th>Source</th>
+                    <th style="width:70px">Mix</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+
+            <div class="small">Monitor mixes</div>
+            <div class="scrollBox">
+              <table id="mixTable">
+                <thead>
+                  <tr>
+                    <th style="width:70px">Mix</th>
+                    <th>Who</th>
+                    <th>Notes</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+
+            <div class="small">Show notes</div>
+            <textarea id="showNotes" rows="6" placeholder="Show notes (parking, backline, contact, set length, etc)"></textarea>
+
+            <div class="small mono" id="notesPreview" style="white-space:pre-wrap; padding:10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:12px;"></div>
           </div>
-
-          <div class="row">
-            <input id="fType" placeholder="Type" style="width:48%" disabled />
-            <input id="fColor" type="color" value="#4aa3ff" style="width:54px; padding:6px;" />
-            <input id="fInput" placeholder="Input (ex: Ch 1)" style="width:40%" />
-            <input id="fMix" placeholder="Mix (ex: M1)" style="width:30%" />
-          </div>
-
-          <div class="row">
-            <label class="small" style="min-width:70px;">Scale</label>
-            <input id="fScale" type="range" min="0.5" max="2.0" step="0.05" value="1" style="flex:1;" />
-            <span class="pill"><span id="scaleReadout">100%</span></span>
-          </div>
-
-          <div class="row">
-            <label class="small" style="min-width:70px;">Rotation</label>
-            <button class="ghost" id="btnResetRot" type="button">Reset rotation</button>
-            <span class="pill"><span id="rotReadout">0°</span></span>
-          </div>
-
-          <div class="row">
-            <textarea id="fNotes" rows="3" placeholder="Item notes (ex: DI after pedals, needs boom, etc)" style="width:100%"></textarea>
-          </div>
-
-          <div class="small">Inputs</div>
-          <div class="scrollBox">
-            <table id="inputsTable">
-              <thead>
-                <tr>
-                  <th style="width:62px">Ch</th>
-                  <th>Source</th>
-                  <th style="width:70px">Mix</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-
-          <div class="small">Monitor mixes</div>
-          <div class="scrollBox">
-            <table id="mixTable">
-              <thead>
-                <tr>
-                  <th style="width:70px">Mix</th>
-                  <th>Who</th>
-                  <th>Notes</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-
-          <div class="small">Show notes</div>
-          <textarea id="showNotes" rows="6" placeholder="Show notes (parking, backline, contact, set length, etc)"></textarea>
-
-          <div class="small mono" id="notesPreview" style="white-space:pre-wrap; padding:10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:12px;"></div>
         </div>
-      </div>
+      </details>
     </section>
   </div>
 
@@ -753,6 +826,9 @@
 
     const STORAGE_KEY = "stageplot_v2_state";
     const STORAGE_KEY_LIB = "stageplot_v2_user_library";
+
+    // Accordion state keys
+    const ACC_KEY = "stageplot_v2_accordion_state";
 
     const BUILTIN_LIBRARY = {
       version: 1,
@@ -1024,6 +1100,9 @@
       save();
       render();
       syncEditor();
+
+      // On mobile, keep info panel easy to reach
+      autoAccordionBehaviorAfterSelection();
     }
 
     function addMisc(size){
@@ -1056,6 +1135,8 @@
       save();
       render();
       syncEditor();
+
+      autoAccordionBehaviorAfterSelection();
     }
 
     function render(){
@@ -1365,6 +1446,8 @@
       save();
       render();
       syncEditor();
+
+      autoAccordionBehaviorAfterSelection();
     }
 
     function onDragMove(e){
@@ -1467,7 +1550,7 @@
         startedAt: { x: e.clientX, y: e.clientY }
       };
 
-      updateMarqueeDiv({ x1:start.xFt, y1:start.yFt, x2:start.xFt, y2:start.yFt });
+      updateMarqueeDiv({ x1:start.xFt, y1:start.yFt, x2:start.xFt, y2:start.xFt });
 
       window.addEventListener("pointermove", onMarqueeMove);
       window.addEventListener("pointerup", onMarqueeEnd, { once: true });
@@ -1838,8 +1921,70 @@
       duplicateSelected();
     });
 
+    // Accordion behavior (mobile) + persistence
+    const accLibrary = $("#accLibrary");
+    const accInfo = $("#accInfo");
+
+    function isMobileLayout(){
+      return window.innerWidth <= 1100;
+    }
+
+    function loadAccState(){
+      const s = loadJSON(ACC_KEY) || null;
+      return s && typeof s === "object" ? s : null;
+    }
+    function saveAccState(){
+      const s = {
+        libOpen: !!accLibrary.open,
+        infoOpen: !!accInfo.open
+      };
+      saveJSON(ACC_KEY, s);
+    }
+
+    function applyAccordionRules(){
+      // Desktop: keep both open
+      if(!isMobileLayout()){
+        accLibrary.open = true;
+        accInfo.open = true;
+        return;
+      }
+
+      // Mobile: restore last choice if available
+      const saved = loadAccState();
+      if(saved){
+        accLibrary.open = !!saved.libOpen;
+        accInfo.open = !!saved.infoOpen;
+      }else{
+        // Default mobile: keep library open, info closed until needed
+        accLibrary.open = true;
+        accInfo.open = false;
+      }
+    }
+
+    function autoAccordionBehaviorAfterSelection(){
+      if(!isMobileLayout()) return;
+      // When selecting/adding an item, open info panel (so edits are right there)
+      accInfo.open = true;
+      // Optionally collapse library to save scroll
+      accLibrary.open = false;
+      saveAccState();
+    }
+
+    // Keep state saved when user toggles
+    accLibrary.addEventListener("toggle", () => { if(isMobileLayout()) saveAccState(); });
+    accInfo.addEventListener("toggle", () => { if(isMobileLayout()) saveAccState(); });
+
     /* Print: force stable layout before opening print dialog */
+    let prePrintAccState = null;
+
     function preparePrintLayout(){
+      // remember accordion state
+      prePrintAccState = { libOpen: accLibrary.open, infoOpen: accInfo.open };
+
+      // force everything open so nothing disappears in print engine
+      accLibrary.open = true;
+      accInfo.open = true;
+
       document.body.classList.add("printing");
       stageEl.getBoundingClientRect();
       render();
@@ -1848,6 +1993,14 @@
 
     function cleanupPrintLayout(){
       document.body.classList.remove("printing");
+
+      // restore accordion state
+      if(prePrintAccState){
+        accLibrary.open = !!prePrintAccState.libOpen;
+        accInfo.open = !!prePrintAccState.infoOpen;
+        prePrintAccState = null;
+      }
+
       requestAnimationFrame(() => render());
     }
 
@@ -2018,6 +2171,7 @@
     $("#category").value = "All";
 
     setStageFromInputs();
+    applyAccordionRules();
     render();
     syncEditor();
 
@@ -2025,9 +2179,10 @@
     window.addEventListener("resize", () => {
       clearTimeout(t);
       t = setTimeout(() => {
+        applyAccordionRules();
         render();
         syncEditor();
-      }, 60);
+      }, 80);
     });
 
     // PWA: register service worker
