@@ -512,33 +512,40 @@
     }
 
     /* Responsive layout (mobile) */
-    @media (max-width: 1100px){
-      .layout{
-        display:flex;
-        flex-direction:column;
-      }
-      .panel{ width: 100%; }
-      .stage{ min-height: 520px; }
-    }
-    @media (max-width: 520px){
-      button, select, input, textarea{ border-radius: 12px; padding: 10px 12px; }
-      .panel .body{ padding:10px; }
-      .stageWrap{ padding:10px; }
-      .item{ padding:10px; min-width: 86px; }
-      .item .label{ max-width: 140px; }
-    }
+@media (max-width: 1100px){
+  .layout{
+    display:flex;
+    flex-direction:column;
+  }
 
-    /* Keep desktop from accidentally collapsing */
-    @media (min-width: 1101px){
-      details.accordion > summary.title{
-        cursor:default;
-      }
-    }
+  /* MOBILE ORDER: Stage first */
+  .stagePanel{ order: 1; }
+  .catalogPanel{ order: 2; }
+  .infoPanel{ order: 3; }
 
-    .item, .item *{
-      user-select:none;
-      -webkit-user-select:none;
-    }
+  .panel{ width: 100%; }
+  .stage{ min-height: 520px; }
+}
+
+@media (max-width: 520px){
+  button, select, input, textarea{ border-radius: 12px; padding: 10px 12px; }
+  .panel .body{ padding:10px; }
+  .stageWrap{ padding:10px; }
+  .item{ padding:10px; min-width: 86px; }
+  .item .label{ max-width: 140px; }
+}
+
+/* Keep desktop from accidentally collapsing */
+@media (min-width: 1101px){
+  details.accordion > summary.title{
+    cursor:default;
+  }
+}
+
+.item, .item *{
+  user-select:none;
+  -webkit-user-select:none;
+}
   </style>
 </head>
 
