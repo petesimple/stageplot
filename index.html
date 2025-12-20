@@ -1048,13 +1048,13 @@
     }
 
     function renderSprite(sprite){
-      const id = sprite ? `#spr-${sprite}` : "";
-      return `
-        <svg class="icon" viewBox="0 0 64 64" aria-hidden="true">
-          <use href="${id}"></use>
-        </svg>
-      `;
-    }
+  const id = sprite ? `#spr-${sprite}` : "";
+  return `
+    <svg class="icon" viewBox="0 0 64 64" aria-hidden="true">
+      <use href="${id}" xlink:href="${id}"></use>
+    </svg>
+  `;
+}
 
     function rotatedAABB(w, h, deg){
       const r = (deg || 0) * Math.PI / 180;
