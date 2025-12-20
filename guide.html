@@ -236,28 +236,69 @@
       font-size: 12px;
     }
 
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 7px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(74,163,255,.35);
-      background: rgba(74,163,255,.10);
-      color: rgba(233,238,251,.92);
-      font-size: 12px;
-      user-select:none;
-      white-space:nowrap;
+    .mono{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     }
-    .badge .b{
-      width:8px; height:8px; border-radius:50%;
-      background: var(--accent);
-      display:inline-block;
+
+    /* Share QR block */
+    .shareRow{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-top: 6px;
+    }
+    .qrWrap{
+      display:none;
+      margin-top: 12px;
+    }
+    .qrCard{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      flex-wrap:wrap;
+    }
+    .qrImg{
+      background:#fff;
+      padding:10px;
+      border-radius:12px;
+      width: 240px;
+      height: 240px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .qrImg img{
+      width: 220px;
+      height: 220px;
+      image-rendering: crisp-edges;
+      border-radius: 6px;
+    }
+    .shareMeta{
+      flex:1;
+      min-width: 240px;
+    }
+    .tinyLink{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      text-decoration:none;
+      color: var(--text);
+    }
+    .tinyLink:hover{
+      border-color: rgba(74,163,255,.55);
+      background: rgba(74,163,255,.06);
     }
 
     @media (max-width: 980px){
       main{ grid-template-columns: 1fr; }
       .nav a{ display:inline-block; margin-right: 8px; }
+      .qrImg{ width: 220px; height: 220px; }
+      .qrImg img{ width: 200px; height: 200px; }
     }
 
     @media print{
@@ -268,7 +309,11 @@
       main{ display:block !important; max-width: 7.8in !important; }
       a{ color:#000 !important; text-decoration:none !important; }
       .callout, .mini{ border:1px solid #ddd !important; background:#fff !important; }
-      .badge{ border:1px solid #ddd !important; background:#fff !important; color:#000 !important; }
+
+      /* Print-friendly share section */
+      .qrWrap{ display:block !important; }
+      button{ display:none !important; }
+      .qrImg{ border: 1px solid #ddd !important; }
     }
   </style>
 </head>
@@ -281,7 +326,6 @@
           <div class="logo" aria-hidden="true">SP</div>
           <div>
             <h1>StagePlot v2 Guide</h1>
-            <!-- Title stays the same - version string updated here only -->
             <div class="sub">How to use StagePlot, all the goodies in one place. Version 1.5.1</div>
           </div>
         </div>
@@ -300,8 +344,8 @@
       <div class="hd"><h2>Jump to</h2></div>
       <div class="bd">
         <a href="#quickstart">Quick start</a>
+        <a href="#share">Share the love</a>
         <a href="#stage">Stage basics</a>
-        <a href="#flip">View Audience vs View Stage</a>
         <a href="#mobile">Mobile layout and accordions</a>
         <a href="#add">Add items</a>
         <a href="#select">Select and multi select</a>
@@ -360,38 +404,58 @@
           If it still blanks, see troubleshooting below.
         </div>
 
+        <h3 id="share">Share the love</h3>
+        <div class="callout ok">
+          <strong>Please share the love.</strong>
+          <p style="margin-top:8px;">
+            If StagePlot saves you time (or saves your band from the “wait, where do you want the keys?” conversation), pass it along.
+            Share the link with a bandmate, a venue, a sound human, or that one friend who always shows up with a DI and good vibes.
+          </p>
+
+          <div class="shareRow">
+            <a class="tinyLink" href="https://petesimple.github.io/stageplot/" target="_blank" rel="noopener">
+              Open StagePlot link
+            </a>
+            <button type="button" class="button" onclick="toggleQR()">Show QR code</button>
+            <button type="button" class="button" onclick="copyAppLink()">Copy link</button>
+          </div>
+
+          <div class="qrWrap" id="qrWrap">
+            <div class="qrCard">
+              <div class="qrImg">
+                <img
+                  id="qrImg"
+                  src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https%3A%2F%2Fpetesimple.github.io%2Fstageplot%2F"
+                  alt="QR code linking to StagePlot"
+                />
+              </div>
+              <div class="shareMeta">
+                <p>
+                  <strong>Scan to open StagePlot:</strong> aim your phone camera at the QR code and tap the link.
+                  This is perfect for tablets, rehearsal rooms, and sending it to someone standing right next to you.
+                </p>
+                <div class="callout" style="margin:10px 0 0 0;">
+                  <strong>Link:</strong>
+                  <div class="mono" id="appLinkText">https://petesimple.github.io/stageplot/</div>
+                </div>
+                <div class="footer">
+                  Tip: Printing this guide includes the QR code automatically, so the paper itself becomes a “scan to open” flyer.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <h3 id="stage">Stage basics</h3>
         <p>
-          The stage is measured in feet using Width x Depth. Audience is at the top. Items are positioned relative to the stage scale,
-          so if you change the stage size later, your layout should stay sensible.
+          The stage is measured in feet using Width x Depth. Upstage is at the top of the plot and audience is downstage at the bottom.
+          Items are positioned relative to the stage scale, so if you change the stage size later, your layout should stay sensible.
         </p>
         <ul>
           <li><strong>Stage preset:</strong> swaps the stage W and D quickly.</li>
           <li><strong>Custom stage:</strong> type W and D yourself.</li>
           <li><strong>Click empty stage space:</strong> clears selection.</li>
         </ul>
-
-        <h3 id="flip">View Audience vs View Stage</h3>
-        <p>
-          StagePlot lets you flip the entire plot so it reads correctly for whoever is looking at it.
-          <strong>View Audience</strong> is how the crowd sees it. <strong>View Stage</strong> is how the band sees it from on stage.
-        </p>
-
-        <div class="callout ok">
-          <strong>New in 1.5.1:</strong> The flip is a true 180 degree rotation around the stage center (no weird drifting down/right).
-          If your items ever look like they “slide” instead of flipping, see the troubleshooting notes below.
-        </div>
-
-        <div class="grid">
-          <div class="mini">
-            <div class="t">View Audience</div>
-            <div class="d">Great for venue staff, FOH, stagehands, load-in planning.</div>
-          </div>
-          <div class="mini">
-            <div class="t">View Stage</div>
-            <div class="d">Great for the band - matches their perspective standing on the deck.</div>
-          </div>
-        </div>
 
         <h3 id="mobile">Mobile layout and accordions</h3>
         <p>
@@ -420,7 +484,7 @@
 
         <div class="callout">
           <strong>Safari note:</strong> If icons ever show on the stage but not in the Item library, it is usually Safari being picky about SVG sizing.
-          The fix is to explicitly size <span class="kbd">.catIcon svg.icon</span> (the app now includes that fix).
+          The fix is to explicitly size <span class="kbd">.catIcon svg.icon</span> (the app includes that fix).
         </div>
 
         <h3 id="select">Select and multi select</h3>
@@ -593,19 +657,6 @@
         </div>
 
         <div class="callout warn">
-          <strong>Flip still looks wrong (items slide instead of rotating)</strong>
-          <ul>
-            <li>Hard refresh (desktop): <span class="kbd">Cmd</span> + <span class="kbd">Shift</span> + <span class="kbd">R</span> or <span class="kbd">Ctrl</span> + <span class="kbd">F5</span>.</li>
-            <li>If you installed the PWA, uninstall and reinstall to clear old cached assets.</li>
-            <li>If you use a service worker, bump the cache version so the new JS/CSS is guaranteed to load.</li>
-            <li>Make sure the flip is applied to the stage container (not each item individually) so the transform origin stays centered.</li>
-          </ul>
-          <div class="footer">
-            If you tell me what your stage container ID/class is, I can drop in the exact “flip class” CSS snippet for your app.
-          </div>
-        </div>
-
-        <div class="callout warn">
           <strong>Stage looks cut off at the bottom on desktop</strong>
           <ul>
             <li>Make the browser window taller or go full screen.</li>
@@ -642,6 +693,39 @@
         history.replaceState(null, "", id);
       });
     });
+
+    const APP_LINK = "https://petesimple.github.io/stageplot/";
+
+    function toggleQR(){
+      const el = document.getElementById("qrWrap");
+      const show = (el.style.display === "none" || !el.style.display);
+      el.style.display = show ? "block" : "none";
+      if(show){
+        // small nicety: ensure QR + link reflect the constant
+        document.getElementById("appLinkText").textContent = APP_LINK;
+        const q = document.getElementById("qrImg");
+        const enc = encodeURIComponent(APP_LINK);
+        q.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${enc}`;
+      }
+    }
+
+    async function copyAppLink(){
+      try{
+        await navigator.clipboard.writeText(APP_LINK);
+        alert("Copied StagePlot link to clipboard.");
+      }catch(e){
+        // fallback
+        const t = document.getElementById("appLinkText");
+        if(t){
+          const r = document.createRange();
+          r.selectNodeContents(t);
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(r);
+        }
+        alert("Could not auto-copy on this browser. The link is highlighted - copy it.");
+      }
+    }
   </script>
 </body>
 </html>
