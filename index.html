@@ -188,6 +188,15 @@
       justify-content:center;
       flex:0 0 auto;
     }
+    /* SAFARI FIX: force size for library SVG icons */
+.catIcon svg.icon{
+  width:22px;
+  height:22px;
+  display:block;
+}
+    .catIcon svg{
+  overflow: visible;
+}
     .catText{ min-width:0; }
     .catName{
       font-size:13px;
