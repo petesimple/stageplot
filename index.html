@@ -95,6 +95,30 @@
     button.ghost{ background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.10); }
     button:disabled{ opacity:.55; cursor:not-allowed; }
 
+/* Blue bounding-box link button (User Guide) */
+a.guideBtn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:8px 12px;
+  border-radius:12px;
+  border:2px solid rgba(74,163,255,.95);
+  color: rgba(233,238,251,.98);
+  background: rgba(74,163,255,.08);
+  text-decoration:none;
+  font-weight:700;
+  letter-spacing:.2px;
+  box-shadow: 0 0 0 2px rgba(74,163,255,.14);
+}
+a.guideBtn:hover{
+  background: rgba(74,163,255,.14);
+  border-color: rgba(74,163,255,1);
+}
+a.guideBtn:active{
+  transform: translateY(1px);
+}
+    
     .pill{
       display:inline-flex;
       gap:6px;
