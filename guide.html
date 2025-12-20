@@ -236,6 +236,25 @@
       font-size: 12px;
     }
 
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(74,163,255,.35);
+      background: rgba(74,163,255,.10);
+      color: rgba(233,238,251,.92);
+      font-size: 12px;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .badge .b{
+      width:8px; height:8px; border-radius:50%;
+      background: var(--accent);
+      display:inline-block;
+    }
+
     @media (max-width: 980px){
       main{ grid-template-columns: 1fr; }
       .nav a{ display:inline-block; margin-right: 8px; }
@@ -249,6 +268,7 @@
       main{ display:block !important; max-width: 7.8in !important; }
       a{ color:#000 !important; text-decoration:none !important; }
       .callout, .mini{ border:1px solid #ddd !important; background:#fff !important; }
+      .badge{ border:1px solid #ddd !important; background:#fff !important; color:#000 !important; }
     }
   </style>
 </head>
@@ -261,7 +281,8 @@
           <div class="logo" aria-hidden="true">SP</div>
           <div>
             <h1>StagePlot v2 Guide</h1>
-            <div class="sub">How to use StagePlot, all the goodies in one place. Version 1.4.1</div>
+            <!-- Title stays the same - version string updated here only -->
+            <div class="sub">How to use StagePlot, all the goodies in one place. Version 1.5.1</div>
           </div>
         </div>
 
@@ -280,6 +301,7 @@
       <div class="bd">
         <a href="#quickstart">Quick start</a>
         <a href="#stage">Stage basics</a>
+        <a href="#flip">View Audience vs View Stage</a>
         <a href="#mobile">Mobile layout and accordions</a>
         <a href="#add">Add items</a>
         <a href="#select">Select and multi select</a>
@@ -300,7 +322,7 @@
     <section class="card">
       <div class="hd">
         <h2>Welcome</h2>
-        <span class="pill">Guide for v1.4.1</span>
+        <span class="pill">Guide for v1.5.1</span>
       </div>
       <div class="bd">
         <p>
@@ -348,6 +370,28 @@
           <li><strong>Custom stage:</strong> type W and D yourself.</li>
           <li><strong>Click empty stage space:</strong> clears selection.</li>
         </ul>
+
+        <h3 id="flip">View Audience vs View Stage</h3>
+        <p>
+          StagePlot lets you flip the entire plot so it reads correctly for whoever is looking at it.
+          <strong>View Audience</strong> is how the crowd sees it. <strong>View Stage</strong> is how the band sees it from on stage.
+        </p>
+
+        <div class="callout ok">
+          <strong>New in 1.5.1:</strong> The flip is a true 180 degree rotation around the stage center (no weird drifting down/right).
+          If your items ever look like they “slide” instead of flipping, see the troubleshooting notes below.
+        </div>
+
+        <div class="grid">
+          <div class="mini">
+            <div class="t">View Audience</div>
+            <div class="d">Great for venue staff, FOH, stagehands, load-in planning.</div>
+          </div>
+          <div class="mini">
+            <div class="t">View Stage</div>
+            <div class="d">Great for the band - matches their perspective standing on the deck.</div>
+          </div>
+        </div>
 
         <h3 id="mobile">Mobile layout and accordions</h3>
         <p>
@@ -546,6 +590,19 @@
             <li>Try a different browser (Chrome, Edge, Safari). Print engines can be spicy.</li>
             <li>If you are using a PWA installed app, try printing from the normal browser tab once.</li>
           </ul>
+        </div>
+
+        <div class="callout warn">
+          <strong>Flip still looks wrong (items slide instead of rotating)</strong>
+          <ul>
+            <li>Hard refresh (desktop): <span class="kbd">Cmd</span> + <span class="kbd">Shift</span> + <span class="kbd">R</span> or <span class="kbd">Ctrl</span> + <span class="kbd">F5</span>.</li>
+            <li>If you installed the PWA, uninstall and reinstall to clear old cached assets.</li>
+            <li>If you use a service worker, bump the cache version so the new JS/CSS is guaranteed to load.</li>
+            <li>Make sure the flip is applied to the stage container (not each item individually) so the transform origin stays centered.</li>
+          </ul>
+          <div class="footer">
+            If you tell me what your stage container ID/class is, I can drop in the exact “flip class” CSS snippet for your app.
+          </div>
         </div>
 
         <div class="callout warn">
