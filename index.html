@@ -1050,13 +1050,77 @@
       return { rect, pad, usableW, usableH, sx, sy };
     }
 
+const ICON_PATHS = {
+  mic: `
+    <path fill="currentColor" d="M32 6c-6 0-11 5-11 11v14c0 6 5 11 11 11s11-5 11-11V17c0-6-5-11-11-11zm-7 25V17a7 7 0 0 1 14 0v14a7 7 0 0 1-14 0z"/>
+    <path fill="currentColor" d="M18 30a2 2 0 0 1 2 2c0 7 5 13 12 13s12-6 12-13a2 2 0 1 1 4 0c0 8-6 15-14 16v6h6a2 2 0 1 1 0 4H24a2 2 0 1 1 0-4h6v-6c-8-1-14-8-14-16a2 2 0 0 1 2-2z"/>
+  `,
+  guitar: `<path fill="currentColor" d="M44 6l14 14-4 4-3-3-9 9c2 5 0 12-5 17-6 6-15 7-20 2l-5 5a4 4 0 0 1-6-6l5-5c-5-5-4-14 2-20 5-5 12-7 17-5l9-9-3-3 4-4zm-24 19c-4 4-5 10-1 14s10 3 14-1 5-10 1-14-10-3-14 1z"/>`,
+  bass: `<path fill="currentColor" d="M46 6l12 12-4 4-2-2-10 10c3 6 1 13-5 19-7 7-17 8-23 2l-4 4a4 4 0 1 1-6-6l4-4c-6-6-5-16 2-23 6-6 13-8 19-5L39 17l-2-2 4-4zM20 24c-5 5-6 12-2 16s11 3 16-2 6-12 2-16-11-3-16 2z"/>`,
+  keys: `
+    <path fill="currentColor" d="M10 18h44a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h44V22H10z"/>
+    <path fill="currentColor" d="M14 22h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22z"/>
+    <path fill="currentColor" d="M19 22h3v12h-3V22zm8 0h3v12h-3V22zm8 0h3v12h-3V22zm8 0h3v12h-3V22z"/>
+  `,
+  drums: `
+    <path fill="currentColor" d="M14 26c0-8 8-14 18-14s18 6 18 14-8 14-18 14-18-6-18-14zm4 0c0 6 6 10 14 10s14-4 14-10-6-10-14-10-14 4-14 10z"/>
+    <path fill="currentColor" d="M20 40h24v12a4 4 0 0 1-4 4H24a4 4 0 0 1-4-4V40zm4 4v8h16v-8H24z"/>
+    <path fill="currentColor" d="M10 18a2 2 0 0 1 3 0l8 8a2 2 0 0 1-3 3l-8-8a2 2 0 0 1 0-3zm44 0a2 2 0 0 1 0 3l-8 8a2 2 0 1 1-3-3l8-8a2 2 0 0 1 3 0z"/>
+  `,
+  amp: `
+    <path fill="currentColor" d="M14 16h36a4 4 0 0 1 4 4v28a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V20a4 4 0 0 1 4-4zm0 4v28h36V20H14z"/>
+    <path fill="currentColor" d="M18 24h28v4H18v-4zm0 8h28v4H18v-4zm0 8h18v4H18v-4z"/>
+    <circle fill="currentColor" cx="44" cy="42" r="3"/>
+  `,
+  wedge: `
+    <path fill="currentColor" d="M10 42l44-16v18a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4v-2z"/>
+    <path fill="currentColor" d="M12 40l40-14v3L12 43v-3z" opacity=".5"/>
+  `,
+  iem: `
+    <path fill="currentColor" d="M20 28c0-7 5-12 12-12s12 5 12 12v10a2 2 0 1 1-4 0V28c0-4-3-8-8-8s-8 4-8 8v10a2 2 0 1 1-4 0V28z"/>
+    <path fill="currentColor" d="M16 40a6 6 0 0 0 12 0v-2h-4v2a2 2 0 0 1-4 0v-2h-4v2zm20 0a6 6 0 0 0 12 0v-2h-4v2a2 2 0 0 1-4 0v-2h-4v2z"/>
+  `,
+  di: `
+    <path fill="currentColor" d="M18 18h28a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h28V22H18z"/>
+    <path fill="currentColor" d="M22 26h8v4h-8v-4zm0 8h12v4H22v-4z"/>
+    <circle fill="currentColor" cx="42" cy="28" r="2"/>
+    <circle fill="currentColor" cx="42" cy="36" r="2"/>
+  `,
+  stand: `
+    <path fill="currentColor" d="M40 10a2 2 0 0 1 2 2v10a2 2 0 1 1-4 0V12a2 2 0 0 1 2-2z"/>
+    <path fill="currentColor" d="M26 22a2 2 0 0 1 3 0l11 11a2 2 0 1 1-3 3L26 25a2 2 0 0 1 0-3z"/>
+    <path fill="currentColor" d="M40 32a2 2 0 0 1 2 2v14l6 6a2 2 0 1 1-3 3l-5-5-5 5a2 2 0 1 1-3-3l6-6V34a2 2 0 0 1 2-2z"/>
+    <path fill="currentColor" d="M20 52h40a2 2 0 1 1 0 4H20a2 2 0 1 1 0-4z"/>
+  `,
+  outlet: `
+    <path fill="currentColor" d="M20 12h24a8 8 0 0 1 8 8v24a8 8 0 0 1-8 8H20a8 8 0 0 1-8-8V20a8 8 0 0 1 8-8zm0 4a4 4 0 0 0-4 4v24a4 4 0 0 0 4 4h24a4 4 0 0 0 4-4V20a4 4 0 0 0-4-4H20z"/>
+    <circle fill="currentColor" cx="26" cy="28" r="4"/>
+    <circle fill="currentColor" cx="38" cy="28" r="4"/>
+    <rect fill="currentColor" x="29" y="36" width="6" height="10" rx="3"/>
+  `,
+  riser: `
+    <path fill="currentColor" d="M10 22h44a4 4 0 0 1 4 4v16a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V26a4 4 0 0 1 4-4zm0 4v16h44V26H10z"/>
+    <path fill="currentColor" d="M14 30h10v8H14v-8zm13 0h10v8H27v-8zm13 0h10v8H40v-8z" opacity=".55"/>
+  `,
+  console: `
+    <path fill="currentColor" d="M10 18h44a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h44V22H10z"/>
+    <path fill="currentColor" d="M14 26h36v4H14v-4zm0 8h20v4H14v-4z"/>
+    <circle fill="currentColor" cx="44" cy="36" r="2.5"/>
+    <circle fill="currentColor" cx="50" cy="36" r="2.5"/>
+  `,
+  misc: `
+    <path fill="currentColor" d="M14 18h36a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h36V22H14z"/>
+    <path fill="currentColor" d="M20 30h24v4H20v-4zm0 8h16v4H20v-4z" opacity=".6"/>
+    <circle fill="currentColor" cx="46" cy="40" r="3"/>
+  `,
+  chev: `<path fill="currentColor" d="M12 15.5 5.5 9a1 1 0 0 1 1.4-1.4l5.1 5.1 5.1-5.1A1 1 0 1 1 18.5 9L12 15.5z"/>`
+};
+    
     function renderSprite(sprite){
-  const id = sprite ? `#spr-${sprite}` : "";
-  return `
-    <svg class="icon" viewBox="0 0 64 64" aria-hidden="true">
-      <use href="${id}" xlink:href="${id}"></use>
-    </svg>
-  `;
+  const key = (sprite || "").toLowerCase();
+  const paths = ICON_PATHS[key] || ICON_PATHS.misc;
+  const vb = (key === "chev") ? "0 0 24 24" : "0 0 64 64";
+  return `<svg class="icon" viewBox="${vb}" aria-hidden="true">${paths}</svg>`;
 }
 
     function rotatedAABB(w, h, deg){
