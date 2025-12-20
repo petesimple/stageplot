@@ -261,7 +261,7 @@
           <div class="logo" aria-hidden="true">SP</div>
           <div>
             <h1>StagePlot v2 Guide</h1>
-            <div class="sub">How to use StagePlot, all the goodies in one place. Version 1.3.3</div>
+            <div class="sub">How to use StagePlot, all the goodies in one place. Version 1.4.1</div>
           </div>
         </div>
 
@@ -299,7 +299,7 @@
     <section class="card">
       <div class="hd">
         <h2>Welcome</h2>
-        <span class="pill">Guide for v1.3.3</span>
+        <span class="pill">Guide for v1.4.1</span>
       </div>
       <div class="bd">
         <p>
@@ -326,15 +326,15 @@
 
         <h3 id="quickstart">Quick start</h3>
         <ul>
-          <li>Pick your stage size in the left panel. Small, medium, large, or custom.</li>
+          <li>Pick your stage size in the Item library panel. Small, medium, large, or custom.</li>
           <li>Search the library and hit Add to drop gear on the stage.</li>
-          <li>Click an item to edit it on the right panel. Label, input, mix, notes, color, scale, rotation.</li>
+          <li>Click an item to edit it in the One-page print info panel. Label, input, mix, notes, color, scale, rotation.</li>
           <li>Build your full plot, then hit Print for the clean one page view.</li>
         </ul>
 
         <div class="callout warn">
-          <strong>If your print preview ever looks blank:</strong> scroll a tiny bit, wait a second, and try Print again. The app does a quick re render for print layout.
-          If it still blanks, see the troubleshooting section below.
+          <strong>If your print preview ever looks blank:</strong> hit the app Print button again. StagePlot forces a quick print-safe layout + rerender before the print dialog opens.
+          If it still blanks, see troubleshooting below.
         </div>
 
         <h3 id="stage">Stage basics</h3>
@@ -350,17 +350,18 @@
 
         <h3 id="mobile">Mobile layout and accordions</h3>
         <p>
-          On mobile, StagePlot shifts into a stacked layout so you can work top to bottom without tiny side panels fighting for space.
-          If accordions are enabled, sections collapse automatically <strong>only when the UI goes inline</strong> (mobile mode), so desktop stays wide and fast.
+          On mobile (or narrow screens), StagePlot switches to a stacked layout so you can work top to bottom.
+          The library and info panels become accordions, and StagePlot remembers what you left open.
         </p>
         <ul>
-          <li><strong>Stage goes first:</strong> you get the stage at the top so you can drag and place without hunting.</li>
-          <li><strong>Accordion sections (mobile only):</strong> collapse the library and info panels to save scroll space.</li>
-          <li><strong>Desktop stays normal:</strong> if you have real screen width, you keep the classic three panel layout.</li>
+          <li><strong>Stage goes first:</strong> the stage panel is at the top for quick drag and place.</li>
+          <li><strong>Accordion panels:</strong> Item library and One-page print info can collapse to save scroll.</li>
+          <li><strong>Auto open info on selection:</strong> when you add/select an item, the info panel opens automatically so edits are right there.</li>
+          <li><strong>Desktop stays normal:</strong> wide screens keep the classic three panel layout, both panels open.</li>
         </ul>
 
         <div class="callout ok">
-          <strong>Mobile tip:</strong> If you are on a phone, treat this like a set list. Scroll, tap, adjust, keep moving. No overthinking, no suffering.
+          <strong>Mobile tip:</strong> Add an item, tweak it on the info panel, repeat. The app tries to keep the next step in your face.
         </div>
 
         <h3 id="add">Add items</h3>
@@ -372,27 +373,31 @@
           <li><strong>Misc buttons:</strong> quick drop generic blocks for mystery gear, pedals, weird props, or the thing nobody can name.</li>
         </ul>
 
+        <div class="callout">
+          <strong>Safari note:</strong> If icons ever show on the stage but not in the Item library, it is usually Safari being picky about SVG sizing.
+          The fix is to explicitly size <span class="kbd">.catIcon svg.icon</span> (the app now includes that fix).
+        </div>
+
         <h3 id="select">Select and multi select</h3>
         <p>
-          Single selection is the default. Multi select lets you move a bunch of stuff together, like a drum world or a horn section pile.
+          Single selection is the default. Multi select lets you move a bunch of stuff together, like a full drum world or a horn section pile.
         </p>
 
         <div class="callout ok">
           <strong>Multi select methods:</strong>
           <ul>
-            <li><strong>Shift + Click</strong> adds or removes an item from the selection.</li>
-            <li><strong>Cmd + Click</strong> on Mac or <strong>Ctrl + Click</strong> on Windows does the same.</li>
-            <li><strong>Drag select</strong> uses a selection box to grab multiple items at once.</li>
-            <li><strong>Click unused stage space</strong> deselects everything.</li>
+            <li><strong>Shift + Click</strong> toggles an item into or out of the selection.</li>
+            <li><strong>Cmd + Click</strong> (Mac) or <strong>Ctrl + Click</strong> (Windows) does the same.</li>
+            <li><strong>Drag select:</strong> drag on empty stage space to draw a selection box.</li>
+            <li><strong>Click empty stage space:</strong> clears selection (unless you are using a modifier key).</li>
           </ul>
           <div class="footer">
-            Note: If you are clicking inside a handle or the rotate dot, it will do that action instead of selection.
+            Note: If you grab a resize handle or the rotate dot, it will do that action instead of selection.
           </div>
         </div>
 
         <p>
-          When multiple items are selected, edits like move and nudge apply to the group. Item detail editing on the right panel is focused on
-          the primary selected item.
+          When multiple items are selected, move and nudge apply to the group. Item detail editing focuses on the primary selected item.
         </p>
 
         <h3 id="move">Move, nudge, center</h3>
@@ -400,8 +405,8 @@
           <li><strong>Drag:</strong> click and drag an item to move it.</li>
           <li><strong>Drag a selected group:</strong> if you have multi select active, drag any selected item and the group moves together.</li>
           <li><strong>Nudge:</strong> <span class="kbd">Shift</span> + <span class="kbd">Arrow</span> moves the selection by 0.25 ft.</li>
-          <li><strong>Center selection:</strong> centers the selected item on the stage.</li>
-          <li><strong>Duplicate:</strong> duplicates the selected item. Also supports hotkey below.</li>
+          <li><strong>Center selection:</strong> centers the selected group into a sensible stage position.</li>
+          <li><strong>Duplicate:</strong> duplicates the selected item(s). Also supports hotkey below.</li>
         </ul>
 
         <h3 id="resize-rotate">Resize and rotate</h3>
@@ -412,12 +417,12 @@
           <li><strong>Resize:</strong> drag the corner or edge dots.</li>
           <li><strong>Rotate:</strong> drag the blue dot above the item.</li>
           <li><strong>Rotate snap:</strong> hold <span class="kbd">Shift</span> while rotating to snap 15 degrees.</li>
-          <li><strong>Reset rotation:</strong> click Reset rotation in the right panel.</li>
+          <li><strong>Reset rotation:</strong> click Reset rotation in the info panel.</li>
           <li><strong>Scale slider:</strong> adjusts the overall footprint without changing the base shape.</li>
         </ul>
 
         <h3 id="edit">Edit details</h3>
-        <p>The right panel is where the real world info lives.</p>
+        <p>The One-page print info panel is where the real world info lives.</p>
         <ul>
           <li><strong>Band name:</strong> optional. It prints at the top of the print page.</li>
           <li><strong>Label:</strong> what shows on the item. Example: Pete Vox, Dave Guitar, Tim Keys.</li>
@@ -443,30 +448,22 @@
 
         <h3 id="print">Printing</h3>
         <p>
-          Hit Print to get the one page view. The library panel hides itself and the stage becomes the main event.
+          Hit Print to get the one page view. StagePlot temporarily switches into a print-safe layout (fixed stage size, panels open, library hidden),
+          then restores your normal layout after printing.
         </p>
         <ul>
           <li><strong>Best results:</strong> print in Portrait, default margins, and let the app handle layout.</li>
-          <li><strong>Stage scale:</strong> the stage box is sized to fit a page while keeping items readable.</li>
           <li><strong>What prints:</strong> band name header, stage plot, inputs list, monitor mixes, show notes.</li>
+          <li><strong>Tip:</strong> use the app Print button (not the browser menu) so the print layout hook runs.</li>
         </ul>
-
-        <div class="callout warn">
-          <strong>Printing tip:</strong> If your stage looks clipped at the bottom on desktop, try one of these:
-          <ul>
-            <li>Zoom the browser out a notch (90 percent or 80 percent) before printing.</li>
-            <li>Maximize the window height and avoid short split views.</li>
-            <li>Use the app Print button instead of the browser menu so the re render hook runs.</li>
-          </ul>
-        </div>
 
         <h3 id="export">Export and import</h3>
         <p>
           Two things can be exported and imported:
         </p>
         <ul>
-          <li><strong>Project:</strong> your stage size, items, band name, and notes. This is the main share file.</li>
-          <li><strong>Library:</strong> your custom item types. Great if you want venue specific stuff or your own weird instrument zoo.</li>
+          <li><strong>Project:</strong> your stage size, items, band name, and notes.</li>
+          <li><strong>Library:</strong> your custom item types (import/export your personalized gear zoo).</li>
         </ul>
 
         <div class="callout ok">
@@ -476,8 +473,6 @@
         <h3 id="shortcuts">Keyboard shortcuts</h3>
         <ul>
           <li><span class="kbd">Cmd</span> or <span class="kbd">Ctrl</span> + <span class="kbd">D</span> - Duplicate selected</li>
-          <li><span class="kbd">Cmd</span> or <span class="kbd">Ctrl</span> + <span class="kbd">C</span> - Copy selected</li>
-          <li><span class="kbd">Cmd</span> or <span class="kbd">Ctrl</span> + <span class="kbd">V</span> - Paste (drops a copy with a small offset)</li>
           <li><span class="kbd">Shift</span> + <span class="kbd">Arrow</span> - Nudge 0.25 ft</li>
           <li><span class="kbd">Shift</span> + click - Multi select toggle</li>
           <li><span class="kbd">Cmd</span> or <span class="kbd">Ctrl</span> + click - Multi select toggle</li>
@@ -497,7 +492,7 @@
         <div class="callout danger">
           <strong>Print preview is blank</strong>
           <ul>
-            <li>Click the app Print button again. The app runs a re render on print start.</li>
+            <li>Click the app Print button again. The app forces a print-safe rerender before opening print preview.</li>
             <li>Wait a second after opening print preview. Some browsers lag before painting.</li>
             <li>Try a different browser (Chrome, Edge, Safari). Print engines can be spicy.</li>
             <li>If you are using a PWA installed app, try printing from the normal browser tab once.</li>
@@ -509,7 +504,7 @@
           <ul>
             <li>Make the browser window taller or go full screen.</li>
             <li>Zoom out slightly in the browser.</li>
-            <li>On smaller screens, the app switches to a stacked layout. That can change stage height. It is normal.</li>
+            <li>On smaller screens, the app switches to stacked layout. That can change stage height. It is normal.</li>
           </ul>
         </div>
 
