@@ -150,7 +150,7 @@
       box-shadow: 0 12px 30px rgba(0,0,0,.35);
     }
 
-    /* Panel headers + bodies - supports <summary class="title"> and .body */
+    /* Panel headers + bodies - now supports <summary class="title"> and .body */
     .panel .title,
     .panel summary.title{
       padding:12px 12px 10px 12px;
@@ -213,7 +213,11 @@
       flex:0 0 auto;
     }
     /* SAFARI FIX: force size for library SVG icons */
-    .catIcon svg.icon{ width:22px; height:22px; display:block; }
+    .catIcon svg.icon{
+      width:22px;
+      height:22px;
+      display:block;
+    }
     .catIcon svg{ overflow: visible; }
     .catText{ min-width:0; }
     .catName{
@@ -234,7 +238,6 @@
       gap:10px;
     }
     .stageMeta{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
-
     .stage{
       flex:1;
       min-height: 540px;
@@ -252,9 +255,11 @@
       -webkit-user-select:none;
     }
 
-    /* Stage orientation labels (canonical: UPSTAGE top, AUDIENCE bottom) */
-    .stageMark{
+    /* Orientation labels (default plot convention) */
+    .stage::before{
+      content:"UPSTAGE";
       position:absolute;
+      top:10px;
       left:50%;
       transform: translateX(-50%);
       font-size:12px;
@@ -262,14 +267,19 @@
       letter-spacing: 2px;
       pointer-events:none;
       user-select:none;
-      z-index:2;
     }
-    .stageMark.upstage{ top:10px; }
-    .stageMark.audience{ bottom:10px; }
-
-    /* When view is flipped, swap the markers (view-only) */
-    .stage.viewFlipped .stageMark.upstage{ top:auto; bottom:10px; }
-    .stage.viewFlipped .stageMark.audience{ bottom:auto; top:10px; }
+    .stage::after{
+      content:"AUDIENCE";
+      position:absolute;
+      bottom:10px;
+      left:50%;
+      transform: translateX(-50%);
+      font-size:12px;
+      color: rgba(255,255,255,.22);
+      letter-spacing: 2px;
+      pointer-events:none;
+      user-select:none;
+    }
 
     .stageEdge{
       position:absolute;
@@ -277,7 +287,6 @@
       border-radius:16px;
       pointer-events:none;
       box-shadow: inset 0 0 0 2px rgba(74,163,255,.06);
-      z-index:1;
     }
 
     .marquee{
@@ -304,7 +313,6 @@
       gap:8px;
       align-items:center;
       transform-origin: center center;
-      z-index:3;
     }
     .item .iconWrap{
       width:34px;
@@ -492,7 +500,7 @@
         contain: none !important;
       }
 
-      .stageMark{ color:#888 !important; }
+      .stage::before, .stage::after{ color:#888 !important; }
       .stageEdge{ box-shadow:none !important; }
       .marquee{ display:none !important; }
 
@@ -545,9 +553,7 @@
       overflow:hidden !important;
     }
 
-    body.printing .item{
-      box-shadow:none !important;
-    }
+    body.printing .item{ box-shadow:none !important; }
 
     /* Responsive layout (mobile) */
     @media (max-width: 1100px){
@@ -555,7 +561,6 @@
         display:flex;
         flex-direction:column;
       }
-
       /* MOBILE ORDER: Stage first */
       .stagePanel{ order: 1; }
       .catalogPanel{ order: 2; }
@@ -575,9 +580,7 @@
 
     /* Keep desktop from accidentally collapsing */
     @media (min-width: 1101px){
-      details.accordion > summary.title{
-        cursor:default;
-      }
+      details.accordion > summary.title{ cursor:default; }
     }
 
     .item, .item *{
@@ -745,7 +748,7 @@
             <div class="small">
               Tip: Shift click or Cmd on Mac or Ctrl on Windows to multi select. Drag on empty stage to box select.
               <br>
-              <center>ver 1.5 (ILYAIMY)</center>
+              <center>ver 1.5.1</center>
               <br>
               <center>
                 <a class="guideBtn" href="https://petesimple.github.io/stageplot/guide.html">USER GUIDE</a>
@@ -761,7 +764,7 @@
       <div class="title">
         <h2>Stage</h2>
         <div class="row">
-          <button class="ghost" id="btnFlipView" title="Toggle view (Audience vs Stage)">View: Audience</button>
+          <button class="ghost" id="btnFlipView" title="Flip the whole plot 180 degrees">View: Audience</button>
 
           <button id="btnCenter">Center selection</button>
           <button class="ghost" id="btnDuplicate" title="Duplicate selected (Cmd/Ctrl+D)">Duplicate</button>
@@ -781,8 +784,6 @@
           </span>
         </div>
         <div id="stage" class="stage">
-          <div class="stageMark upstage">UPSTAGE</div>
-          <div class="stageMark audience">AUDIENCE</div>
           <div class="stageEdge"></div>
         </div>
       </div>
@@ -884,26 +885,6 @@
     // Accordion state keys
     const ACC_KEY = "stageplot_v2_accordion_state";
 
-    // View orientation key (view-only)
-    const VIEW_KEY = "stageplot_v2_view_mode"; // "audience" | "stage"
-    function getViewMode(){
-      const v = (localStorage.getItem(VIEW_KEY) || "audience");
-      return (v === "stage") ? "stage" : "audience";
-    }
-    function setViewMode(v){
-      localStorage.setItem(VIEW_KEY, (v === "stage") ? "stage" : "audience");
-    }
-    function isViewFlipped(){
-      return getViewMode() === "stage";
-    }
-    function applyViewClass(){
-      stageEl.classList.toggle("viewFlipped", isViewFlipped());
-      const btn = $("#btnFlipView");
-      if(btn){
-        btn.textContent = isViewFlipped() ? "View: Stage" : "View: Audience";
-      }
-    }
-
     const BUILTIN_LIBRARY = {
       version: 1,
       items: [
@@ -999,10 +980,14 @@
       stage: { w: 24, d: 16 },
       bandName: "",
       notes: "",
-      items: []
+      items: [],
+      view: "audience" // "audience" or "stage"
     };
 
     let state = loadJSON(STORAGE_KEY) || deepClone(defaults);
+
+    // Ensure view exists for older saves
+    if(!state.view) state.view = "audience";
 
     // Multi select state
     let selectedIds = new Set();
@@ -1073,7 +1058,6 @@
       return { w, h, rect };
     }
 
-    // Map stage feet to px (view-only flip supported)
     function stageToPx(xFt, yFt){
       const { w, h, rect } = getStageSizePx();
 
@@ -1083,18 +1067,9 @@
       const sx = usableW / state.stage.w;
       const sy = usableH / state.stage.d;
 
-      let rxFt = xFt;
-      let ryFt = yFt;
-
-      if(isViewFlipped()){
-        rxFt = state.stage.w - xFt;
-        ryFt = state.stage.d - yFt;
-      }
-
-      return { x: pad + rxFt * sx, y: pad + ryFt * sy, sx, sy, pad, usableW, usableH, rect };
+      return { x: pad + xFt * sx, y: pad + yFt * sy, sx, sy, pad, usableW, usableH, rect };
     }
 
-    // Map px to stage feet (view-only flip supported)
     function pxToStage(clientX, clientY){
       const { w, h, rect } = getStageSizePx();
 
@@ -1108,15 +1083,7 @@
       const sx = usableW / state.stage.w;
       const sy = usableH / state.stage.d;
 
-      let xFt = xIn / sx;
-      let yFt = yIn / sy;
-
-      if(isViewFlipped()){
-        xFt = state.stage.w - xFt;
-        yFt = state.stage.d - yFt;
-      }
-
-      return { xFt, yFt, rect, pad, usableW, usableH, sx, sy };
+      return { xFt: xIn / sx, yFt: yIn / sy, rect, pad, usableW, usableH, sx, sy };
     }
 
     function getStageScale(){
@@ -1233,6 +1200,35 @@
       item.y = clamp(item.y, 0, state.stage.d - hFt);
     }
 
+    /* View flip - real 180-degree perspective transform (position + rotation) */
+    function updateViewUI(){
+      const b = $("#btnFlipView");
+      if(!b) return;
+      b.textContent = (state.view === "stage") ? "View: Stage" : "View: Audience";
+    }
+
+    function flipPerspective180(){
+      state.view = (state.view === "stage") ? "audience" : "stage";
+
+      for(const it of state.items){
+        const s = (it.scale || 1);
+        const wFt = (it.w || 0) * s;
+        const hFt = (it.h || 0) * s;
+
+        it.x = state.stage.w - (it.x + wFt);
+        it.y = state.stage.d - (it.y + hFt);
+
+        it.rot = ((it.rot || 0) + 180) % 360;
+
+        enforceBounds(it);
+      }
+
+      save();
+      render();
+      syncEditor();
+      updateViewUI();
+    }
+
     function addFromCatalog(catItem){
       const it = catItem;
       const item = {
@@ -1257,6 +1253,7 @@
       render();
       syncEditor();
 
+      // On mobile, keep info panel easy to reach
       autoAccordionBehaviorAfterSelection();
     }
 
@@ -1295,8 +1292,6 @@
     }
 
     function render(){
-      applyViewClass();
-
       $("#stageW").value = state.stage.w;
       $("#stageD").value = state.stage.d;
       $("#stageLabel").textContent = `${state.stage.w} x ${state.stage.d}`;
@@ -1364,18 +1359,9 @@
         div.className = "item" + (isSel ? " selected" : "") + (isPrimary ? " primary" : "");
         div.dataset.id = item.id;
 
+        const p = stageToPx(item.x, item.y);
         const wFt = item.w * (item.scale || 1);
         const hFt = item.h * (item.scale || 1);
-
-        // View-only flip: reflect item box across both axes
-        let rx = item.x;
-        let ry = item.y;
-        if(isViewFlipped()){
-          rx = state.stage.w - (item.x + wFt);
-          ry = state.stage.d - (item.y + hFt);
-        }
-
-        const p = stageToPx(rx, ry);
 
         const wPx = wFt * p.sx;
         const hPx = hFt * p.sy;
@@ -1880,16 +1866,8 @@
       const cxFt = item.x + wFt/2;
       const cyFt = item.y + hFt/2;
 
-      // When view is flipped, the on-screen center is mirrored.
-      let rcxFt = cxFt;
-      let rcyFt = cyFt;
-      if(isViewFlipped()){
-        rcxFt = state.stage.w - cxFt;
-        rcyFt = state.stage.d - cyFt;
-      }
-
-      const cxPx = rect.left + pad + rcxFt * sx;
-      const cyPx = rect.top + pad + rcyFt * sy;
+      const cxPx = rect.left + pad + cxFt * sx;
+      const cyPx = rect.top + pad + cyFt * sy;
 
       rotate = { id, cxPx, cyPx };
 
@@ -1950,16 +1928,6 @@
     }
 
     document.addEventListener("click", () => { clearConfirms(); });
-
-    // View toggle
-    $("#btnFlipView").addEventListener("click", (e) => {
-      e.stopPropagation();
-      clearConfirms();
-      const next = isViewFlipped() ? "audience" : "stage";
-      setViewMode(next);
-      render();
-      syncEditor();
-    });
 
     $("#stagePreset").addEventListener("change", (e) => {
       e.stopPropagation();
@@ -2105,6 +2073,12 @@
       duplicateSelected();
     });
 
+    $("#btnFlipView").addEventListener("click", (e) => {
+      e.stopPropagation();
+      clearConfirms();
+      flipPerspective180();
+    });
+
     // Accordion behavior (mobile) + persistence
     const accLibrary = $("#accLibrary");
     const accInfo = $("#accInfo");
@@ -2147,26 +2121,23 @@
 
     function autoAccordionBehaviorAfterSelection(){
       if(!isMobileLayout()) return;
+      // When selecting/adding an item, open info panel (so edits are right there)
       accInfo.open = true;
+      // Optionally collapse library to save scroll
       accLibrary.open = false;
       saveAccState();
     }
 
+    // Keep state saved when user toggles
     accLibrary.addEventListener("toggle", () => { if(isMobileLayout()) saveAccState(); });
     accInfo.addEventListener("toggle", () => { if(isMobileLayout()) saveAccState(); });
 
     /* Print: force stable layout before opening print dialog */
     let prePrintAccState = null;
-    let prePrintViewMode = null;
 
     function preparePrintLayout(){
       // remember accordion state
       prePrintAccState = { libOpen: accLibrary.open, infoOpen: accInfo.open };
-
-      // remember view mode and force canonical for print
-      prePrintViewMode = getViewMode();
-      setViewMode("audience");
-      applyViewClass();
 
       // force everything open so nothing disappears in print engine
       accLibrary.open = true;
@@ -2188,13 +2159,7 @@
         prePrintAccState = null;
       }
 
-      // restore view mode
-      if(prePrintViewMode){
-        setViewMode(prePrintViewMode);
-        prePrintViewMode = null;
-      }
-
-      requestAnimationFrame(() => { render(); syncEditor(); });
+      requestAnimationFrame(() => render());
     }
 
     $("#btnPrint").addEventListener("click", (e) => {
@@ -2233,6 +2198,8 @@
         if(!imported.stage || !imported.items) throw new Error("Invalid project file");
         state = imported;
 
+        if(!state.view) state.view = "audience";
+
         for(const it of (state.items || [])){
           if(it.rot == null) it.rot = 0;
         }
@@ -2242,6 +2209,7 @@
         save();
         render();
         syncEditor();
+        updateViewUI();
       }catch(err){
         alert("Could not import that project JSON.");
       }finally{
@@ -2321,6 +2289,7 @@
       save();
       render();
       syncEditor();
+      updateViewUI();
     });
 
     function isTypingTarget(el){
@@ -2365,9 +2334,9 @@
 
     setStageFromInputs();
     applyAccordionRules();
-    applyViewClass();
     render();
     syncEditor();
+    updateViewUI();
 
     let t = null;
     window.addEventListener("resize", () => {
