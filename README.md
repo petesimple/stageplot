@@ -1,110 +1,125 @@
-# 🎤 StagePlot v2 (v1.4.1)
+🎤 StagePlot v2 (v1.5.1)
 
 StagePlot v2 is a fast, offline-capable stage plot builder for bands, venues, and sound engineers.
 
-Drag gear onto a stage, label inputs and monitor mixes, add notes, and print a clean one-page handoff (or save it as a PDF). No accounts. No clutter. Works on desktop, tablet, and phone.
+Drag gear onto a stage, label inputs and monitor mixes, add notes, flip stage perspective, and print a clean one-page handoff (or save it as a PDF).
+No accounts. No clutter. Works on desktop, tablet, and phone.
 
----
+⸻
 
-## ✅ What it does
-- Build a stage diagram in real-world feet (Width x Depth)
-- Add musicians + gear from a built-in library (plus quick “Misc” blocks)
-- Auto-generate a readable Inputs list + Monitor Mix list
-- Add item notes and show notes (load-in, backline, contact, etc.)
-- Print a clean one-page sheet for venues and engineers
-- Export/import a project JSON to share with bandmates or FOH
+✅ What it does
+	•	Build a stage diagram in real-world feet (Width x Depth)
+	•	Add musicians and gear from a built-in library (plus quick “Misc” blocks)
+	•	Auto-generate readable Inputs and Monitor Mix lists
+	•	Add item notes and show notes (load-in, backline, contact, etc.)
+	•	Flip between Stage View and Audience View
+	•	Print a clean one-page sheet for venues and engineers
+	•	Export and import a project JSON to share with bandmates or FOH
 
----
+⸻
 
-## ✨ Features
+✨ Features
 
-### 🧱 Visual stage builder
-- Stage presets plus custom size (feet)
-- Drag-and-drop musicians, instruments, wedges, risers, power, and more
-- Scale + rotate items
-- Color-code and label for fast reading
-- Works with mouse, touch, trackpad
+🧱 Visual stage builder
+	•	Stage presets plus custom size (feet)
+	•	Drag-and-drop musicians, instruments, wedges, risers, power, and more
+	•	Scale and rotate items
+	•	Color-code and label for fast reading
+	•	Works with mouse, touch, trackpad
 
-### 🎛️ Inputs and monitor mixes
-- Inputs list auto-generated from stage items
-- Monitor mix list grouped automatically
-- Notes per item + notes per show
+🔄 Stage view and audience view
+	•	Default layout: Upstage at top, audience at bottom (standard stage plot convention)
+	•	One-click toggle to flip the entire plot to Audience View
+	•	Items rotate and reposition correctly (true 180-degree flip)
+	•	Useful for thinking like a performer or like FOH
 
-### 🧰 Item library
-- Built-in gear catalog
-- Import/export custom libraries (JSON)
-- Quick-add Misc blocks (small/medium/large) for anything weird on the fly
+🎛️ Inputs and monitor mixes
+	•	Inputs list auto-generated from stage items
+	•	Monitor mix list grouped automatically
+	•	Notes per item and notes per show
 
-### 🖨️ One-page print output (and PDF)
-- Stage diagram + inputs + mixes + notes
-- Designed to fit on a single page
-- Venue-friendly, readable layout
+🧰 Item library
+	•	Built-in gear catalog
+	•	Import/export custom libraries (JSON)
+	•	Quick-add Misc blocks (small, medium, large) for anything weird on the fly
 
-### 📦 Project files
-- Export/import complete stage plots as JSON
-- Easy sharing between band, FOH, and venues
+🖨️ One-page print output (and PDF)
+	•	Stage diagram plus inputs, mixes, and notes
+	•	Designed to fit on a single page
+	•	Venue-friendly, readable layout
+	•	Uses system print-to-PDF for universal reliability
 
-### 📱 Mobile-friendly + PWA
-- Responsive layout + touch-optimized dragging
-- Installable on iOS, Android, and desktop
-- Works offline (no backend required)
+📦 Project files
+	•	Export/import complete stage plots as JSON
+	•	Easy sharing between band, FOH, and venues
 
----
+📱 Mobile-friendly and PWA
+	•	Responsive layout with touch-optimized dragging
+	•	Accordion panels on mobile to save space
+	•	Installable on iOS, Android, and desktop
+	•	Works offline (no backend required)
 
-## 🚀 Getting started
+⸻
 
-### Option 1 - Use it online
-Host the files on GitHub Pages (or any static web server) and open `index.html`.
+🚀 Getting started
 
-### Option 2 - Install as an app (PWA)
-1. Open StagePlot in your browser
-2. Use “Add to Home Screen” (mobile) or “Install App” (desktop)
-3. Use it offline at gigs and rehearsals
+Option 1: Use it online
 
----
+Open the app here:
+https://petesimple.github.io/stageplot/
 
-## 🧭 Quick workflow
-1. Pick a stage size (preset or custom)
-2. Add items from the library (or drop Misc blocks for mystery gear)
-3. Click items to set label, input, mix, color, and notes
-4. Add show notes (load-in, contact, backline, set length, parking)
-5. Print or save to PDF, then send it to the venue
+Option 2: Install as an app (PWA)
+	1.	Open StagePlot in your browser
+	2.	Use “Add to Home Screen” (mobile) or “Install App” (desktop)
+	3.	Use it offline at gigs and rehearsals
 
----
+⸻
 
-## 🖨️ Printing and saving as PDF
+🧭 Quick workflow
+	1.	Pick a stage size (preset or custom)
+	2.	Add items from the library (or drop Misc blocks for mystery gear)
+	3.	Click items to set label, input, mix, color, scale, and notes
+	4.	Add show notes (load-in, contact, backline, set length, parking)
+	5.	Choose Stage View or Audience View if needed
+	6.	Print or save as PDF and send it to the venue
 
-Use the in-app **Print** button (not the browser menu) so StagePlot can switch into the print-safe one-page layout first.
+⸻
 
-### Windows (PC)
-- Print
-- Choose **Microsoft Print to PDF**
-- Print
-- Save
+🖨️ Printing and saving as PDF
 
-### macOS (Mac)
-- Print
-- Click **PDF** (bottom-left)
-- **Save as PDF**
+Use the in-app Print button (not the browser menu) so StagePlot can switch into its print-safe one-page layout first.
 
-### iPhone / iPad (iOS)
-- Print
-- On the preview, **pinch out (zoom)** to open the PDF view
-- Share
-- Save to Files
+Windows (PC)
+	•	Click Print
+	•	Choose Microsoft Print to PDF
+	•	Print
+	•	Save
 
-### Android
-- Print
-- Choose **Save as PDF**
-- Save
+macOS (Mac)
+	•	Click Print
+	•	Click PDF (bottom-left)
+	•	Choose Save as PDF
 
-Troubleshooting tip:
-- If print preview looks blank, hit the app Print button again. Some browsers need a quick rerender.
-- If you are using an installed PWA and printing is weird, try printing from the normal browser tab once.
+iPhone and iPad (iOS)
+	•	Tap Print
+	•	In the preview, pinch out (zoom) to open the PDF view
+	•	Tap Share
+	•	Save to Files or send it
 
----
+Android
+	•	Tap Print
+	•	Choose Save as PDF
+	•	Save
 
-## 📁 Project structure
+Troubleshooting tips
+	•	If print preview looks blank, click the app Print button again
+	•	Some browsers need a brief rerender before painting
+	•	If printing from an installed PWA is odd, try printing from a normal browser tab once
+
+⸻
+
+📁 Project structure
+
 /
 ├─ index.html
 ├─ guide.html
@@ -112,67 +127,73 @@ Troubleshooting tip:
 ├─ service-worker.js
 ├─ stageplotlogo.png
 └─ icons/
-├─ icon-192.png
-├─ icon-512.png
-├─ maskable-192.png
-└─ maskable-512.png
----
+   ├─ icon-192.png
+   ├─ icon-512.png
+   ├─ maskable-192.png
+   └─ maskable-512.png
 
-## 🧠 How it works
-- The stage is defined in feet (Width x Depth)
-- Items are stored in stage coordinates and scaled visually
-- Inputs and monitor mixes are generated from your item data
-- Everything saves locally in your browser via localStorage (no cloud dependency)
-- Export JSON is your portable backup and share file
 
----
+⸻
 
-## 🛠️ Customization
+🧠 How it works
+	•	The stage is defined in feet (Width x Depth)
+	•	Items are stored in stage coordinates and scaled visually
+	•	Inputs and monitor mixes are generated from item data
+	•	Everything saves locally in your browser via localStorage
+	•	Exported JSON files are your portable backup and share format
 
-### Add custom gear fast (Misc blocks)
-Use **+ Misc 1 / + Misc 2 / + Misc 3** to drop generic gear boxes, then rename, resize, rotate, and color them.
+⸻
 
-### Add custom gear properly (Library JSON)
-1. Export your library
-2. Edit or create new item definitions
-3. Import the updated library JSON
+🛠️ Customization
+
+Add custom gear fast (Misc blocks)
+
+Use + Misc 1 / + Misc 2 / + Misc 3 to drop generic gear boxes, then rename, resize, rotate, and color them.
+
+Add custom gear properly (Library JSON)
+	1.	Export your library
+	2.	Edit or create new item definitions
+	3.	Import the updated library JSON
 
 Perfect for:
-- Venue-specific power drops
-- Lighting elements
-- Backline variations
-- Oddball instruments and special requests
+	•	Venue-specific power drops
+	•	Lighting elements
+	•	Backline variations
+	•	Oddball instruments and special requests
 
----
+⸻
 
-## 🧩 Tech stack
-- Vanilla HTML / CSS / JavaScript
-- SVG icons for crisp visuals
-- No frameworks
-- No build step
-- No backend
+🧩 Tech stack
+	•	Vanilla HTML, CSS, JavaScript
+	•	SVG icons for crisp visuals
+	•	No frameworks
+	•	No build step
+	•	No backend
 
----
+⸻
 
-## ❤️ Why StagePlot exists
+❤️ Why StagePlot exists
+
 Stage plots should be:
-- Fast to make
-- Easy to read
-- Easy to share
-- Usable at load-in, not just buried in email threads
+	•	Fast to make
+	•	Easy to read
+	•	Easy to share
+	•	Usable at load-in, not just buried in email threads
 
-StagePlot v2 is built by musicians and event organizers who actually use this stuff in the real world.
+StagePlot is built by musicians and event organizers who actually use this stuff in the real world.
 
----
+⸻
 
-## 📄 License
-MIT License - Use it, remix it, improve it, ship it.
+📄 License
 
----
+MIT License
+Use it, remix it, improve it, ship it.
 
-## 🧠 Ideas for v3 (Pinned)
-- Snap-to-grid
-- Cable runs / arrows
-- FOH view toggle
-- Dark/light print themes
-- Optional extra export formats
+⸻
+
+🧠 Ideas for v3 (Pinned)
+	•	Snap-to-grid
+	•	Cable runs and arrows
+	•	FOH view toggle refinements
+	•	Dark and light print themes
+	•	Optional additional export formats
