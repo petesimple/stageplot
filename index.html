@@ -236,11 +236,28 @@
       display:flex;
       flex-direction:column;
       gap:10px;
+      /* FIX: allow the stage itself to shrink inside this flex column */
+      min-height: 0;
+      flex: 1 1 auto;
     }
     .stageMeta{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+
+    /* FIX: make stage panel a real column so stage can fit at 100% */
+    .panel.stagePanel{
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+    }
+    .panel.stagePanel .title{ flex:0 0 auto; }
+    .panel.stagePanel .stageWrap{ flex:1 1 auto; min-height:0; }
+
     .stage{
-      flex:1;
-      min-height: 540px;
+      flex: 1 1 auto;
+      min-height: 0; /* FIX: critical for flex shrink */
+      width: 100%;
+      height: auto;
+      max-height: 100%;
+      aspect-ratio: 24 / 16; /* default; JS keeps updated */
       background:
         linear-gradient(var(--grid) 1px, transparent 1px),
         linear-gradient(90deg, var(--grid) 1px, transparent 1px),
@@ -253,15 +270,6 @@
       contain: layout paint;
       user-select:none;
       -webkit-user-select:none;
-      touch-action:none; /* helps pinch/zoom handling */
-    }
-
-    /* NEW: inner layer that gets zoom-scaled */
-    .stageInner{
-      position:absolute;
-      inset:0;
-      transform-origin: 0 0;
-      will-change: transform;
     }
 
     /* Orientation labels (default plot convention) */
@@ -276,7 +284,6 @@
       letter-spacing: 2px;
       pointer-events:none;
       user-select:none;
-      z-index:2;
     }
     .stage::after{
       content:"AUDIENCE";
@@ -289,7 +296,6 @@
       letter-spacing: 2px;
       pointer-events:none;
       user-select:none;
-      z-index:2;
     }
 
     .stageEdge{
@@ -497,22 +503,18 @@
       details.accordion .body{ display:block !important; padding:10px !important; }
 
       .stageWrap{ padding:10px !important; }
-      .stageMeta{ margin-bottom:6px !important; }
 
       .stage{
-        min-height: 0 !important;
         width: 960px !important;
         height: 720px !important;
         max-width: 960px !important;
         max-height: 720px !important;
+        aspect-ratio: auto !important;
         background: #fff !important;
         border:1px solid #bbb !important;
         overflow:hidden !important;
         contain: none !important;
       }
-
-      /* Force zoom to 100% for printing */
-      .stageInner{ transform: none !important; }
 
       .stage::before, .stage::after{ color:#888 !important; }
       .stageEdge{ box-shadow:none !important; }
@@ -562,13 +564,11 @@
       height: 720px !important;
       min-height: 720px !important;
       max-height: 720px !important;
+      aspect-ratio: auto !important;
       background:#fff !important;
       border:1px solid #bbb !important;
       overflow:hidden !important;
     }
-
-    /* Force zoom to 100% during printing mode */
-    body.printing .stageInner{ transform: none !important; }
 
     body.printing .item{ box-shadow:none !important; }
 
@@ -584,7 +584,7 @@
       .infoPanel{ order: 3; }
 
       .panel{ width: 100%; }
-      .stage{ min-height: 520px; }
+      /* NOTE: removed min-height forcing that caused cut-off */
     }
 
     @media (max-width: 520px){
@@ -663,7 +663,7 @@
 
     <symbol id="spr-stand" viewBox="0 0 64 64">
       <path fill="currentColor" d="M40 10a2 2 0 0 1 2 2v10a2 2 0 1 1-4 0V12a2 2 0 0 1 2-2z"/>
-      <path fill="currentColor" d="M26 22a2 2 0 0 1 3 0l11 11a2 2 0 1 1-3 3L26 25a2 2 0 0 1 0-3z"/>
+      <path fill="currentColor" d="M26 22a2 2 0 0 1 3 0l11 11a2 2 0 0 1-3 3L26 25a2 2 0 0 1 0-3z"/>
       <path fill="currentColor" d="M40 32a2 2 0 0 1 2 2v14l6 6a2 2 0 1 1-3 3l-5-5-5 5a2 2 0 1 1-3-3l6-6V34a2 2 0 0 1 2-2z"/>
       <path fill="currentColor" d="M20 52h40a2 2 0 1 1 0 4H20a2 2 0 1 1 0-4z"/>
     </symbol>
@@ -765,7 +765,7 @@
             <div class="small">
               Tip: Shift click or Cmd on Mac or Ctrl on Windows to multi select. Drag on empty stage to box select.
               <br>
-              <center>ver 1.5.2</center>
+              <center>ver 1.5.3</center>
               <br>
               <center>
                 <a class="guideBtn" href="https://petesimple.github.io/stageplot/guide.html">USER GUIDE</a>
@@ -782,12 +782,6 @@
         <h2>Stage</h2>
         <div class="row">
           <button class="ghost" id="btnFlipView" title="Flip the whole plot 180 degrees">View: Audience</button>
-
-          <!-- NEW: Zoom controls -->
-          <button class="ghost" id="btnZoomOut" title="Zoom out (Ctrl/Cmd -)">Zoom -</button>
-          <button class="ghost" id="btnZoomIn" title="Zoom in (Ctrl/Cmd +)">Zoom +</button>
-          <button class="ghost" id="btnZoomReset" title="Reset zoom (Ctrl/Cmd 0)">Reset</button>
-          <span class="pill" title="Stage zoom"><span id="zoomReadout">100%</span></span>
 
           <button id="btnCenter">Center selection</button>
           <button class="ghost" id="btnDuplicate" title="Duplicate selected (Cmd/Ctrl+D)">Duplicate</button>
@@ -807,9 +801,7 @@
           </span>
         </div>
         <div id="stage" class="stage">
-          <div id="stageInner" class="stageInner">
-            <div class="stageEdge"></div>
-          </div>
+          <div class="stageEdge"></div>
         </div>
       </div>
     </section>
@@ -903,7 +895,6 @@
   <script>
     const $ = (s) => document.querySelector(s);
     const stageEl = $("#stage");
-    const stageInner = $("#stageInner");
 
     const STORAGE_KEY = "stageplot_v2_state";
     const STORAGE_KEY_LIB = "stageplot_v2_user_library";
@@ -1007,15 +998,13 @@
       bandName: "",
       notes: "",
       items: [],
-      view: "audience", // "audience" or "stage"
-      zoom: 1.0         // NEW
+      view: "audience" // "audience" or "stage"
     };
 
     let state = loadJSON(STORAGE_KEY) || deepClone(defaults);
 
-    // Ensure view/zoom exists for older saves
+    // Ensure view exists for older saves
     if(!state.view) state.view = "audience";
-    if(typeof state.zoom !== "number" || !isFinite(state.zoom)) state.zoom = 1.0;
 
     // Multi select state
     let selectedIds = new Set();
@@ -1027,38 +1016,6 @@
       return !!(e && (e.shiftKey || e.metaKey || e.ctrlKey));
     }
 
-    // ----- ZOOM -----
-    const ZOOM_MIN = 0.5;
-    const ZOOM_MAX = 2.5;
-    const ZOOM_STEP = 0.1;
-
-    function clampZoom(z){
-      return clamp(Math.round(z * 100) / 100, ZOOM_MIN, ZOOM_MAX);
-    }
-
-    function applyZoom(){
-      const z = clampZoom(state.zoom || 1);
-      state.zoom = z;
-      if(stageInner){
-        stageInner.style.transform = `scale(${z})`;
-      }
-      const zr = $("#zoomReadout");
-      if(zr) zr.textContent = `${Math.round(z * 100)}%`;
-      save();
-    }
-
-    function setZoom(z){
-      state.zoom = clampZoom(z);
-      applyZoom();
-      render(); // refresh hit-testing visuals like marquee placement
-      syncEditor();
-    }
-
-    function zoomIn(){ setZoom((state.zoom || 1) + ZOOM_STEP); }
-    function zoomOut(){ setZoom((state.zoom || 1) - ZOOM_STEP); }
-    function zoomReset(){ setZoom(1); }
-
-    // ----- selection helpers -----
     function setPrimary(id){
       primaryId = id || null;
       if(primaryId && !selectedIds.has(primaryId)){
@@ -1098,6 +1055,10 @@
       const d = clamp(parseFloat($("#stageD").value || 16), 6, 60);
       state.stage.w = w;
       state.stage.d = d;
+
+      // FIX: keep the stage box always fitting at 100% by matching aspect ratio
+      stageEl.style.aspectRatio = `${w} / ${d}`;
+
       $("#stageLabel").textContent = `${w} x ${d}`;
       save();
       render();
@@ -1130,21 +1091,15 @@
       return { x: pad + xFt * sx, y: pad + yFt * sy, sx, sy, pad, usableW, usableH, rect };
     }
 
-    // NEW: account for stage zoom when converting pointer -> stage feet
     function pxToStage(clientX, clientY){
       const { w, h, rect } = getStageSizePx();
-      const z = clampZoom(state.zoom || 1);
 
       const pad = 16;
       const usableW = Math.max(1, w - pad*2);
       const usableH = Math.max(1, h - pad*2);
 
-      // Convert client coords into "unzoomed stageInner coords"
-      const xLocal = (clientX - rect.left) / z;
-      const yLocal = (clientY - rect.top) / z;
-
-      const xIn = clamp(xLocal - pad, 0, usableW);
-      const yIn = clamp(yLocal - pad, 0, usableH);
+      const xIn = clamp(clientX - rect.left - pad, 0, usableW);
+      const yIn = clamp(clientY - rect.top - pad, 0, usableH);
 
       const sx = usableW / state.stage.w;
       const sy = usableH / state.stage.d;
@@ -1164,8 +1119,6 @@
 
       return { rect, pad, usableW, usableH, sx, sy };
     }
-
-    // ... (rest of your code remains the same, except where noted below)
 
     const ICON_PATHS = {
       mic: `
@@ -1205,7 +1158,7 @@
       `,
       stand: `
         <path fill="currentColor" d="M40 10a2 2 0 0 1 2 2v10a2 2 0 1 1-4 0V12a2 2 0 0 1 2-2z"/>
-        <path fill="currentColor" d="M26 22a2 2 0 0 1 3 0l11 11a2 2 0 1 1-3 3L26 25a2 2 0 0 1 0-3z"/>
+        <path fill="currentColor" d="M26 22a2 2 0 0 1 3 0l11 11a2 2 0 0 1-3 3L26 25a2 2 0 0 1 0-3z"/>
         <path fill="currentColor" d="M40 32a2 2 0 0 1 2 2v14l6 6a2 2 0 1 1-3 3l-5-5-5 5a2 2 0 1 1-3-3l6-6V34a2 2 0 0 1 2-2z"/>
         <path fill="currentColor" d="M20 52h40a2 2 0 1 1 0 4H20a2 2 0 1 1 0-4z"/>
       `,
@@ -1320,6 +1273,8 @@
       save();
       render();
       syncEditor();
+
+      // On mobile, keep info panel easy to reach
       autoAccordionBehaviorAfterSelection();
     }
 
@@ -1353,6 +1308,7 @@
       save();
       render();
       syncEditor();
+
       autoAccordionBehaviorAfterSelection();
     }
 
@@ -1361,6 +1317,9 @@
       $("#stageD").value = state.stage.d;
       $("#stageLabel").textContent = `${state.stage.w} x ${state.stage.d}`;
 
+      // Keep aspect ratio in sync even when loading old saves
+      stageEl.style.aspectRatio = `${state.stage.w} / ${state.stage.d}`;
+
       $("#bandName").value = state.bandName || "";
       const bn = (state.bandName || "").trim();
       const pb = document.querySelector("#printBandName");
@@ -1368,9 +1327,6 @@
 
       $("#showNotes").value = state.notes || "";
       $("#notesPreview").textContent = state.notes || "";
-
-      // apply zoom each render (ensures inner exists and matches state)
-      applyZoom();
 
       const lib = mergedLibrary();
       $("#libCount").textContent = `${lib.items.length} items`;
@@ -1406,8 +1362,7 @@
         listEl.appendChild(row);
       }
 
-      // IMPORTANT: render items inside stageInner now (not stageEl)
-      stageInner.querySelectorAll(".item, .marquee").forEach(n => n.remove());
+      stageEl.querySelectorAll(".item").forEach(n => n.remove());
 
       if(primaryId && !state.items.some(i => i.id === primaryId)){
         primaryId = null;
@@ -1483,17 +1438,12 @@
         }
 
         div.addEventListener("pointerdown", onItemPointerDown);
-        stageInner.appendChild(div);
+        stageEl.appendChild(div);
       }
 
       rebuildLists();
       updateActionButtons();
     }
-
-    // ---- the rest of your original functions (updateActionButtons, rebuildLists, editor, drag, marquee, resize, rotate, delete/reset, etc.)
-    // ---- remain unchanged EXCEPT:
-    // 1) marquee div should be created/removed on stageInner (not stageEl)
-    // 2) stageEl pointerdown for marquee still stays on stageEl (outer), but updateMarqueeDiv appends to stageInner
 
     function updateActionButtons(){
       const count = selectedIds.size;
@@ -1729,17 +1679,17 @@
     }
 
     function ensureMarqueeDiv(){
-      let el = stageInner.querySelector(".marquee");
+      let el = stageEl.querySelector(".marquee");
       if(!el){
         el = document.createElement("div");
         el.className = "marquee";
-        stageInner.appendChild(el);
+        stageEl.appendChild(el);
       }
       return el;
     }
 
     function removeMarqueeDiv(){
-      const el = stageInner.querySelector(".marquee");
+      const el = stageEl.querySelector(".marquee");
       if(el) el.remove();
     }
 
@@ -1825,9 +1775,6 @@
       syncEditor();
     }
 
-    // --- resize/rotate/delete/reset/etc: unchanged from your original ---
-    // (kept identical behavior, because pxToStage already accounts for zoom)
-
     // Resizing (primary only)
     let resize = null;
     const MIN_W_FT = 0.8;
@@ -1878,10 +1825,8 @@
       if(!item) return;
 
       const { sx, sy } = getStageScale();
-      // IMPORTANT: dx/dy in feet must account for zoom
-      const z = clampZoom(state.zoom || 1);
-      const dxFt = ((e.clientX - resize.startX) / z) / sx;
-      const dyFt = ((e.clientY - resize.startY) / z) / sy;
+      const dxFt = (e.clientX - resize.startX) / sx;
+      const dyFt = (e.clientY - resize.startY) / sy;
 
       let w = resize.startW;
       let h = resize.startH;
@@ -1945,9 +1890,8 @@
       const cxFt = item.x + wFt/2;
       const cyFt = item.y + hFt/2;
 
-      const z = clampZoom(state.zoom || 1);
-      const cxPx = rect.left + (pad + cxFt * sx) * z;
-      const cyPx = rect.top  + (pad + cyFt * sy) * z;
+      const cxPx = rect.left + pad + cxFt * sx;
+      const cyPx = rect.top + pad + cyFt * sy;
 
       rotate = { id, cxPx, cyPx };
 
@@ -2159,21 +2103,6 @@
       flipPerspective180();
     });
 
-    // NEW: Zoom buttons
-    $("#btnZoomIn").addEventListener("click", (e) => { e.stopPropagation(); clearConfirms(); zoomIn(); });
-    $("#btnZoomOut").addEventListener("click", (e) => { e.stopPropagation(); clearConfirms(); zoomOut(); });
-    $("#btnZoomReset").addEventListener("click", (e) => { e.stopPropagation(); clearConfirms(); zoomReset(); });
-
-    // NEW: Trackpad pinch / ctrl-wheel zoom on stage
-    stageEl.addEventListener("wheel", (e) => {
-      // Pinch-to-zoom on Mac usually comes through as ctrlKey=true wheel
-      if(!(e.ctrlKey || e.metaKey)) return;
-      e.preventDefault();
-      clearConfirms();
-      const dir = (e.deltaY > 0) ? -1 : 1;
-      setZoom((state.zoom || 1) + dir * 0.08);
-    }, { passive:false });
-
     // Accordion behavior (mobile) + persistence
     const accLibrary = $("#accLibrary");
     const accInfo = $("#accInfo");
@@ -2216,7 +2145,9 @@
 
     function autoAccordionBehaviorAfterSelection(){
       if(!isMobileLayout()) return;
+      // When selecting/adding an item, open info panel (so edits are right there)
       accInfo.open = true;
+      // Optionally collapse library to save scroll
       accLibrary.open = false;
       saveAccState();
     }
@@ -2227,18 +2158,14 @@
 
     /* Print: force stable layout before opening print dialog */
     let prePrintAccState = null;
-    let prePrintZoom = null;
 
     function preparePrintLayout(){
+      // remember accordion state
       prePrintAccState = { libOpen: accLibrary.open, infoOpen: accInfo.open };
-      prePrintZoom = state.zoom;
 
+      // force everything open so nothing disappears in print engine
       accLibrary.open = true;
       accInfo.open = true;
-
-      // keep print deterministic
-      state.zoom = 1;
-      applyZoom();
 
       document.body.classList.add("printing");
       stageEl.getBoundingClientRect();
@@ -2249,16 +2176,11 @@
     function cleanupPrintLayout(){
       document.body.classList.remove("printing");
 
+      // restore accordion state
       if(prePrintAccState){
         accLibrary.open = !!prePrintAccState.libOpen;
         accInfo.open = !!prePrintAccState.infoOpen;
         prePrintAccState = null;
-      }
-
-      if(typeof prePrintZoom === "number"){
-        state.zoom = prePrintZoom;
-        prePrintZoom = null;
-        applyZoom();
       }
 
       requestAnimationFrame(() => render());
@@ -2301,11 +2223,12 @@
         state = imported;
 
         if(!state.view) state.view = "audience";
-        if(typeof state.zoom !== "number" || !isFinite(state.zoom)) state.zoom = 1;
-
         for(const it of (state.items || [])){
           if(it.rot == null) it.rot = 0;
         }
+
+        // keep aspect ratio correct after import
+        stageEl.style.aspectRatio = `${state.stage.w} / ${state.stage.d}`;
 
         clearSelection();
         clearConfirms();
@@ -2389,11 +2312,14 @@
       state = deepClone(defaults);
       clearSelection();
       clearConfirms();
+
+      // reset aspect ratio too
+      stageEl.style.aspectRatio = `${state.stage.w} / ${state.stage.d}`;
+
       save();
       render();
       syncEditor();
       updateViewUI();
-      applyZoom();
     });
 
     function isTypingTarget(el){
@@ -2406,23 +2332,6 @@
 
     window.addEventListener("keydown", (e) => {
       if(isTypingTarget(document.activeElement)) return;
-
-      // Zoom shortcuts
-      if((e.ctrlKey || e.metaKey) && (e.key === "=" || e.key === "+")){
-        e.preventDefault();
-        zoomIn();
-        return;
-      }
-      if((e.ctrlKey || e.metaKey) && (e.key === "-" || e.key === "_")){
-        e.preventDefault();
-        zoomOut();
-        return;
-      }
-      if((e.ctrlKey || e.metaKey) && (e.key === "0")){
-        e.preventDefault();
-        zoomReset();
-        return;
-      }
 
       if((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === "d")){
         e.preventDefault();
@@ -2455,7 +2364,6 @@
 
     setStageFromInputs();
     applyAccordionRules();
-    applyZoom();
     render();
     syncEditor();
     updateViewUI();
