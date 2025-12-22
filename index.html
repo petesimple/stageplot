@@ -236,28 +236,17 @@
       display:flex;
       flex-direction:column;
       gap:10px;
-      /* FIX: allow the stage itself to shrink inside this flex column */
-      min-height: 0;
-      flex: 1 1 auto;
     }
     .stageMeta{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
 
-    /* FIX: make stage panel a real column so stage can fit at 100% */
-    .panel.stagePanel{
-      display:flex;
-      flex-direction:column;
-      min-height:0;
-    }
-    .panel.stagePanel .title{ flex:0 0 auto; }
-    .panel.stagePanel .stageWrap{ flex:1 1 auto; min-height:0; }
-
+    /* IMPORTANT: keep stage always fully visible (no cutoff) */
     .stage{
-      flex: 1 1 auto;
-      min-height: 0; /* FIX: critical for flex shrink */
+      flex:1;
+      min-height: 540px;
+      aspect-ratio: 4 / 3;
       width: 100%;
-      height: auto;
-      max-height: 100%;
-      aspect-ratio: 24 / 16; /* default; JS keeps updated */
+      max-width: 960px;
+      margin: 0 auto;
       background:
         linear-gradient(var(--grid) 1px, transparent 1px),
         linear-gradient(90deg, var(--grid) 1px, transparent 1px),
@@ -272,6 +261,14 @@
       -webkit-user-select:none;
     }
 
+    /* Inner layer that gets view-zoomed */
+    .stageInner{
+      position:absolute;
+      inset:0;
+      transform-origin:center center;
+      will-change: transform;
+    }
+
     /* Orientation labels (default plot convention) */
     .stage::before{
       content:"UPSTAGE";
@@ -284,6 +281,7 @@
       letter-spacing: 2px;
       pointer-events:none;
       user-select:none;
+      z-index:2;
     }
     .stage::after{
       content:"AUDIENCE";
@@ -296,6 +294,7 @@
       letter-spacing: 2px;
       pointer-events:none;
       user-select:none;
+      z-index:2;
     }
 
     .stageEdge{
@@ -330,6 +329,7 @@
       gap:8px;
       align-items:center;
       transform-origin: center center;
+      z-index:3;
     }
     .item .iconWrap{
       width:34px;
@@ -503,8 +503,10 @@
       details.accordion .body{ display:block !important; padding:10px !important; }
 
       .stageWrap{ padding:10px !important; }
+      .stageMeta{ margin-bottom:6px !important; }
 
       .stage{
+        min-height: 0 !important;
         width: 960px !important;
         height: 720px !important;
         max-width: 960px !important;
@@ -584,7 +586,7 @@
       .infoPanel{ order: 3; }
 
       .panel{ width: 100%; }
-      /* NOTE: removed min-height forcing that caused cut-off */
+      .stage{ min-height: 520px; }
     }
 
     @media (max-width: 520px){
@@ -664,7 +666,7 @@
     <symbol id="spr-stand" viewBox="0 0 64 64">
       <path fill="currentColor" d="M40 10a2 2 0 0 1 2 2v10a2 2 0 1 1-4 0V12a2 2 0 0 1 2-2z"/>
       <path fill="currentColor" d="M26 22a2 2 0 0 1 3 0l11 11a2 2 0 0 1-3 3L26 25a2 2 0 0 1 0-3z"/>
-      <path fill="currentColor" d="M40 32a2 2 0 0 1 2 2v14l6 6a2 2 0 1 1-3 3l-5-5-5 5a2 2 0 1 1-3-3l6-6V34a2 2 0 0 1 2-2z"/>
+      <path fill="currentColor" d="M40 32a2 2 0 0 1 2 2v14l6 6a2 2 0 0 1-3 3l-5-5-5 5a2 2 0 1 1-3-3l6-6V34a2 2 0 0 1 2-2z"/>
       <path fill="currentColor" d="M20 52h40a2 2 0 1 1 0 4H20a2 2 0 1 1 0-4z"/>
     </symbol>
 
@@ -765,7 +767,7 @@
             <div class="small">
               Tip: Shift click or Cmd on Mac or Ctrl on Windows to multi select. Drag on empty stage to box select.
               <br>
-              <center>ver 1.5.3</center>
+              <center>ver 1.5.4</center>
               <br>
               <center>
                 <a class="guideBtn" href="https://petesimple.github.io/stageplot/guide.html">USER GUIDE</a>
@@ -801,7 +803,9 @@
           </span>
         </div>
         <div id="stage" class="stage">
-          <div class="stageEdge"></div>
+          <div id="stageInner" class="stageInner">
+            <div class="stageEdge"></div>
+          </div>
         </div>
       </div>
     </section>
@@ -842,6 +846,14 @@
               <label class="small" style="min-width:70px;">Scale</label>
               <input id="fScale" type="range" min="0.5" max="2.0" step="0.05" value="1" style="flex:1;" />
               <span class="pill"><span id="scaleReadout">100%</span></span>
+            </div>
+
+            <!-- NEW: View zoom controls -->
+            <div class="row">
+              <label class="small" style="min-width:70px;">View zoom</label>
+              <input id="viewZoom" type="range" min="0.6" max="2.0" step="0.05" value="1" style="flex:1;" />
+              <span class="pill"><span id="viewZoomReadout">100%</span></span>
+              <button class="ghost" id="btnResetViewZoom" type="button" title="Reset view zoom to 100%">Reset view</button>
             </div>
 
             <div class="row">
@@ -895,6 +907,7 @@
   <script>
     const $ = (s) => document.querySelector(s);
     const stageEl = $("#stage");
+    const stageInnerEl = $("#stageInner");
 
     const STORAGE_KEY = "stageplot_v2_state";
     const STORAGE_KEY_LIB = "stageplot_v2_user_library";
@@ -998,19 +1011,30 @@
       bandName: "",
       notes: "",
       items: [],
-      view: "audience" // "audience" or "stage"
+      view: "audience", // "audience" or "stage"
+      viewZoom: 1
     };
 
     let state = loadJSON(STORAGE_KEY) || deepClone(defaults);
 
     // Ensure view exists for older saves
     if(!state.view) state.view = "audience";
+    if(state.viewZoom == null) state.viewZoom = 1;
+
+    function save(){ saveJSON(STORAGE_KEY, state); }
+
+    // Apply global view zoom (visual only)
+    function applyViewZoom(){
+      const z = clamp(parseFloat(state.viewZoom || 1), 0.6, 2.0);
+      state.viewZoom = z;
+      if(stageInnerEl) stageInnerEl.style.transform = `scale(${z})`;
+      const r = $("#viewZoomReadout");
+      if(r) r.textContent = `${Math.round(z * 100)}%`;
+    }
 
     // Multi select state
     let selectedIds = new Set();
     let primaryId = null;
-
-    function save(){ saveJSON(STORAGE_KEY, state); }
 
     function hasModifier(e){
       return !!(e && (e.shiftKey || e.metaKey || e.ctrlKey));
@@ -1055,10 +1079,6 @@
       const d = clamp(parseFloat($("#stageD").value || 16), 6, 60);
       state.stage.w = w;
       state.stage.d = d;
-
-      // FIX: keep the stage box always fitting at 100% by matching aspect ratio
-      stageEl.style.aspectRatio = `${w} / ${d}`;
-
       $("#stageLabel").textContent = `${w} x ${d}`;
       save();
       render();
@@ -1159,7 +1179,7 @@
       stand: `
         <path fill="currentColor" d="M40 10a2 2 0 0 1 2 2v10a2 2 0 1 1-4 0V12a2 2 0 0 1 2-2z"/>
         <path fill="currentColor" d="M26 22a2 2 0 0 1 3 0l11 11a2 2 0 0 1-3 3L26 25a2 2 0 0 1 0-3z"/>
-        <path fill="currentColor" d="M40 32a2 2 0 0 1 2 2v14l6 6a2 2 0 1 1-3 3l-5-5-5 5a2 2 0 1 1-3-3l6-6V34a2 2 0 0 1 2-2z"/>
+        <path fill="currentColor" d="M40 32a2 2 0 0 1 2 2v14l6 6a2 2 0 0 1-3 3l-5-5-5 5a2 2 0 1 1-3-3l6-6V34a2 2 0 0 1 2-2z"/>
         <path fill="currentColor" d="M20 52h40a2 2 0 1 1 0 4H20a2 2 0 1 1 0-4z"/>
       `,
       outlet: `
@@ -1317,9 +1337,6 @@
       $("#stageD").value = state.stage.d;
       $("#stageLabel").textContent = `${state.stage.w} x ${state.stage.d}`;
 
-      // Keep aspect ratio in sync even when loading old saves
-      stageEl.style.aspectRatio = `${state.stage.w} / ${state.stage.d}`;
-
       $("#bandName").value = state.bandName || "";
       const bn = (state.bandName || "").trim();
       const pb = document.querySelector("#printBandName");
@@ -1327,6 +1344,13 @@
 
       $("#showNotes").value = state.notes || "";
       $("#notesPreview").textContent = state.notes || "";
+
+      // Sync view zoom UI + apply transform
+      const vz = clamp(parseFloat(state.viewZoom || 1), 0.6, 2.0);
+      state.viewZoom = vz;
+      $("#viewZoom").value = vz;
+      $("#viewZoomReadout").textContent = `${Math.round(vz * 100)}%`;
+      applyViewZoom();
 
       const lib = mergedLibrary();
       $("#libCount").textContent = `${lib.items.length} items`;
@@ -1362,7 +1386,7 @@
         listEl.appendChild(row);
       }
 
-      stageEl.querySelectorAll(".item").forEach(n => n.remove());
+      (stageInnerEl || stageEl).querySelectorAll(".item").forEach(n => n.remove());
 
       if(primaryId && !state.items.some(i => i.id === primaryId)){
         primaryId = null;
@@ -1438,7 +1462,7 @@
         }
 
         div.addEventListener("pointerdown", onItemPointerDown);
-        stageEl.appendChild(div);
+        (stageInnerEl || stageEl).appendChild(div);
       }
 
       rebuildLists();
@@ -1509,6 +1533,13 @@
 
     function syncEditor(){
       const hint = $("#selHint");
+
+      // keep view zoom UI synced always
+      const vz = clamp(parseFloat(state.viewZoom || 1), 0.6, 2.0);
+      state.viewZoom = vz;
+      $("#viewZoom").value = vz;
+      $("#viewZoomReadout").textContent = `${Math.round(vz * 100)}%`;
+      applyViewZoom();
 
       if(selectedIds.size > 1){
         hint.textContent = `${selectedIds.size} items selected`;
@@ -1679,17 +1710,19 @@
     }
 
     function ensureMarqueeDiv(){
-      let el = stageEl.querySelector(".marquee");
+      const host = (stageInnerEl || stageEl);
+      let el = host.querySelector(".marquee");
       if(!el){
         el = document.createElement("div");
         el.className = "marquee";
-        stageEl.appendChild(el);
+        host.appendChild(el);
       }
       return el;
     }
 
     function removeMarqueeDiv(){
-      const el = stageEl.querySelector(".marquee");
+      const host = (stageInnerEl || stageEl);
+      const el = host.querySelector(".marquee");
       if(el) el.remove();
     }
 
@@ -1996,6 +2029,23 @@
       updateSelected({ scale: parseFloat($("#fScale").value) });
     });
 
+    // View zoom controls
+    $("#viewZoom").addEventListener("input", (e) => {
+      state.viewZoom = parseFloat($("#viewZoom").value);
+      $("#viewZoomReadout").textContent = `${Math.round(state.viewZoom * 100)}%`;
+      applyViewZoom();
+      save();
+    });
+
+    $("#btnResetViewZoom").addEventListener("click", (e) => {
+      e.stopPropagation();
+      clearConfirms();
+      state.viewZoom = 1;
+      $("#viewZoom").value = 1;
+      applyViewZoom();
+      save();
+    });
+
     $("#btnResetRot").addEventListener("click", (e) => {
       e.stopPropagation();
       clearConfirms();
@@ -2223,12 +2273,11 @@
         state = imported;
 
         if(!state.view) state.view = "audience";
+        if(state.viewZoom == null) state.viewZoom = 1;
+
         for(const it of (state.items || [])){
           if(it.rot == null) it.rot = 0;
         }
-
-        // keep aspect ratio correct after import
-        stageEl.style.aspectRatio = `${state.stage.w} / ${state.stage.d}`;
 
         clearSelection();
         clearConfirms();
@@ -2312,10 +2361,6 @@
       state = deepClone(defaults);
       clearSelection();
       clearConfirms();
-
-      // reset aspect ratio too
-      stageEl.style.aspectRatio = `${state.stage.w} / ${state.stage.d}`;
-
       save();
       render();
       syncEditor();
@@ -2367,6 +2412,7 @@
     render();
     syncEditor();
     updateViewUI();
+    applyViewZoom();
 
     let t = null;
     window.addEventListener("resize", () => {
