@@ -3,13 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0b0d12">
-
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>StagePlot v2</title>
+  <meta name="theme-color" content="#0b0d12" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="stageplotlogo.png" />
+  <title>StagePlot v2 - v1.5.5 (metric)</title>
 
   <style>
     :root{
@@ -20,2415 +17,1746 @@
       --text:#e9eefb;
       --muted:#a9b4cc;
       --accent:#4aa3ff;
-      --danger:#ff5a6a;
       --ok:#40d98a;
+      --warn:#ffcc66;
+      --danger:#ff5a6a;
       --grid:rgba(255,255,255,.06);
-      --select: rgba(74,163,255,.22);
-      --selectLine: rgba(74,163,255,.65);
+
+      --stageBorder:rgba(255,255,255,.14);
+      --stageFill:rgba(255,255,255,.03);
+      --sel:rgba(74,163,255,.9);
+      --handle:rgba(74,163,255,.95);
+
+      --pillBg:rgba(255,255,255,.06);
+      --btnBg:rgba(255,255,255,.06);
+      --btnBd:rgba(255,255,255,.12);
+      --btnBdHover:rgba(74,163,255,.75);
+
+      --shadow:0 12px 30px rgba(0,0,0,.35);
     }
-    *{box-sizing:border-box}
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
     body{
       margin:0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
       background: radial-gradient(1200px 700px at 50% -10%, #1a2540, var(--bg));
-      color:var(--text);
+      color: var(--text);
+      line-height:1.35;
     }
+
     header{
+      position: sticky;
+      top:0;
+      z-index: 30;
+      border-bottom:1px solid var(--line);
+      background: rgba(10,12,18,.75);
+      backdrop-filter: blur(10px);
+    }
+
+    .wrap{
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 12px 14px;
+    }
+
+    .top{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      padding:14px 16px;
-      border-bottom:1px solid var(--line);
-      background: rgba(10,12,18,.7);
-      backdrop-filter: blur(10px);
-      position:sticky;
-      top:0;
-      z-index:10;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-    header h1{
-      font-size:16px;
-      margin:0;
-      letter-spacing:.2px;
-      display:flex;
       gap:10px;
-      align-items:center;
-    }
-    header .right{
-      display:flex;
-      gap:8px;
-      align-items:center;
       flex-wrap:wrap;
     }
 
-    .appTitle{
+    .title{
       display:flex;
       align-items:center;
       gap:10px;
+      min-width: 260px;
     }
+
     .logo{
-      width:28px;
-      height:28px;
-      object-fit:contain;
-      display:block;
-    }
-
-    button, select, input, textarea{
-      font: inherit;
-      color:var(--text);
-      background: var(--panel);
-      border:1px solid var(--line);
+      width:30px; height:30px;
       border-radius:10px;
-      padding:8px 10px;
-      outline:none;
-    }
-    button{
-      cursor:pointer;
-      transition: transform .05s ease, border-color .15s ease, background .15s ease;
-    }
-    button:hover{ border-color: rgba(74,163,255,.8); }
-    button:active{ transform: translateY(1px); }
-    button.primary{ background: rgba(74,163,255,.14); border-color: rgba(74,163,255,.6); }
-    button.danger{ background: rgba(255,90,106,.12); border-color: rgba(255,90,106,.5); }
-    button.ok{ background: rgba(64,217,138,.12); border-color: rgba(64,217,138,.5); }
-    button.ghost{ background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.10); }
-    button:disabled{ opacity:.55; cursor:not-allowed; }
-
-    /* Blue bounding-box link button (User Guide) */
-    a.guideBtn{
-      display:inline-flex;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
+      display:flex;
       align-items:center;
       justify-content:center;
-      gap:8px;
-      padding:8px 12px;
-      border-radius:12px;
-      border:2px solid rgba(74,163,255,.95);
-      color: rgba(233,238,251,.98);
-      background: rgba(74,163,255,.08);
-      text-decoration:none;
-      font-weight:700;
+      color: var(--accent);
+      font-weight: 900;
+      user-select:none;
+    }
+
+    .title h1{
+      margin:0;
+      font-size: 15px;
       letter-spacing:.2px;
-      box-shadow: 0 0 0 2px rgba(74,163,255,.14);
     }
-    a.guideBtn:hover{
-      background: rgba(74,163,255,.14);
-      border-color: rgba(74,163,255,1);
+    .sub{
+      margin-top:2px;
+      color: var(--muted);
+      font-size: 12px;
     }
-    a.guideBtn:active{
-      transform: translateY(1px);
+
+    .actions{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
     }
 
     .pill{
       display:inline-flex;
-      gap:6px;
       align-items:center;
-      padding:6px 10px;
-      border-radius:999px;
-      background: rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.08);
+      gap:8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: var(--pillBg);
       color: var(--muted);
-      font-size:12px;
-      cursor:default;
+      font-size: 12px;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .dot{ width:8px; height:8px; border-radius:50%; background: var(--ok); display:inline-block; }
+
+    a.button, button{
+      font: inherit;
+      color: var(--text);
+      background: var(--btnBg);
+      border: 1px solid var(--btnBd);
+      border-radius: 12px;
+      padding: 8px 10px;
+      text-decoration:none;
+      cursor:pointer;
+      transition: transform .05s ease, border-color .15s ease, background .15s ease;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
       user-select:none;
     }
-    .pill.clickable{ cursor:pointer; }
-    .dot{ width:8px; height:8px; border-radius:50%; background: var(--accent); display:inline-block; }
+    a.button:hover, button:hover{ border-color: var(--btnBdHover); }
+    a.button:active, button:active{ transform: translateY(1px); }
+    a.button.primary{
+      background: rgba(74,163,255,.14);
+      border-color: rgba(74,163,255,.55);
+    }
 
     .layout{
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 12px 14px 24px 14px;
       display:grid;
-      grid-template-columns: 340px 1fr 380px;
-      gap:12px;
-      padding:12px;
-      min-height: calc(100vh - 70px);
-    }
-    .panel{
-      background: linear-gradient(180deg, rgba(18,24,38,.9), rgba(12,16,26,.9));
-      border:1px solid var(--line);
-      border-radius:16px;
-      overflow:hidden;
-      box-shadow: 0 12px 30px rgba(0,0,0,.35);
+      grid-template-columns: 320px 1fr 360px;
+      gap: 12px;
+      align-items:start;
     }
 
-    /* Panel headers + bodies - now supports <summary class="title"> and .body */
-    .panel .title,
-    .panel summary.title{
-      padding:12px 12px 10px 12px;
-      border-bottom:1px solid var(--line);
+    .card{
+      background: linear-gradient(180deg, rgba(18,24,38,.9), rgba(12,16,26,.9));
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      min-width: 0;
+    }
+    .card .hd{
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:10px;
       flex-wrap:wrap;
     }
-    .panel .title h2,
-    .panel summary.title h2{
+    .card .hd h2{
       margin:0;
-      font-size:13px;
+      font-size: 12px;
       color: var(--muted);
-      font-weight:600;
-      letter-spacing:.2px;
       text-transform: uppercase;
+      letter-spacing: .35px;
+      font-weight: 780;
     }
-    .panel .body{ padding:12px; }
+    .card .bd{ padding: 10px 12px 12px 12px; }
 
-    .stack{ display:flex; flex-direction:column; gap:10px; }
-    .row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-    .small{ font-size:12px; color: var(--muted); }
-    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .row.tight{ gap:8px; }
+    .row + .row{ margin-top: 10px; }
 
-    .catalog{
+    label.small{
+      color: var(--muted);
+      font-size: 12px;
+      display:block;
+      margin-bottom:6px;
+    }
+
+    input[type="text"], input[type="number"], textarea, select{
+      width:100%;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      outline:none;
+      font: inherit;
+    }
+    textarea{ min-height: 84px; resize: vertical; }
+
+    .split2{ display:grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .split3{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+    .hint{
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    .hr{
+      border:0;
+      border-top:1px solid rgba(255,255,255,.08);
+      margin: 12px 0;
+    }
+
+    .kbd{
+      display:inline-flex;
+      align-items:center;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      color: rgba(233,238,251,.92);
+      white-space:nowrap;
+      margin: 0 2px;
+    }
+
+    /* Stage area */
+    .stageShell{
       display:flex;
       flex-direction:column;
-      gap:8px;
-      max-height: 420px;
-      overflow:auto;
-      padding-right:4px;
+      gap: 10px;
     }
-    .catItem{
+
+    .stageMeta{
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:10px;
-      padding:10px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,.04);
+      flex-wrap:wrap;
     }
-    .catLeft{
-      display:flex;
-      gap:10px;
+    .stageMeta .muted{ color: var(--muted); font-size: 12px; }
+    .stageMeta .tag{
+      display:inline-flex;
+      gap:8px;
       align-items:center;
-      min-width:0;
-    }
-    .catIcon{
-      width:34px;
-      height:34px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.06);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      flex:0 0 auto;
-    }
-    /* SAFARI FIX: force size for library SVG icons */
-    .catIcon svg.icon{
-      width:22px;
-      height:22px;
-      display:block;
-    }
-    .catIcon svg{ overflow: visible; }
-    .catText{ min-width:0; }
-    .catName{
-      font-size:13px;
-      font-weight:650;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      color: var(--muted);
+      font-size: 12px;
       white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width: 210px;
     }
-    .catMeta{ font-size:12px; color: var(--muted); }
 
-    .stageWrap{
-      padding:12px;
-      height: 100%;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-    .stageMeta{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
-
-    /* IMPORTANT: keep stage always fully visible (no cutoff) */
-    .stage{
-      flex:1;
-      min-height: 540px;
-      aspect-ratio: 4 / 3;
+    .stageSquare{
       width: 100%;
-      max-width: 960px;
-      margin: 0 auto;
-      background:
-        linear-gradient(var(--grid) 1px, transparent 1px),
-        linear-gradient(90deg, var(--grid) 1px, transparent 1px),
-        linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-      background-size: 32px 32px, 32px 32px, auto;
-      border:1px solid var(--line);
-      border-radius:16px;
-      position:relative;
+      aspect-ratio: 1 / 1;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.22);
       overflow:hidden;
-      contain: layout paint;
-      user-select:none;
-      -webkit-user-select:none;
+      position: relative;
+      box-shadow: 0 10px 24px rgba(0,0,0,.28) inset;
     }
 
-    /* Inner layer that gets view-zoomed */
+    .stageViewport{
+      position:absolute;
+      inset: 10px;
+      border-radius: 14px;
+      border: 1px solid var(--stageBorder);
+      background: var(--stageFill);
+      overflow:hidden; /* important - zoom inside square */
+    }
+
     .stageInner{
       position:absolute;
-      inset:0;
-      transform-origin:center center;
-      will-change: transform;
-    }
-
-    /* Orientation labels (default plot convention) */
-    .stage::before{
-      content:"UPSTAGE";
-      position:absolute;
-      top:10px;
       left:50%;
-      transform: translateX(-50%);
-      font-size:12px;
-      color: rgba(255,255,255,.22);
-      letter-spacing: 2px;
-      pointer-events:none;
-      user-select:none;
-      z-index:2;
-    }
-    .stage::after{
-      content:"AUDIENCE";
-      position:absolute;
-      bottom:10px;
-      left:50%;
-      transform: translateX(-50%);
-      font-size:12px;
-      color: rgba(255,255,255,.22);
-      letter-spacing: 2px;
-      pointer-events:none;
-      user-select:none;
-      z-index:2;
+      top:50%;
+      transform-origin: center center;
+      /* transform set by JS */
     }
 
-    .stageEdge{
+    .stageGrid{
       position:absolute;
-      inset:0;
-      border-radius:16px;
+      inset: 0;
+      background-image:
+        linear-gradient(to right, var(--grid) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+      background-size: 32px 32px;
       pointer-events:none;
-      box-shadow: inset 0 0 0 2px rgba(74,163,255,.06);
+      opacity:.7;
     }
 
-    .marquee{
+    .stageLabelTop, .stageLabelBottom{
       position:absolute;
-      border:1px solid var(--selectLine);
-      background: var(--select);
-      border-radius:10px;
+      left:0;
+      right:0;
+      text-align:center;
+      color: rgba(233,238,251,.85);
+      font-size: 12px;
       pointer-events:none;
-      z-index:5;
+      text-shadow: 0 2px 8px rgba(0,0,0,.45);
+      user-select:none;
     }
+    .stageLabelTop{ top: 8px; }
+    .stageLabelBottom{ bottom: 8px; }
 
     .item{
       position:absolute;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.14);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.20);
       background: rgba(255,255,255,.08);
-      box-shadow: 0 10px 18px rgba(0,0,0,.25);
-      padding:10px 10px 8px 10px;
-      touch-action:none;
-      user-select:none;
-      min-width: 90px;
-      color: var(--accent);
-      display:flex;
-      gap:8px;
-      align-items:center;
-      transform-origin: center center;
-      z-index:3;
-    }
-    .item .iconWrap{
-      width:34px;
-      height:34px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.06);
+      box-shadow: 0 6px 14px rgba(0,0,0,.25);
       display:flex;
       align-items:center;
       justify-content:center;
-      flex:0 0 auto;
+      text-align:center;
+      padding: 6px;
+      user-select:none;
+      cursor: grab;
+      transform-origin: center center;
     }
-    .item svg.icon{
-      width:22px; height:22px;
-      display:block;
-      color: currentColor;
+    .item:active{ cursor: grabbing; }
+
+    .item .lbl{
+      font-size: 12px;
+      line-height: 1.1;
+      font-weight: 700;
+      letter-spacing:.1px;
+      text-shadow: 0 2px 10px rgba(0,0,0,.35);
+      max-width: 100%;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
-    .item .textWrap{ min-width:0; }
-    .item .type{ font-size:10px; color: rgba(233,238,251,.70); text-transform: uppercase; letter-spacing:.35px; }
-    .item .label{ font-size:13px; font-weight:700; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width: 180px; color: rgba(233,238,251,.96); }
-    .item .sub{ font-size:11px; color: rgba(233,238,251,.60); margin-top:3px; display:flex; gap:8px; }
+    .item .subLbl{
+      font-size: 10px;
+      opacity:.9;
+      margin-top:2px;
+      color: rgba(233,238,251,.92);
+    }
+
     .item.selected{
-      border-color: rgba(74,163,255,.55);
-      box-shadow: 0 0 0 2px rgba(74,163,255,.18), 0 10px 18px rgba(0,0,0,.25);
-    }
-    .item.primary{
-      border-color: rgba(74,163,255,.95);
-      box-shadow: 0 0 0 2px rgba(74,163,255,.26), 0 10px 18px rgba(0,0,0,.25);
+      outline: 2px solid var(--sel);
+      outline-offset: 2px;
     }
 
-    /* Resize + rotate handles (only rendered for primary item) */
-    .handles{ position:absolute; inset:0; pointer-events:none; }
-    .handle{
+    .handles{
       position:absolute;
-      width:12px;
-      height:12px;
-      border-radius:999px;
-      background: rgba(233,238,251,.92);
-      border:1px solid rgba(0,0,0,.45);
-      box-shadow: 0 4px 10px rgba(0,0,0,.25);
-      pointer-events:auto;
-      touch-action:none;
-    }
-    .handle.n { left:50%; top:-6px; transform:translateX(-50%); cursor:ns-resize; }
-    .handle.s { left:50%; bottom:-6px; transform:translateX(-50%); cursor:ns-resize; }
-    .handle.e { right:-6px; top:50%; transform:translateY(-50%); cursor:ew-resize; }
-    .handle.w { left:-6px; top:50%; transform:translateY(-50%); cursor:ew-resize; }
-    .handle.ne{ right:-6px; top:-6px; cursor:nesw-resize; }
-    .handle.nw{ left:-6px; top:-6px; cursor:nwse-resize; }
-    .handle.se{ right:-6px; bottom:-6px; cursor:nwse-resize; }
-    .handle.sw{ left:-6px; bottom:-6px; cursor:nesw-resize; }
-
-    .rotHandle{
-      position:absolute;
-      left:50%;
-      top:-28px;
-      width:14px;
-      height:14px;
-      border-radius:999px;
-      background: rgba(74,163,255,.95);
-      border:1px solid rgba(0,0,0,.45);
-      box-shadow: 0 6px 14px rgba(0,0,0,.25);
-      transform: translateX(-50%);
-      pointer-events:auto;
-      touch-action:none;
-      cursor:grab;
-    }
-    .rotStem{
-      position:absolute;
-      left:50%;
-      top:-18px;
-      width:2px;
-      height:14px;
-      background: rgba(74,163,255,.65);
-      transform: translateX(-50%);
+      inset:0;
       pointer-events:none;
-      border-radius:999px;
+    }
+    .handle{
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--handle);
+      box-shadow: 0 4px 10px rgba(0,0,0,.35);
+      position:absolute;
+      pointer-events:auto;
+      cursor: nwse-resize;
+    }
+    .handle.br{ right:-6px; bottom:-6px; }
+    .rotateDot{
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(64,217,138,.95);
+      position:absolute;
+      left: 50%;
+      top: -18px;
+      transform: translateX(-50%);
+      pointer-events:auto;
+      cursor: grab;
     }
 
-    table{ width:100%; border-collapse: collapse; font-size:12px; }
-    th, td{
-      text-align:left;
-      padding:8px 8px;
-      border-bottom:1px solid rgba(255,255,255,.08);
-      vertical-align:top;
-    }
-    th{ color: var(--muted); font-weight:650; }
+    /* Library */
+    .libSearch{ display:flex; gap:10px; align-items:center; }
+    .libSearch input{ flex: 1; }
 
-    .scrollBox{
-      max-height: 220px;
+    .libList{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      max-height: 56vh;
       overflow:auto;
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:12px;
+      padding-right: 4px;
+    }
+    .libItem{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding: 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.03);
     }
+    .libItem .name{ font-weight: 800; font-size: 13px; }
+    .libItem .meta{ color: var(--muted); font-size: 12px; margin-top:2px; }
 
-    .printOnly{ display:none; }
-
-    @page { margin: 0.35in; }
-
-    /* Accordion styling */
-    details.accordion{ display:block; }
-    details.accordion > summary::-webkit-details-marker{ display:none; }
-    details.accordion > summary.title{
-      list-style:none;
-      cursor:pointer;
-      user-select:none;
+    .tiny{
+      font-size: 12px;
+      color: var(--muted);
     }
-    .accRight{
+
+    .sliderRow{
       display:flex;
-      align-items:center;
       gap:10px;
-    }
-    .chev{
-      width:28px;
-      height:28px;
-      border-radius:10px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.06);
-      display:flex;
       align-items:center;
-      justify-content:center;
-      color: rgba(233,238,251,.85);
-      flex:0 0 auto;
     }
-    details.accordion[open] .chev{
-      transform: rotate(180deg);
-    }
-    .chev svg{ width:16px; height:16px; display:block; }
+    input[type="range"]{ width: 100%; }
 
-    /* Print */
+    .badge{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      color: var(--muted);
+      font-size: 12px;
+      white-space:nowrap;
+    }
+
+    /* Mobile accordions */
+    .accBtn{
+      width:100%;
+      justify-content:space-between;
+    }
+    .accIcon{
+      opacity:.85;
+      font-weight: 900;
+    }
+
+    @media (max-width: 1080px){
+      .layout{
+        grid-template-columns: 1fr;
+      }
+      .libList{ max-height: 34vh; }
+    }
+
     @media print{
       header{ display:none !important; }
-      body{ background:#fff; color:#000; }
-      *{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-
-      .printOnly{
-        display:block !important;
-        font-size: 16px !important;
-        font-weight: 800 !important;
-        margin: 2px 0 10px 0 !important;
-      }
-
-      .layout{
-        display:block !important;
-        padding:0 !important;
-        gap:0 !important;
-        min-height: 0 !important;
-        width: 100% !important;
-        max-width: 960px !important;
-        margin: 0 auto !important;
-      }
-
-      .panel{
-        box-shadow:none !important;
-        background:#fff !important;
-        color:#000 !important;
-        border:1px solid #ddd !important;
-        border-radius: 12px !important;
-        margin: 0 0 10px 0 !important;
-        break-inside: avoid;
-        page-break-inside: avoid;
-      }
-
-      .panel.catalogPanel{ display:none !important; }
-
-      button, select, input, textarea, .pill.clickable{ display:none !important; }
-
-      /* IMPORTANT: ensure accordion content is visible in print */
-      details.accordion > summary{ display:none !important; }
-      details.accordion .body{ display:block !important; padding:10px !important; }
-
-      .stageWrap{ padding:10px !important; }
-      .stageMeta{ margin-bottom:6px !important; }
-
-      .stage{
-        min-height: 0 !important;
-        width: 960px !important;
-        height: 720px !important;
-        max-width: 960px !important;
-        max-height: 720px !important;
-        aspect-ratio: auto !important;
-        background: #fff !important;
-        border:1px solid #bbb !important;
-        overflow:hidden !important;
-        contain: none !important;
-      }
-
-      .stage::before, .stage::after{ color:#888 !important; }
-      .stageEdge{ box-shadow:none !important; }
-      .marquee{ display:none !important; }
-
-      .item{
-        box-shadow:none !important;
-        background: rgba(0,0,0,.04) !important;
-        border: 1px solid rgba(0,0,0,.22) !important;
-        color:#000 !important;
-      }
-      .item .label{ color:#000 !important; }
-      .item .type, .item .sub{ color: rgba(0,0,0,.70) !important; }
-
-      .handles{ display:none !important; }
-      th, td{ border-bottom: 1px solid #e3e3e3 !important; }
-      th{ color:#444 !important; }
-
-      .scrollBox{
-        max-height: none !important;
-        overflow: visible !important;
-        border:1px solid #ddd !important;
-      }
-      .small{ color:#444 !important; }
-    }
-
-    /* Print fix: force real pixel size and stable layout before print dialog opens */
-    body.printing .layout{
-      display:block !important;
-      padding:0 !important;
-      gap:0 !important;
-      min-height: 0 !important;
-      width: 100% !important;
-      max-width: 960px !important;
-      margin: 0 auto !important;
-    }
-    body.printing header{ display:none !important; }
-    body.printing .panel{ box-shadow:none !important; }
-    body.printing .panel.catalogPanel{ display:none !important; }
-
-    /* IMPORTANT: ensure accordion content is visible during printing mode too */
-    body.printing details.accordion > summary{ display:none !important; }
-    body.printing details.accordion .body{ display:block !important; }
-
-    body.printing .stage{
-      width: 960px !important;
-      height: 720px !important;
-      min-height: 720px !important;
-      max-height: 720px !important;
-      aspect-ratio: auto !important;
-      background:#fff !important;
-      border:1px solid #bbb !important;
-      overflow:hidden !important;
-    }
-
-    body.printing .item{ box-shadow:none !important; }
-
-    /* Responsive layout (mobile) */
-    @media (max-width: 1100px){
-      .layout{
-        display:flex;
-        flex-direction:column;
-      }
-      /* MOBILE ORDER: Stage first */
-      .stagePanel{ order: 1; }
-      .catalogPanel{ order: 2; }
-      .infoPanel{ order: 3; }
-
-      .panel{ width: 100%; }
-      .stage{ min-height: 520px; }
-    }
-
-    @media (max-width: 520px){
-      button, select, input, textarea{ border-radius: 12px; padding: 10px 12px; }
-      .panel .body{ padding:10px; }
-      .stageWrap{ padding:10px; }
-      .item{ padding:10px; min-width: 86px; }
-      .item .label{ max-width: 140px; }
-    }
-
-    /* Keep desktop from accidentally collapsing */
-    @media (min-width: 1101px){
-      details.accordion > summary.title{ cursor:default; }
-    }
-
-    .item, .item *{
-      user-select:none;
-      -webkit-user-select:none;
+      body{ background:#fff !important; color:#000 !important; }
+      .layout{ display:block !important; max-width: 7.8in !important; padding: 0 !important; }
+      .card{ box-shadow:none !important; background:#fff !important; border:1px solid #ddd !important; }
+      .card .hd{ border-bottom:1px solid #ddd !important; }
+      .stageSquare{ border:1px solid #ddd !important; background:#fff !important; }
+      .stageViewport{ border:1px solid #ddd !important; background:#fff !important; }
+      .stageGrid{ display:none !important; }
+      button, a.button{ display:none !important; }
+      .libCard{ display:none !important; }
+      .infoCard .hd .badge{ display:none !important; }
     }
   </style>
 </head>
 
 <body>
-
-  <svg width="1" height="1"
-     style="position:absolute; left:-9999px; top:-9999px;"
-     aria-hidden="true" focusable="false"
-     xmlns:xlink="http://www.w3.org/1999/xlink">
-    <symbol id="spr-mic" viewBox="0 0 64 64">
-      <path fill="currentColor" d="M32 6c-6 0-11 5-11 11v14c0 6 5 11 11 11s11-5 11-11V17c0-6-5-11-11-11zm-7 25V17a7 7 0 0 1 14 0v14a7 7 0 0 1-14 0z"/>
-      <path fill="currentColor" d="M18 30a2 2 0 0 1 2 2c0 7 5 13 12 13s12-6 12-13a2 2 0 1 1 4 0c0 8-6 15-14 16v6h6a2 2 0 1 1 0 4H24a2 2 0 1 1 0-4h6v-6c-8-1-14-8-14-16a2 2 0 0 1 2-2z"/>
-    </symbol>
-
-    <symbol id="spr-guitar" viewBox="0 0 64 64">
-      <path fill="currentColor" d="M44 6l14 14-4 4-3-3-9 9c2 5 0 12-5 17-6 6-15 7-20 2l-5 5a4 4 0 0 1-6-6l5-5c-5-5-4-14 2-20 5-5 12-7 17-5l9-9-3-3 4-4zm-24 19c-4 4-5 10-1 14s10 3 14-1 5-10 1-14-10-3-14 1z"/>
-    </symbol>
-
-    <symbol id="spr-bass" viewBox="0 0 64 64">
-      <path fill="currentColor" d="M46 6l12 12-4 4-2-2-10 10c3 6 1 13-5 19-7 7-17 8-23 2l-4 4a4 4 0 1 1-6-6l4-4c-6-6-5-16 2-23 6-6 13-8 19-5L39 17l-2-2 4-4zM20 24c-5 5-6 12-2 16s11 3 16-2 6-12 2-16-11-3-16 2z"/>
-    </symbol>
-
-    <symbol id="spr-keys" viewBox="0 0 64 64">
-      <path fill="currentColor" d="M10 18h44a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h44V22H10z"/>
-      <path fill="currentColor" d="M14 22h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22z"/>
-      <path fill="currentColor" d="M19 22h3v12h-3V22zm8 0h3v12h-3V22zm8 0h3v12h-3V22zm8 0h3v12h-3V22z"/>
-    </symbol>
-
-    <symbol id="spr-drums" viewBox="0 0 64 64">
-      <path fill="currentColor" d="M14 26c0-8 8-14 18-14s18 6 18 14-8 14-18 14-18-6-18-14zm4 0c0 6 6 10 14 10s14-4 14-10-6-10-14-10-14 4-14 10z"/>
-      <path fill="currentColor" d="M20 40h24v12a4 4 0 0 1-4 4H24a4 4 0 0 1-4-4V40zm4 4v8h16v-8H24z"/>
-      <path fill="currentColor" d="M10 18a2 2 0 0 1 3 0l8 8a2 2 0 0 1-3 3l-8-8a2 2 0 0 1 0-3zm44 0a2 2 0 0 1 0 3l-8 8a2 2 0 1 1-3-3l8-8a2 2 0 0 1 3 0z"/>
-    </symbol>
-
-    <symbol id="spr-amp" viewBox="0 0 64 64">
-      <path fill="currentColor" d="M14 16h36a4 4 0 0 1 4 4v28a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V20a4 4 0 0 1 4-4zm0 4v28h36V20H14z"/>
-      <path fill="currentColor" d="M18 24h28v4H18v-4zm0 8h28v4H18v-4zm0 8h18v4H18v-4z"/>
-      <circle fill="currentColor" cx="44" cy="42" r="3"/>
-    </symbol>
-
-    <symbol id="spr-wedge" viewBox="0 0 64 64">
-      <path fill="currentColor" d="M10 42l44-16v18a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4v-2z"/>
-      <path fill="currentColor" d="M12 40l40-14v3L12 43v-3z" opacity=".5"/>
-    </symbol>
-
-    <symbol id="spr-iem" viewBox="0 0 64 64">
-      <path fill="currentColor" d="M20 28c0-7 5-12 12-12s12 5 12 12v10a2 2 0 1 1-4 0V28c0-4-3-8-8-8s-8 4-8 8v10a2 2 0 1 1-4 0V28z"/>
-      <path fill="currentColor" d="M16 40a6 6 0 0 0 12 0v-2h-4v2a2 2 0 0 1-4 0v-2h-4v2zm20 0a6 6 0 0 0 12 0v-2h-4v2a2 2 0 0 1-4 0v-2h-4v2z"/>
-    </symbol>
-
-    <symbol id="spr-di" viewBox="0 0 64 64">
-      <path fill="currentColor" d="M18 18h28a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h28V22H18z"/>
-      <path fill="currentColor" d="M22 26h8v4h-8v-4zm0 8h12v4H22v-4z"/>
-      <circle fill="currentColor" cx="42" cy="28" r="2"/>
-      <circle fill="currentColor" cx="42" cy="36" r="2"/>
-    </symbol>
-
-    <symbol id="spr-stand" viewBox="0 0 64 64">
-      <path fill="currentColor" d="M40 10a2 2 0 0 1 2 2v10a2 2 0 1 1-4 0V12a2 2 0 0 1 2-2z"/>
-      <path fill="currentColor" d="M26 22a2 2 0 0 1 3 0l11 11a2 2 0 0 1-3 3L26 25a2 2 0 0 1 0-3z"/>
-      <path fill="currentColor" d="M40 32a2 2 0 0 1 2 2v14l6 6a2 2 0 0 1-3 3l-5-5-5 5a2 2 0 1 1-3-3l6-6V34a2 2 0 0 1 2-2z"/>
-      <path fill="currentColor" d="M20 52h40a2 2 0 1 1 0 4H20a2 2 0 1 1 0-4z"/>
-    </symbol>
-
-    <symbol id="spr-outlet" viewBox="0 0 64 64">
-      <path fill="currentColor" d="M20 12h24a8 8 0 0 1 8 8v24a8 8 0 0 1-8 8H20a8 8 0 0 1-8-8V20a8 8 0 0 1 8-8zm0 4a4 4 0 0 0-4 4v24a4 4 0 0 0 4 4h24a4 4 0 0 0 4-4V20a4 4 0 0 0-4-4H20z"/>
-      <circle fill="currentColor" cx="26" cy="28" r="4"/>
-      <circle fill="currentColor" cx="38" cy="28" r="4"/>
-      <rect fill="currentColor" x="29" y="36" width="6" height="10" rx="3"/>
-    </symbol>
-
-    <symbol id="spr-riser" viewBox="0 0 64 64">
-      <path fill="currentColor" d="M10 22h44a4 4 0 0 1 4 4v16a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V26a4 4 0 0 1 4-4zm0 4v16h44V26H10z"/>
-      <path fill="currentColor" d="M14 30h10v8H14v-8zm13 0h10v8H27v-8zm13 0h10v8H40v-8z" opacity=".55"/>
-    </symbol>
-
-    <symbol id="spr-console" viewBox="0 0 64 64">
-      <path fill="currentColor" d="M10 18h44a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h44V22H10z"/>
-      <path fill="currentColor" d="M14 26h36v4H14v-4zm0 8h20v4H14v-4z"/>
-      <circle fill="currentColor" cx="44" cy="36" r="2.5"/>
-      <circle fill="currentColor" cx="50" cy="36" r="2.5"/>
-    </symbol>
-
-    <symbol id="spr-misc" viewBox="0 0 64 64">
-      <path fill="currentColor" d="M14 18h36a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h36V22H14z"/>
-      <path fill="currentColor" d="M20 30h24v4H20v-4zm0 8h16v4H20v-4z" opacity=".6"/>
-      <circle fill="currentColor" cx="46" cy="40" r="3"/>
-    </symbol>
-
-    <symbol id="spr-chev" viewBox="0 0 24 24">
-      <path fill="currentColor" d="M12 15.5 5.5 9a1 1 0 0 1 1.4-1.4l5.1 5.1 5.1-5.1A1 1 0 1 1 18.5 9L12 15.5z"/>
-    </symbol>
-  </svg>
-
   <header>
-    <h1 class="appTitle">
-      <img src="stageplotlogo.png" alt="StagePlot" class="logo" />
-      <span>StagePlot v2</span>
-      <span class="pill"><span class="dot"></span><span id="autosavePill">Autosave on</span></span>
-    </h1>
-    <div class="right">
-      <button class="primary" id="btnPrint">Print</button>
+    <div class="wrap">
+      <div class="top">
+        <div class="title">
+          <div class="logo" aria-hidden="true">SP</div>
+          <div>
+            <h1>StagePlot v2</h1>
+            <div class="sub">v1.5.5 (metric) - fast stage plots that do not feel like taxes</div>
+          </div>
+        </div>
 
-      <button id="btnExportProject">Export project</button>
-      <label class="pill clickable">
-        <span class="dot"></span>Import project
-        <input id="fileImportProject" type="file" accept="application/json" style="display:none;">
-      </label>
-
-      <button id="btnExportLibrary">Export library</button>
-      <label class="pill clickable">
-        <span class="dot"></span>Import library
-        <input id="fileImportLibrary" type="file" accept="application/json" style="display:none;">
-      </label>
-
-      <button class="danger" id="btnReset">Reset</button>
+        <div class="actions">
+          <span class="pill"><span class="dot"></span>Autosave on</span>
+          <a class="button" href="./guide.html">Guide</a>
+          <button class="button primary" id="printBtn">Print</button>
+          <button class="button" id="exportBtn">Export project</button>
+          <button class="button" id="importBtn">Import project</button>
+          <input id="importFile" type="file" accept="application/json" hidden />
+        </div>
+      </div>
     </div>
   </header>
 
   <div class="layout">
-    <!-- LIBRARY (accordion on mobile) -->
-    <section class="panel catalogPanel">
-      <details class="accordion" id="accLibrary" open>
-        <summary class="title">
-          <h2>Item library</h2>
-          <div class="accRight">
-            <span class="small" id="libCount">0 items</span>
-            <span class="chev" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><use href="#spr-chev" xlink:href="#spr-chev"></use></svg>
-            </span>
+    <!-- LEFT: Stage + View -->
+    <section class="card">
+      <div class="hd">
+        <h2>Stage and view</h2>
+        <span class="badge" id="unitsBadge">Units: ft</span>
+      </div>
+      <div class="bd">
+        <div class="split2">
+          <div>
+            <label class="small">Stage preset</label>
+            <select id="stagePreset">
+              <option value="small">Small (20 x 12)</option>
+              <option value="medium" selected>Medium (24 x 16)</option>
+              <option value="large">Large (32 x 20)</option>
+              <option value="custom">Custom</option>
+            </select>
           </div>
-        </summary>
-
-        <div class="body">
-          <div class="stack">
-            <div class="row">
-              <select id="stagePreset">
-                <option value="small">Stage: Small (16x12)</option>
-                <option value="medium" selected>Stage: Medium (24x16)</option>
-                <option value="large">Stage: Large (32x20)</option>
-                <option value="custom">Stage: Custom</option>
-              </select>
-            </div>
-            <div class="row">
-              <input id="stageW" type="number" min="8" max="80" step="1" value="24" style="width:110px" />
-              <input id="stageD" type="number" min="6" max="60" step="1" value="16" style="width:110px" />
-              <span class="small">W x D</span>
-            </div>
-
-            <div class="row">
-              <input id="search" placeholder="Search (guitar, outlet, riser...)" style="width:100%" />
-            </div>
-            <div class="row">
-              <select id="category" style="width:100%"></select>
-            </div>
-
-            <div class="catalog" id="catalog"></div>
-
-            <div class="small">
-              Tip: Shift click or Cmd on Mac or Ctrl on Windows to multi select. Drag on empty stage to box select.
-              <br>
-              <center>ver 1.5.4</center>
-              <br>
-              <center>
-                <a class="guideBtn" href="https://petesimple.github.io/stageplot/guide.html">USER GUIDE</a>
-              </center>
-            </div>
+          <div>
+            <label class="small">Units</label>
+            <select id="unitsSelect">
+              <option value="ft" selected>Feet (ft)</option>
+              <option value="m">Meters (m)</option>
+            </select>
           </div>
         </div>
-      </details>
+
+        <div class="split2" style="margin-top:10px;">
+          <div>
+            <label class="small" id="wLabel">Stage width (ft)</label>
+            <input id="stageW" type="number" inputmode="decimal" step="0.1" min="1" value="24" />
+          </div>
+          <div>
+            <label class="small" id="dLabel">Stage depth (ft)</label>
+            <input id="stageD" type="number" inputmode="decimal" step="0.1" min="1" value="16" />
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+          <button class="button" id="flipBtn">Flip stage / audience view</button>
+          <button class="button" id="centerBtn">Center selection</button>
+          <button class="button" id="dupBtn">Duplicate</button>
+          <button class="button" id="delBtn">Delete</button>
+        </div>
+
+        <div class="hr"></div>
+
+        <label class="small">View zoom (inside the square)</label>
+        <div class="sliderRow">
+          <input id="viewZoom" type="range" min="50" max="200" value="100" />
+          <span class="pill" id="viewZoomVal">100%</span>
+          <button class="button" id="resetViewBtn">Reset view</button>
+        </div>
+        <div class="hint">
+          View Zoom changes your camera, not item sizes. The stage stays inside the square at 100%.
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="stageShell">
+          <div class="stageMeta">
+            <div class="muted" id="stageMetaText">Stage: 24 ft x 16 ft</div>
+            <div class="tag" id="viewTag">Stage view</div>
+          </div>
+
+          <div class="stageSquare" id="stageSquare">
+            <div class="stageViewport" id="stageViewport">
+              <div class="stageGrid"></div>
+              <div class="stageLabelTop" id="labelTop">UPSTAGE</div>
+              <div class="stageLabelBottom" id="labelBottom">AUDIENCE</div>
+
+              <div class="stageInner" id="stageInner">
+                <!-- items inserted here -->
+              </div>
+            </div>
+          </div>
+
+          <div class="hint">
+            Tips: Shift + Arrow nudges. Cmd/Ctrl + D duplicates. Click empty stage to clear selection.
+          </div>
+        </div>
+      </div>
     </section>
 
-    <!-- STAGE (not accordion) -->
-    <section class="panel stagePanel">
-      <div class="title">
-        <h2>Stage</h2>
+    <!-- MIDDLE: Library -->
+    <section class="card libCard" id="libCard">
+      <div class="hd">
+        <h2>Item library</h2>
+        <span class="tiny">Search + add</span>
+      </div>
+      <div class="bd">
+        <div class="libSearch">
+          <input id="libSearch" type="text" placeholder="Search: vocal, guitar, keys, wedge, power, drums..." />
+          <select id="libCat" style="width:140px;">
+            <option value="all" selected>All</option>
+            <option value="people">People</option>
+            <option value="instruments">Instruments</option>
+            <option value="stage">Stage gear</option>
+            <option value="audio">Audio</option>
+            <option value="power">Power</option>
+            <option value="misc">Misc</option>
+          </select>
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+          <button class="button" id="misc1">+ Misc 1</button>
+          <button class="button" id="misc2">+ Misc 2</button>
+          <button class="button" id="misc3">+ Misc 3</button>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="libList" id="libList"></div>
+      </div>
+    </section>
+
+    <!-- RIGHT: Info -->
+    <section class="card infoCard">
+      <div class="hd">
+        <h2>One-page info</h2>
+        <span class="badge" id="selBadge">No selection</span>
+      </div>
+      <div class="bd">
+        <label class="small">Band name (optional)</label>
+        <input id="bandName" type="text" placeholder="Example: Petesimple Trio" />
+
+        <div class="hr"></div>
+
+        <div id="selPanel" style="display:none;">
+          <div class="split2">
+            <div>
+              <label class="small">Label</label>
+              <input id="itLabel" type="text" placeholder="Example: Pete Vox" />
+            </div>
+            <div>
+              <label class="small">Color</label>
+              <input id="itColor" type="color" value="#4aa3ff" style="height:40px; padding:6px 8px;" />
+            </div>
+          </div>
+
+          <div class="split2" style="margin-top:10px;">
+            <div>
+              <label class="small">Input</label>
+              <input id="itInput" type="text" placeholder="Example: Ch 1" />
+            </div>
+            <div>
+              <label class="small">Mix</label>
+              <input id="itMix" type="text" placeholder="Example: M1" />
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:10px;">
+            <button class="button" id="rotReset">Reset rotation</button>
+            <button class="button" id="scaleReset">Reset scale</button>
+          </div>
+
+          <div style="margin-top:10px;">
+            <label class="small">Scale (item footprint)</label>
+            <div class="sliderRow">
+              <input id="itScale" type="range" min="50" max="200" value="100" />
+              <span class="pill" id="itScaleVal">100%</span>
+            </div>
+          </div>
+
+          <div style="margin-top:10px;">
+            <label class="small">Notes</label>
+            <textarea id="itNotes" placeholder="Boom stand, DI after pedals, phantom power, etc."></textarea>
+          </div>
+
+          <div class="hr"></div>
+        </div>
+
+        <label class="small">Show notes</label>
+        <textarea id="showNotes" placeholder="Load-in, parking, contact, set length, backline notes..."></textarea>
+
+        <div class="hr"></div>
+
         <div class="row">
-          <button class="ghost" id="btnFlipView" title="Flip the whole plot 180 degrees">View: Audience</button>
+          <button class="button" id="clearAllBtn">Reset project</button>
+          <a class="button" href="https://petesimple.github.io/stageplot/" target="_blank" rel="noopener">Open live app</a>
+        </div>
 
-          <button id="btnCenter">Center selection</button>
-          <button class="ghost" id="btnDuplicate" title="Duplicate selected (Cmd/Ctrl+D)">Duplicate</button>
-
-          <button id="btnAddMiscS">+ Misc 1</button>
-          <button id="btnAddMiscM">+ Misc 2</button>
-          <button id="btnAddMiscL">+ Misc 3</button>
-
-          <button class="danger" id="btnDelete">Delete</button>
+        <div class="hint">
+          Export project makes a JSON file. Share it in text, email, or AirDrop. Import restores everything.
         </div>
       </div>
-      <div class="stageWrap">
-        <div class="stageMeta">
-          <span class="pill"><span class="dot"></span><span id="stageLabel">24 x 16</span></span>
-          <span class="small">
-            Click an item to edit. Drag to move. Shift + Arrow nudges 0.25 ft. Drag dots to resize. Drag blue dot to rotate (Shift snaps 15 degrees).
-          </span>
-        </div>
-        <div id="stage" class="stage">
-          <div id="stageInner" class="stageInner">
-            <div class="stageEdge"></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- INFO (accordion on mobile) -->
-    <section class="panel infoPanel">
-      <details class="accordion" id="accInfo" open>
-        <summary class="title">
-          <h2>One-page print info</h2>
-          <div class="accRight">
-            <span class="small" id="selHint">No item selected</span>
-            <span class="chev" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><use href="#spr-chev" xlink:href="#spr-chev"></use></svg>
-            </span>
-          </div>
-        </summary>
-
-        <div class="body">
-          <div class="stack">
-            <div id="printBandName" class="printOnly"></div>
-
-            <div class="row">
-              <input id="bandName" placeholder="Band name (optional)" style="width:100%" />
-            </div>
-
-            <div class="row">
-              <input id="fLabel" placeholder="Label (ex: Pete Vox)" style="width:100%" />
-            </div>
-
-            <div class="row">
-              <input id="fType" placeholder="Type" style="width:48%" disabled />
-              <input id="fColor" type="color" value="#4aa3ff" style="width:54px; padding:6px;" />
-              <input id="fInput" placeholder="Input (ex: Ch 1)" style="width:40%" />
-              <input id="fMix" placeholder="Mix (ex: M1)" style="width:30%" />
-            </div>
-
-            <div class="row">
-              <label class="small" style="min-width:70px;">Scale</label>
-              <input id="fScale" type="range" min="0.5" max="2.0" step="0.05" value="1" style="flex:1;" />
-              <span class="pill"><span id="scaleReadout">100%</span></span>
-            </div>
-
-            <!-- NEW: View zoom controls -->
-            <div class="row">
-              <label class="small" style="min-width:70px;">View zoom</label>
-              <input id="viewZoom" type="range" min="0.6" max="2.0" step="0.05" value="1" style="flex:1;" />
-              <span class="pill"><span id="viewZoomReadout">100%</span></span>
-              <button class="ghost" id="btnResetViewZoom" type="button" title="Reset view zoom to 100%">Reset view</button>
-            </div>
-
-            <div class="row">
-              <label class="small" style="min-width:70px;">Rotation</label>
-              <button class="ghost" id="btnResetRot" type="button">Reset rotation</button>
-              <span class="pill"><span id="rotReadout">0°</span></span>
-            </div>
-
-            <div class="row">
-              <textarea id="fNotes" rows="3" placeholder="Item notes (ex: DI after pedals, needs boom, etc)" style="width:100%"></textarea>
-            </div>
-
-            <div class="small">Inputs</div>
-            <div class="scrollBox">
-              <table id="inputsTable">
-                <thead>
-                  <tr>
-                    <th style="width:62px">Ch</th>
-                    <th>Source</th>
-                    <th style="width:70px">Mix</th>
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-            </div>
-
-            <div class="small">Monitor mixes</div>
-            <div class="scrollBox">
-              <table id="mixTable">
-                <thead>
-                  <tr>
-                    <th style="width:70px">Mix</th>
-                    <th>Who</th>
-                    <th>Notes</th>
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-            </div>
-
-            <div class="small">Show notes</div>
-            <textarea id="showNotes" rows="6" placeholder="Show notes (parking, backline, contact, set length, etc)"></textarea>
-
-            <div class="small mono" id="notesPreview" style="white-space:pre-wrap; padding:10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:12px;"></div>
-          </div>
-        </div>
-      </details>
     </section>
   </div>
 
   <script>
-    const $ = (s) => document.querySelector(s);
-    const stageEl = $("#stage");
-    const stageInnerEl = $("#stageInner");
+    /* =========================================================
+      StagePlot v1.5.5 (metric)
+      - Adds unit toggle ft/m
+      - Keeps internal storage in feet for backwards compatibility
+      - Displays stage dims in selected units
+      - Maintains "stage always fits inside the square at 100%" by:
+        fitScale (auto) * viewZoom (user) inside a clipped viewport
+    ========================================================= */
 
-    const STORAGE_KEY = "stageplot_v2_state";
-    const STORAGE_KEY_LIB = "stageplot_v2_user_library";
+    const VERSION = "1.5.5 (metric)";
+    const STORAGE_KEY = "stageplot_v2_project";
+    const STORAGE_KEY_UI = "stageplot_v2_ui";
 
-    // Accordion state keys
-    const ACC_KEY = "stageplot_v2_accordion_state";
+    // internal units are feet
+    const FT_PER_M = 3.280839895;
 
-    const BUILTIN_LIBRARY = {
-      version: 1,
-      items: [
-        { type:"Vocal", labelDefault:"Vox", category:"People", w:3.2, h:2.2, sprite:"mic", inputHint:"Ch 1", mixHint:"M1" },
-        { type:"Guitar", labelDefault:"Guitar", category:"Instruments", w:3.2, h:2.2, sprite:"guitar", inputHint:"Ch ?", mixHint:"M?" },
-        { type:"Bass", labelDefault:"Bass", category:"Instruments", w:3.2, h:2.2, sprite:"bass", inputHint:"Ch ?", mixHint:"M?" },
-        { type:"Keys", labelDefault:"Keys", category:"Instruments", w:3.6, h:2.4, sprite:"keys", inputHint:"Ch ?", mixHint:"M?" },
-        { type:"Drums", labelDefault:"Drums", category:"Instruments", w:5.2, h:3.4, sprite:"drums", inputHint:"Multi", mixHint:"M?" },
-
-        { type:"Amp", labelDefault:"Amp", category:"Stage gear", w:2.4, h:2.0, sprite:"amp" },
-        { type:"Wedge", labelDefault:"Wedge", category:"Stage gear", w:2.0, h:1.6, sprite:"wedge", inputHint:"Aux ?", mixHint:"Aux?" },
-        { type:"IEM", labelDefault:"IEM", category:"Stage gear", w:2.0, h:1.6, sprite:"iem", mixHint:"M?" },
-        { type:"DI", labelDefault:"DI", category:"Stage gear", w:1.8, h:1.4, sprite:"di" },
-        { type:"Mic Stand", labelDefault:"Stand", category:"Stage gear", w:1.8, h:1.4, sprite:"stand" },
-
-        { type:"Power Outlet", labelDefault:"Power", category:"Electrical", w:1.6, h:1.2, sprite:"outlet" },
-        { type:"Riser", labelDefault:"Riser", category:"Stage", w:4.4, h:2.2, sprite:"riser" },
-        { type:"FOH Console", labelDefault:"FOH", category:"Front of house", w:3.6, h:2.0, sprite:"console" }
-      ]
-    };
-
-    function deepClone(x){ return JSON.parse(JSON.stringify(x)); }
-    function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
-
-    function normalizeHex(h){
-      if(!h) return "#4aa3ff";
-      if(/^#([0-9a-f]{3})$/i.test(h)){
-        const m = h.slice(1).split("");
-        return "#" + m.map(x=>x+x).join("");
-      }
-      if(/^#([0-9a-f]{6})$/i.test(h)) return h;
-      return "#4aa3ff";
-    }
-
-    function hexToRgba(hex, a){
-      const h = normalizeHex(hex).slice(1);
-      const r = parseInt(h.slice(0,2),16);
-      const g = parseInt(h.slice(2,4),16);
-      const b = parseInt(h.slice(4,6),16);
-      return `rgba(${r},${g},${b},${a})`;
-    }
-
-    function escapeHtml(s){
-      return String(s ?? "").replace(/[&<>"']/g, c => ({
-        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-      }[c]));
-    }
-
-    function uid(){
-      return Math.random().toString(16).slice(2) + Date.now().toString(16);
-    }
-
-    function loadJSON(key){
-      try{
-        const raw = localStorage.getItem(key);
-        return raw ? JSON.parse(raw) : null;
-      }catch(e){ return null; }
-    }
-    function saveJSON(key, value){
-      localStorage.setItem(key, JSON.stringify(value));
-    }
-
-    function mergedLibrary(){
-      const userLib = loadJSON(STORAGE_KEY_LIB) || { version: 1, items: [] };
-      const map = new Map();
-      for(const it of BUILTIN_LIBRARY.items) map.set(it.type.toLowerCase(), it);
-      for(const it of userLib.items || []) map.set((it.type||"").toLowerCase(), it);
-      const items = [...map.values()];
-      return { version: 1, items };
-    }
-
-    function buildCategoryOptions(lib){
-      const sel = $("#category");
-      const cats = new Set(["All"]);
-      for(const it of lib.items){
-        cats.add(it.category || "Other");
-      }
-      const list = [...cats].sort((a,b)=>{
-        if(a==="All") return -1;
-        if(b==="All") return 1;
-        return a.localeCompare(b);
-      });
-      sel.innerHTML = "";
-      for(const c of list){
-        const opt = document.createElement("option");
-        opt.value = c;
-        opt.textContent = c;
-        sel.appendChild(opt);
-      }
-    }
-
-    const defaults = {
-      stage: { w: 24, d: 16 },
+    const DEFAULTS = {
+      units: "ft",
+      preset: "medium",
+      stageWft: 24,
+      stageDft: 16,
+      audienceView: false,
+      viewZoom: 100,
       bandName: "",
-      notes: "",
+      showNotes: "",
       items: [],
-      view: "audience", // "audience" or "stage"
-      viewZoom: 1
+      nextId: 1
     };
 
-    let state = loadJSON(STORAGE_KEY) || deepClone(defaults);
+    const PRESETS_FT = {
+      small:  { w: 20, d: 12 },
+      medium: { w: 24, d: 16 },
+      large:  { w: 32, d: 20 }
+    };
 
-    // Ensure view exists for older saves
-    if(!state.view) state.view = "audience";
-    if(state.viewZoom == null) state.viewZoom = 1;
+    const LIB = [
+      { id:"vocal", name:"Vocal", cat:"people", w:2.0, h:1.2, label:"Vox" },
+      { id:"guitar", name:"Guitar", cat:"instruments", w:2.0, h:1.2, label:"Gtr" },
+      { id:"bass", name:"Bass", cat:"instruments", w:2.0, h:1.2, label:"Bass" },
+      { id:"keys", name:"Keys", cat:"instruments", w:2.4, h:1.4, label:"Keys" },
+      { id:"drums", name:"Drums", cat:"instruments", w:3.2, h:2.2, label:"Drums" },
+      { id:"wedge", name:"Wedge monitor", cat:"audio", w:1.6, h:1.1, label:"Wedge" },
+      { id:"iem", name:"IEM pack", cat:"audio", w:1.4, h:1.0, label:"IEM" },
+      { id:"mic", name:"Mic stand", cat:"audio", w:1.0, h:1.0, label:"Mic" },
+      { id:"di", name:"DI box", cat:"audio", w:1.0, h:0.8, label:"DI" },
+      { id:"amp", name:"Guitar amp", cat:"stage", w:1.6, h:1.2, label:"Amp" },
+      { id:"cab", name:"Bass cab", cat:"stage", w:1.8, h:1.3, label:"Cab" },
+      { id:"riser", name:"Riser", cat:"stage", w:4.0, h:2.5, label:"Riser" },
+      { id:"power", name:"Power drop", cat:"power", w:1.2, h:1.0, label:"Power" },
+      { id:"outlet", name:"Outlet", cat:"power", w:1.2, h:1.0, label:"Outlet" }
+    ];
 
-    function save(){ saveJSON(STORAGE_KEY, state); }
+    // DOM
+    const stagePreset = document.getElementById("stagePreset");
+    const unitsSelect = document.getElementById("unitsSelect");
+    const unitsBadge = document.getElementById("unitsBadge");
+    const stageW = document.getElementById("stageW");
+    const stageD = document.getElementById("stageD");
+    const wLabel = document.getElementById("wLabel");
+    const dLabel = document.getElementById("dLabel");
+    const stageMetaText = document.getElementById("stageMetaText");
+    const viewTag = document.getElementById("viewTag");
+    const flipBtn = document.getElementById("flipBtn");
+    const centerBtn = document.getElementById("centerBtn");
+    const dupBtn = document.getElementById("dupBtn");
+    const delBtn = document.getElementById("delBtn");
 
-    // Apply global view zoom (visual only)
-    function applyViewZoom(){
-      const z = clamp(parseFloat(state.viewZoom || 1), 0.6, 2.0);
-      state.viewZoom = z;
-      if(stageInnerEl) stageInnerEl.style.transform = `scale(${z})`;
-      const r = $("#viewZoomReadout");
-      if(r) r.textContent = `${Math.round(z * 100)}%`;
-    }
+    const stageSquare = document.getElementById("stageSquare");
+    const stageViewport = document.getElementById("stageViewport");
+    const stageInner = document.getElementById("stageInner");
+    const labelTop = document.getElementById("labelTop");
+    const labelBottom = document.getElementById("labelBottom");
 
-    // Multi select state
+    const viewZoom = document.getElementById("viewZoom");
+    const viewZoomVal = document.getElementById("viewZoomVal");
+    const resetViewBtn = document.getElementById("resetViewBtn");
+
+    const libSearch = document.getElementById("libSearch");
+    const libCat = document.getElementById("libCat");
+    const libList = document.getElementById("libList");
+    const misc1 = document.getElementById("misc1");
+    const misc2 = document.getElementById("misc2");
+    const misc3 = document.getElementById("misc3");
+
+    const bandName = document.getElementById("bandName");
+    const showNotes = document.getElementById("showNotes");
+    const selBadge = document.getElementById("selBadge");
+    const selPanel = document.getElementById("selPanel");
+
+    const itLabel = document.getElementById("itLabel");
+    const itColor = document.getElementById("itColor");
+    const itInput = document.getElementById("itInput");
+    const itMix = document.getElementById("itMix");
+    const itScale = document.getElementById("itScale");
+    const itScaleVal = document.getElementById("itScaleVal");
+    const itNotes = document.getElementById("itNotes");
+    const rotReset = document.getElementById("rotReset");
+    const scaleReset = document.getElementById("scaleReset");
+
+    const printBtn = document.getElementById("printBtn");
+    const exportBtn = document.getElementById("exportBtn");
+    const importBtn = document.getElementById("importBtn");
+    const importFile = document.getElementById("importFile");
+
+    const clearAllBtn = document.getElementById("clearAllBtn");
+
+    // State
+    let project = loadProject();
+    let ui = loadUI();
+
     let selectedIds = new Set();
     let primaryId = null;
 
-    function hasModifier(e){
-      return !!(e && (e.shiftKey || e.metaKey || e.ctrlKey));
-    }
+    // Drag state
+    let drag = null; // {id, startX, startY, itemStartXft, itemStartYft}
+    let resize = null; // {id, startX, startY, w0ft, h0ft, scale0}
+    let rotate = null; // {id, startX, startY, a0}
 
-    function setPrimary(id){
-      primaryId = id || null;
-      if(primaryId && !selectedIds.has(primaryId)){
-        selectedIds.add(primaryId);
-      }
-    }
+    // Rendering scale
+    // pixels per foot baseline before auto fitScale
+    const PPF = 28;
 
-    function clearSelection(){
-      selectedIds.clear();
-      primaryId = null;
-    }
+    init();
 
-    function toggleSelect(id){
-      if(selectedIds.has(id)){
-        selectedIds.delete(id);
-        if(primaryId === id){
-          const next = selectedIds.values().next();
-          primaryId = next && !next.done ? next.value : null;
+    function init(){
+      // Apply saved values to controls
+      stagePreset.value = project.preset;
+      unitsSelect.value = project.units || "ft";
+      viewZoom.value = String(project.viewZoom || 100);
+      bandName.value = project.bandName || "";
+      showNotes.value = project.showNotes || "";
+
+      applyUnitsUI();
+      setStageInputsFromProject();
+
+      renderLibrary();
+      renderAll();
+
+      // Events
+      stagePreset.addEventListener("change", () => {
+        project.preset = stagePreset.value;
+        if(project.preset !== "custom"){
+          const p = PRESETS_FT[project.preset] || PRESETS_FT.medium;
+          project.stageWft = p.w;
+          project.stageDft = p.d;
+          setStageInputsFromProject();
         }
-      }else{
-        selectedIds.add(id);
-        primaryId = id;
-      }
-    }
+        saveAndRender();
+      });
 
-    function selectOnly(id){
-      selectedIds = new Set([id]);
-      primaryId = id;
-    }
+      unitsSelect.addEventListener("change", () => {
+        // convert visible inputs to new units but keep internal feet
+        const prev = project.units || "ft";
+        const next = unitsSelect.value;
 
-    function selectedItems(){
-      return state.items.filter(i => selectedIds.has(i.id));
-    }
+        // Read current input values as "prev units" and store to feet
+        const wVal = safeNum(stageW.value, displayFromFt(project.stageWft, prev));
+        const dVal = safeNum(stageD.value, displayFromFt(project.stageDft, prev));
+        project.stageWft = ftFromDisplay(wVal, prev);
+        project.stageDft = ftFromDisplay(dVal, prev);
 
-    function setStageFromInputs(){
-      const w = clamp(parseFloat($("#stageW").value || 24), 8, 80);
-      const d = clamp(parseFloat($("#stageD").value || 16), 6, 60);
-      state.stage.w = w;
-      state.stage.d = d;
-      $("#stageLabel").textContent = `${w} x ${d}`;
-      save();
-      render();
-    }
+        project.units = next;
+        applyUnitsUI();
+        setStageInputsFromProject();
+        saveAndRender();
+      });
 
-    /* Print-safe sizing (fixes stage disappearing in print) */
-    const PRINT_FALLBACK = { w: 960, h: 720 };
+      stageW.addEventListener("input", () => {
+        project.preset = "custom";
+        stagePreset.value = "custom";
+        project.stageWft = ftFromDisplay(safeNum(stageW.value, 24), project.units);
+        saveAndRender();
+      });
 
-    function getStageSizePx(){
-      const rect = stageEl.getBoundingClientRect();
-      let w = stageEl.clientWidth || rect.width || stageEl.offsetWidth || 0;
-      let h = stageEl.clientHeight || rect.height || stageEl.offsetHeight || 0;
+      stageD.addEventListener("input", () => {
+        project.preset = "custom";
+        stagePreset.value = "custom";
+        project.stageDft = ftFromDisplay(safeNum(stageD.value, 16), project.units);
+        saveAndRender();
+      });
 
-      if (w < 50 || h < 50) {
-        w = PRINT_FALLBACK.w;
-        h = PRINT_FALLBACK.h;
-      }
-      return { w, h, rect };
-    }
+      bandName.addEventListener("input", () => {
+        project.bandName = bandName.value;
+        saveProject(project);
+      });
+      showNotes.addEventListener("input", () => {
+        project.showNotes = showNotes.value;
+        saveProject(project);
+      });
 
-    function stageToPx(xFt, yFt){
-      const { w, h, rect } = getStageSizePx();
+      flipBtn.addEventListener("click", () => {
+        project.audienceView = !project.audienceView;
+        saveAndRender();
+      });
 
-      const pad = 16;
-      const usableW = Math.max(1, w - pad*2);
-      const usableH = Math.max(1, h - pad*2);
-      const sx = usableW / state.stage.w;
-      const sy = usableH / state.stage.d;
+      centerBtn.addEventListener("click", centerSelection);
+      dupBtn.addEventListener("click", duplicateSelection);
+      delBtn.addEventListener("click", deleteSelection);
 
-      return { x: pad + xFt * sx, y: pad + yFt * sy, sx, sy, pad, usableW, usableH, rect };
-    }
+      viewZoom.addEventListener("input", () => {
+        project.viewZoom = safeNum(viewZoom.value, 100);
+        viewZoomVal.textContent = `${project.viewZoom}%`;
+        saveProject(project);
+        applyStageTransform();
+      });
 
-    function pxToStage(clientX, clientY){
-      const { w, h, rect } = getStageSizePx();
+      resetViewBtn.addEventListener("click", () => {
+        project.viewZoom = 100;
+        viewZoom.value = "100";
+        viewZoomVal.textContent = "100%";
+        saveProject(project);
+        applyStageTransform();
+      });
 
-      const pad = 16;
-      const usableW = Math.max(1, w - pad*2);
-      const usableH = Math.max(1, h - pad*2);
+      libSearch.addEventListener("input", renderLibrary);
+      libCat.addEventListener("change", renderLibrary);
 
-      const xIn = clamp(clientX - rect.left - pad, 0, usableW);
-      const yIn = clamp(clientY - rect.top - pad, 0, usableH);
+      misc1.addEventListener("click", () => addMisc(1));
+      misc2.addEventListener("click", () => addMisc(2));
+      misc3.addEventListener("click", () => addMisc(3));
 
-      const sx = usableW / state.stage.w;
-      const sy = usableH / state.stage.d;
+      printBtn.addEventListener("click", () => {
+        // best practice: force a reflow and ensure transform applied
+        applyStageTransform();
+        setTimeout(() => window.print(), 30);
+      });
 
-      return { xFt: xIn / sx, yFt: yIn / sy, rect, pad, usableW, usableH, sx, sy };
-    }
+      exportBtn.addEventListener("click", exportProject);
+      importBtn.addEventListener("click", () => importFile.click());
+      importFile.addEventListener("change", importProject);
 
-    function getStageScale(){
-      const { w, h, rect } = getStageSizePx();
-
-      const pad = 16;
-      const usableW = Math.max(1, w - pad*2);
-      const usableH = Math.max(1, h - pad*2);
-
-      const sx = usableW / state.stage.w;
-      const sy = usableH / state.stage.d;
-
-      return { rect, pad, usableW, usableH, sx, sy };
-    }
-
-    const ICON_PATHS = {
-      mic: `
-        <path fill="currentColor" d="M32 6c-6 0-11 5-11 11v14c0 6 5 11 11 11s11-5 11-11V17c0-6-5-11-11-11zm-7 25V17a7 7 0 0 1 14 0v14a7 7 0 0 1-14 0z"/>
-        <path fill="currentColor" d="M18 30a2 2 0 0 1 2 2c0 7 5 13 12 13s12-6 12-13a2 2 0 1 1 4 0c0 8-6 15-14 16v6h6a2 2 0 1 1 0 4H24a2 2 0 1 1 0-4h6v-6c-8-1-14-8-14-16a2 2 0 0 1 2-2z"/>
-      `,
-      guitar: `<path fill="currentColor" d="M44 6l14 14-4 4-3-3-9 9c2 5 0 12-5 17-6 6-15 7-20 2l-5 5a4 4 0 0 1-6-6l5-5c-5-5-4-14 2-20 5-5 12-7 17-5l9-9-3-3 4-4zm-24 19c-4 4-5 10-1 14s10 3 14-1 5-10 1-14-10-3-14 1z"/>`,
-      bass: `<path fill="currentColor" d="M46 6l12 12-4 4-2-2-10 10c3 6 1 13-5 19-7 7-17 8-23 2l-4 4a4 4 0 1 1-6-6l4-4c-6-6-5-16 2-23 6-6 13-8 19-5L39 17l-2-2 4-4zM20 24c-5 5-6 12-2 16s11 3 16-2 6-12 2-16-11-3-16 2z"/>`,
-      keys: `
-        <path fill="currentColor" d="M10 18h44a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h44V22H10z"/>
-        <path fill="currentColor" d="M14 22h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22zm6 0h4v20h-4V22z"/>
-        <path fill="currentColor" d="M19 22h3v12h-3V22zm8 0h3v12h-3V22zm8 0h3v12h-3V22zm8 0h3v12h-3V22z"/>
-      `,
-      drums: `
-        <path fill="currentColor" d="M14 26c0-8 8-14 18-14s18 6 18 14-8 14-18 14-18-6-18-14zm4 0c0 6 6 10 14 10s14-4 14-10-6-10-14-10-14 4-14 10z"/>
-        <path fill="currentColor" d="M20 40h24v12a4 4 0 0 1-4 4H24a4 4 0 0 1-4-4V40zm4 4v8h16v-8H24z"/>
-        <path fill="currentColor" d="M10 18a2 2 0 0 1 3 0l8 8a2 2 0 0 1-3 3l-8-8a2 2 0 0 1 0-3zm44 0a2 2 0 0 1 0 3l-8 8a2 2 0 1 1-3-3l8-8a2 2 0 0 1 3 0z"/>
-      `,
-      amp: `
-        <path fill="currentColor" d="M14 16h36a4 4 0 0 1 4 4v28a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V20a4 4 0 0 1 4-4zm0 4v28h36V20H14z"/>
-        <path fill="currentColor" d="M18 24h28v4H18v-4zm0 8h28v4H18v-4zm0 8h18v4H18v-4z"/>
-        <circle fill="currentColor" cx="44" cy="42" r="3"/>
-      `,
-      wedge: `
-        <path fill="currentColor" d="M10 42l44-16v18a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4v-2z"/>
-        <path fill="currentColor" d="M12 40l40-14v3L12 43v-3z" opacity=".5"/>
-      `,
-      iem: `
-        <path fill="currentColor" d="M20 28c0-7 5-12 12-12s12 5 12 12v10a2 2 0 1 1-4 0V28c0-4-3-8-8-8s-8 4-8 8v10a2 2 0 1 1-4 0V28z"/>
-        <path fill="currentColor" d="M16 40a6 6 0 0 0 12 0v-2h-4v2a2 2 0 0 1-4 0v-2h-4v2zm20 0a6 6 0 0 0 12 0v-2h-4v2a2 2 0 0 1-4 0v-2h-4v2z"/>
-      `,
-      di: `
-        <path fill="currentColor" d="M18 18h28a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h28V22H18z"/>
-        <path fill="currentColor" d="M22 26h8v4h-8v-4zm0 8h12v4H22v-4z"/>
-        <circle fill="currentColor" cx="42" cy="28" r="2"/>
-        <circle fill="currentColor" cx="42" cy="36" r="2"/>
-      `,
-      stand: `
-        <path fill="currentColor" d="M40 10a2 2 0 0 1 2 2v10a2 2 0 1 1-4 0V12a2 2 0 0 1 2-2z"/>
-        <path fill="currentColor" d="M26 22a2 2 0 0 1 3 0l11 11a2 2 0 0 1-3 3L26 25a2 2 0 0 1 0-3z"/>
-        <path fill="currentColor" d="M40 32a2 2 0 0 1 2 2v14l6 6a2 2 0 0 1-3 3l-5-5-5 5a2 2 0 1 1-3-3l6-6V34a2 2 0 0 1 2-2z"/>
-        <path fill="currentColor" d="M20 52h40a2 2 0 1 1 0 4H20a2 2 0 1 1 0-4z"/>
-      `,
-      outlet: `
-        <path fill="currentColor" d="M20 12h24a8 8 0 0 1 8 8v24a8 8 0 0 1-8 8H20a8 8 0 0 1-8-8V20a8 8 0 0 1 8-8zm0 4a4 4 0 0 0-4 4v24a4 4 0 0 0 4 4h24a4 4 0 0 0 4-4V20a4 4 0 0 0-4-4H20z"/>
-        <circle fill="currentColor" cx="26" cy="28" r="4"/>
-        <circle fill="currentColor" cx="38" cy="28" r="4"/>
-        <rect fill="currentColor" x="29" y="36" width="6" height="10" rx="3"/>
-      `,
-      riser: `
-        <path fill="currentColor" d="M10 22h44a4 4 0 0 1 4 4v16a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V26a4 4 0 0 1 4-4zm0 4v16h44V26H10z"/>
-        <path fill="currentColor" d="M14 30h10v8H14v-8zm13 0h10v8H27v-8zm13 0h10v8H40v-8z" opacity=".55"/>
-      `,
-      console: `
-        <path fill="currentColor" d="M10 18h44a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h44V22H10z"/>
-        <path fill="currentColor" d="M14 26h36v4H14v-4zm0 8h20v4H14v-4z"/>
-        <circle fill="currentColor" cx="44" cy="36" r="2.5"/>
-        <circle fill="currentColor" cx="50" cy="36" r="2.5"/>
-      `,
-      misc: `
-        <path fill="currentColor" d="M14 18h36a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4zm0 4v20h36V22H14z"/>
-        <path fill="currentColor" d="M20 30h24v4H20v-4zm0 8h16v4H20v-4z" opacity=".6"/>
-        <circle fill="currentColor" cx="46" cy="40" r="3"/>
-      `,
-      chev: `<path fill="currentColor" d="M12 15.5 5.5 9a1 1 0 0 1 1.4-1.4l5.1 5.1 5.1-5.1A1 1 0 1 1 18.5 9L12 15.5z"/>`
-    };
-
-    function renderSprite(sprite){
-      const key = (sprite || "").toLowerCase();
-      const paths = ICON_PATHS[key] || ICON_PATHS.misc;
-      const vb = (key === "chev") ? "0 0 24 24" : "0 0 64 64";
-      return `<svg class="icon" viewBox="${vb}" aria-hidden="true">${paths}</svg>`;
-    }
-
-    function rotatedAABB(w, h, deg){
-      const r = (deg || 0) * Math.PI / 180;
-      const c = Math.cos(r), s = Math.sin(r);
-      const bw = Math.abs(w*c) + Math.abs(h*s);
-      const bh = Math.abs(w*s) + Math.abs(h*c);
-      return { bw, bh };
-    }
-
-    function enforceBounds(item){
-      const wFt = item.w * (item.scale || 1);
-      const hFt = item.h * (item.scale || 1);
-      const rot = item.rot || 0;
-
-      const { bw, bh } = rotatedAABB(wFt, hFt, rot);
-
-      let cx = item.x + wFt/2;
-      let cy = item.y + hFt/2;
-
-      cx = clamp(cx, bw/2, state.stage.w - bw/2);
-      cy = clamp(cy, bh/2, state.stage.d - bh/2);
-
-      item.x = cx - wFt/2;
-      item.y = cy - hFt/2;
-
-      item.x = clamp(item.x, 0, state.stage.w - wFt);
-      item.y = clamp(item.y, 0, state.stage.d - hFt);
-    }
-
-    /* View flip - real 180-degree perspective transform (position + rotation) */
-    function updateViewUI(){
-      const b = $("#btnFlipView");
-      if(!b) return;
-      b.textContent = (state.view === "stage") ? "View: Stage" : "View: Audience";
-    }
-
-    function flipPerspective180(){
-      state.view = (state.view === "stage") ? "audience" : "stage";
-
-      for(const it of state.items){
-        const s = (it.scale || 1);
-        const wFt = (it.w || 0) * s;
-        const hFt = (it.h || 0) * s;
-
-        it.x = state.stage.w - (it.x + wFt);
-        it.y = state.stage.d - (it.y + hFt);
-
-        it.rot = ((it.rot || 0) + 180) % 360;
-
-        enforceBounds(it);
-      }
-
-      save();
-      render();
-      syncEditor();
-      updateViewUI();
-    }
-
-    function addFromCatalog(catItem){
-      const it = catItem;
-      const item = {
-        id: uid(),
-        type: it.type,
-        sprite: it.sprite || "mic",
-        x: (state.stage.w * 0.5) - (it.w/2),
-        y: (state.stage.d * 0.55) - (it.h/2),
-        w: it.w,
-        h: it.h,
-        scale: 1.0,
-        rot: 0,
-        label: it.labelDefault || it.type,
-        color: "#4aa3ff",
-        input: it.inputHint || "",
-        mix: it.mixHint || "",
-        notes: ""
-      };
-      state.items.push(item);
-      selectOnly(item.id);
-      save();
-      render();
-      syncEditor();
-
-      // On mobile, keep info panel easy to reach
-      autoAccordionBehaviorAfterSelection();
-    }
-
-    function addMisc(size){
-      const presets = {
-        S: { w: 2.2, h: 1.6, label: "Misc 1" },
-        M: { w: 3.2, h: 2.2, label: "Misc 2" },
-        L: { w: 4.4, h: 3.0, label: "Misc 3" },
-      };
-      const p = presets[size] || presets.M;
-
-      const item = {
-        id: uid(),
-        type: "Misc Gear",
-        sprite: "misc",
-        x: (state.stage.w * 0.5) - (p.w/2),
-        y: (state.stage.d * 0.70) - (p.h/2),
-        w: p.w,
-        h: p.h,
-        scale: 1.0,
-        rot: 0,
-        label: p.label,
-        color: "#4aa3ff",
-        input: "",
-        mix: "",
-        notes: ""
-      };
-
-      state.items.push(item);
-      selectOnly(item.id);
-      save();
-      render();
-      syncEditor();
-
-      autoAccordionBehaviorAfterSelection();
-    }
-
-    function render(){
-      $("#stageW").value = state.stage.w;
-      $("#stageD").value = state.stage.d;
-      $("#stageLabel").textContent = `${state.stage.w} x ${state.stage.d}`;
-
-      $("#bandName").value = state.bandName || "";
-      const bn = (state.bandName || "").trim();
-      const pb = document.querySelector("#printBandName");
-      if (pb) pb.textContent = bn ? bn : "StagePlot";
-
-      $("#showNotes").value = state.notes || "";
-      $("#notesPreview").textContent = state.notes || "";
-
-      // Sync view zoom UI + apply transform
-      const vz = clamp(parseFloat(state.viewZoom || 1), 0.6, 2.0);
-      state.viewZoom = vz;
-      $("#viewZoom").value = vz;
-      $("#viewZoomReadout").textContent = `${Math.round(vz * 100)}%`;
-      applyViewZoom();
-
-      const lib = mergedLibrary();
-      $("#libCount").textContent = `${lib.items.length} items`;
-      const search = ($("#search").value || "").trim().toLowerCase();
-      const cat = $("#category").value || "All";
-
-      const filtered = lib.items.filter(it => {
-        const inCat = (cat === "All") || ((it.category || "Other") === cat);
-        const inSearch = !search || (it.type || "").toLowerCase().includes(search) || (it.category || "").toLowerCase().includes(search);
-        return inCat && inSearch;
-      }).sort((a,b)=> (a.type||"").localeCompare(b.type||""));
-
-      const listEl = $("#catalog");
-      listEl.innerHTML = "";
-      for(const it of filtered){
-        const row = document.createElement("div");
-        row.className = "catItem";
-        row.innerHTML = `
-          <div class="catLeft">
-            <div class="catIcon">${renderSprite(it.sprite)}</div>
-            <div class="catText">
-              <div class="catName" title="${escapeHtml(it.type)}">${escapeHtml(it.type)}</div>
-              <div class="catMeta">${escapeHtml(it.category || "Other")} base ${it.w}x${it.h}</div>
-            </div>
-          </div>
-          <button class="primary">Add</button>
-        `;
-        row.querySelector("button").addEventListener("click", (e) => {
-          e.stopPropagation();
-          clearConfirms();
-          addFromCatalog(it);
-        });
-        listEl.appendChild(row);
-      }
-
-      (stageInnerEl || stageEl).querySelectorAll(".item").forEach(n => n.remove());
-
-      if(primaryId && !state.items.some(i => i.id === primaryId)){
+      clearAllBtn.addEventListener("click", () => {
+        if(!confirm("Reset project? This clears items and notes in this browser.")) return;
+        project = structuredClone(DEFAULTS);
+        selectedIds.clear();
         primaryId = null;
+        stagePreset.value = project.preset;
+        unitsSelect.value = project.units;
+        viewZoom.value = "100";
+        bandName.value = "";
+        showNotes.value = "";
+        applyUnitsUI();
+        setStageInputsFromProject();
+        saveAndRender(true);
+      });
+
+      // Stage interactions
+      stageViewport.addEventListener("pointerdown", onStagePointerDown);
+      window.addEventListener("pointermove", onPointerMove);
+      window.addEventListener("pointerup", onPointerUp);
+
+      // Keyboard
+      window.addEventListener("keydown", onKeyDown);
+
+      // Resize observer for fitScale
+      const ro = new ResizeObserver(() => applyStageTransform());
+      ro.observe(stageSquare);
+      ro.observe(stageViewport);
+
+      // initial UI
+      viewZoomVal.textContent = `${project.viewZoom || 100}%`;
+      applyStageTransform();
+    }
+
+    function applyUnitsUI(){
+      const u = project.units || "ft";
+      unitsBadge.textContent = `Units: ${u}`;
+      wLabel.textContent = `Stage width (${u})`;
+      dLabel.textContent = `Stage depth (${u})`;
+
+      // steps
+      if(u === "m"){
+        stageW.step = "0.1";
+        stageD.step = "0.1";
+      }else{
+        stageW.step = "0.1";
+        stageD.step = "0.1";
       }
-      const alive = new Set(state.items.map(i => i.id));
-      selectedIds = new Set([...selectedIds].filter(id => alive.has(id)));
-      if(!primaryId && selectedIds.size){
-        primaryId = selectedIds.values().next().value;
-      }
+    }
 
-      for(const item of state.items){
-        if(item.rot == null) item.rot = 0;
+    function setStageInputsFromProject(){
+      const u = project.units || "ft";
+      stageW.value = round1(displayFromFt(project.stageWft, u));
+      stageD.value = round1(displayFromFt(project.stageDft, u));
+      updateStageMetaText();
+    }
 
-        const div = document.createElement("div");
-        const isSel = selectedIds.has(item.id);
-        const isPrimary = item.id === primaryId;
+    function updateStageMetaText(){
+      const u = project.units || "ft";
+      const w = round1(displayFromFt(project.stageWft, u));
+      const d = round1(displayFromFt(project.stageDft, u));
+      stageMetaText.textContent = `Stage: ${w} ${u} x ${d} ${u}`;
+      viewTag.textContent = project.audienceView ? "Audience view" : "Stage view";
+      labelTop.textContent = project.audienceView ? "AUDIENCE" : "UPSTAGE";
+      labelBottom.textContent = project.audienceView ? "UPSTAGE" : "AUDIENCE";
+    }
 
-        div.className = "item" + (isSel ? " selected" : "") + (isPrimary ? " primary" : "");
-        div.dataset.id = item.id;
+    function renderLibrary(){
+      const q = (libSearch.value || "").trim().toLowerCase();
+      const c = libCat.value;
 
-        const p = stageToPx(item.x, item.y);
-        const wFt = item.w * (item.scale || 1);
-        const hFt = item.h * (item.scale || 1);
+      const filtered = LIB.filter(it => {
+        const matchesQ = !q || it.name.toLowerCase().includes(q) || it.label.toLowerCase().includes(q);
+        const matchesC = (c === "all") || (it.cat === c);
+        return matchesQ && matchesC;
+      });
 
-        const wPx = wFt * p.sx;
-        const hPx = hFt * p.sy;
-
-        div.style.left = `${p.x}px`;
-        div.style.top = `${p.y}px`;
-        div.style.width = `${wPx}px`;
-        div.style.height = `${hPx}px`;
-
-        const c = normalizeHex(item.color || "#4aa3ff");
-        div.style.borderColor = hexToRgba(c, 0.55);
-        div.style.background = hexToRgba(c, 0.14);
-        div.style.color = c;
-        div.style.transform = `rotate(${item.rot || 0}deg)`;
-
-        div.innerHTML = `
-          <div class="iconWrap">${renderSprite(item.sprite)}</div>
-          <div class="textWrap">
-            <div class="type">${escapeHtml(item.type)}</div>
-            <div class="label" title="${escapeHtml(item.label)}">${escapeHtml(item.label)}</div>
-            <div class="sub">
-              <span>${escapeHtml(item.input || "")}</span>
-              <span>${escapeHtml(item.mix || "")}</span>
-            </div>
+      libList.innerHTML = "";
+      filtered.forEach(it => {
+        const el = document.createElement("div");
+        el.className = "libItem";
+        el.innerHTML = `
+          <div>
+            <div class="name">${escapeHtml(it.name)}</div>
+            <div class="meta">${escapeHtml(it.cat)} - ${escapeHtml(it.label)}</div>
           </div>
+          <button class="button">Add</button>
         `;
+        el.querySelector("button").addEventListener("click", () => addItemFromLib(it));
+        libList.appendChild(el);
+      });
 
-        if(isPrimary){
-          const overlay = document.createElement("div");
-          overlay.className = "handles";
-          overlay.innerHTML = `
-            <div class="rotStem"></div>
-            <div class="rotHandle" data-rot="1" title="Rotate (Shift snaps 15 degrees)"></div>
-
-            <div class="handle nw" data-h="nw"></div>
-            <div class="handle n"  data-h="n"></div>
-            <div class="handle ne" data-h="ne"></div>
-            <div class="handle e"  data-h="e"></div>
-            <div class="handle se" data-h="se"></div>
-            <div class="handle s"  data-h="s"></div>
-            <div class="handle sw" data-h="sw"></div>
-            <div class="handle w"  data-h="w"></div>
-          `;
-          div.appendChild(overlay);
-
-          overlay.querySelectorAll(".handle").forEach(h => {
-            h.addEventListener("pointerdown", onResizeStart);
-          });
-          overlay.querySelector(".rotHandle").addEventListener("pointerdown", onRotateStart);
-        }
-
-        div.addEventListener("pointerdown", onItemPointerDown);
-        (stageInnerEl || stageEl).appendChild(div);
-      }
-
-      rebuildLists();
-      updateActionButtons();
-    }
-
-    function updateActionButtons(){
-      const count = selectedIds.size;
-      $("#btnResetRot").disabled = !(primaryId && state.items.find(i => i.id === primaryId));
-      $("#btnDuplicate").disabled = (count === 0);
-      $("#btnCenter").disabled = (count === 0);
-      $("#btnDelete").disabled = (count === 0);
-    }
-
-    function rebuildLists(){
-      const tbody = $("#inputsTable tbody");
-      tbody.innerHTML = "";
-      const rows = state.items
-        .filter(i => (i.input || "").trim() || (i.type || "").trim())
-        .map(i => ({
-          ch: (i.input || "").trim(),
-          src: `${i.label || i.type}`.trim(),
-          mix: (i.mix || "").trim(),
-        }))
-        .sort((a,b) => (a.ch || "").localeCompare(b.ch || ""));
-
-      for(const r of rows){
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td class="mono">${escapeHtml(r.ch)}</td>
-          <td>${escapeHtml(r.src)}</td>
-          <td class="mono">${escapeHtml(r.mix)}</td>
-        `;
-        tbody.appendChild(tr);
-      }
-
-      const mixMap = new Map();
-      for(const i of state.items){
-        const mix = (i.mix || "").trim();
-        if(!mix) continue;
-        if(!mixMap.has(mix)) mixMap.set(mix, []);
-        mixMap.get(mix).push(i);
-      }
-
-      const mtbody = $("#mixTable tbody");
-      mtbody.innerHTML = "";
-      const mixes = [...mixMap.keys()].sort((a,b)=>a.localeCompare(b));
-      for(const mix of mixes){
-        const who = mixMap.get(mix).map(i => i.label || i.type).join(", ");
-        const notes = mixMap.get(mix).map(i => (i.notes || "").trim()).filter(Boolean).join(" | ");
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td class="mono">${escapeHtml(mix)}</td>
-          <td>${escapeHtml(who)}</td>
-          <td>${escapeHtml(notes)}</td>
-        `;
-        mtbody.appendChild(tr);
+      if(filtered.length === 0){
+        const empty = document.createElement("div");
+        empty.className = "tiny";
+        empty.style.padding = "10px";
+        empty.textContent = "No matches. Try a different search.";
+        libList.appendChild(empty);
       }
     }
 
-    function setEditorEnabled(on){
-      ["#fLabel","#fColor","#fInput","#fMix","#fNotes","#fScale","#btnResetRot"].forEach(sel => {
-        const el = $(sel);
-        if(!el) return;
-        el.disabled = !on;
+    function addMisc(n){
+      const sizes = {
+        1: { w: 2.2, h: 1.4, label: "Misc" },
+        2: { w: 3.0, h: 1.8, label: "Misc" },
+        3: { w: 4.0, h: 2.4, label: "Misc" }
+      };
+      const s = sizes[n] || sizes[1];
+      addItem({
+        type: `misc${n}`,
+        label: `${s.label} ${n}`,
+        wft: s.w,
+        hft: s.h,
+        color: "#4aa3ff"
       });
     }
 
-    function syncEditor(){
-      const hint = $("#selHint");
+    function addItemFromLib(def){
+      addItem({
+        type: def.id,
+        label: def.label,
+        wft: def.w,
+        hft: def.h,
+        color: "#4aa3ff"
+      });
+    }
 
-      // keep view zoom UI synced always
-      const vz = clamp(parseFloat(state.viewZoom || 1), 0.6, 2.0);
-      state.viewZoom = vz;
-      $("#viewZoom").value = vz;
-      $("#viewZoomReadout").textContent = `${Math.round(vz * 100)}%`;
-      applyViewZoom();
+    function addItem({type,label,wft,hft,color}){
+      const id = project.nextId++;
+      const center = getStageCenterFt();
+      const item = {
+        id,
+        type,
+        label: label || "Item",
+        input: "",
+        mix: "",
+        notes: "",
+        color: color || "#4aa3ff",
+        xft: center.x - (wft/2),
+        yft: center.y - (hft/2),
+        wft,
+        hft,
+        rot: 0,
+        scale: 100
+      };
+      project.items.push(item);
+      selectedIds = new Set([id]);
+      primaryId = id;
+      saveAndRender();
+      openSelectionPanel();
+    }
 
-      if(selectedIds.size > 1){
-        hint.textContent = `${selectedIds.size} items selected`;
-        setEditorEnabled(false);
+    function renderAll(){
+      updateStageMetaText();
+      renderItems();
+      renderSelectionPanel();
+      applyStageTransform();
+    }
 
-        $("#fLabel").value = "";
-        $("#fType").value = "Multiple";
-        $("#fColor").value = "#4aa3ff";
-        $("#fInput").value = "";
-        $("#fMix").value = "";
-        $("#fNotes").value = "";
-        $("#fScale").value = 1.0;
-        $("#scaleReadout").textContent = "100%";
-        $("#rotReadout").textContent = "0°";
-        updateActionButtons();
-        return;
+    function renderItems(){
+      stageInner.innerHTML = "";
+      const av = !!project.audienceView;
+
+      project.items.forEach(item => {
+        const el = document.createElement("div");
+        el.className = "item";
+        el.dataset.id = String(item.id);
+
+        if(selectedIds.has(item.id)) el.classList.add("selected");
+
+        // position and size in pixels (feet to pixels)
+        const { xpx, ypx, wpx, hpx } = itemToPixels(item, av);
+
+        el.style.left = `${xpx}px`;
+        el.style.top  = `${ypx}px`;
+        el.style.width  = `${wpx}px`;
+        el.style.height = `${hpx}px`;
+
+        const rot = (av ? (item.rot + 180) : item.rot);
+        const sc = item.scale / 100;
+        el.style.transform = `rotate(${rot}deg) scale(${sc})`;
+
+        // color
+        el.style.background = hexToRgba(item.color, 0.18);
+        el.style.borderColor = hexToRgba(item.color, 0.55);
+
+        el.innerHTML = `
+          <div>
+            <div class="lbl">${escapeHtml(item.label || "Item")}</div>
+            ${item.input || item.mix ? `<div class="subLbl">${escapeHtml([item.input, item.mix].filter(Boolean).join(" - "))}</div>` : ""}
+          </div>
+          <div class="handles" style="${(primaryId===item.id && selectedIds.size===1) ? "" : "display:none;"}">
+            <div class="handle br" data-handle="br" title="Resize"></div>
+            <div class="rotateDot" data-handle="rot" title="Rotate"></div>
+          </div>
+        `;
+
+        // pointerdown for drag
+        el.addEventListener("pointerdown", (e) => onItemPointerDown(e, item.id));
+
+        // resize/rotate handles
+        const br = el.querySelector(".handle.br");
+        const rd = el.querySelector(".rotateDot");
+        if(br){
+          br.addEventListener("pointerdown", (e) => onResizeDown(e, item.id));
+        }
+        if(rd){
+          rd.addEventListener("pointerdown", (e) => onRotateDown(e, item.id));
+        }
+
+        stageInner.appendChild(el);
+      });
+
+      // size stageInner to the stage pixel size
+      const stageWpx = project.stageWft * PPF;
+      const stageDpx = project.stageDft * PPF;
+      stageInner.style.width = `${stageWpx}px`;
+      stageInner.style.height = `${stageDpx}px`;
+      stageInner.style.marginLeft = `${-stageWpx/2}px`;
+      stageInner.style.marginTop = `${-stageDpx/2}px`;
+    }
+
+    function itemToPixels(item, audienceView){
+      // stage coords are in feet from top-left in stage view
+      // audience view flips 180, so position mirrors around center
+      const stageW = project.stageWft;
+      const stageD = project.stageDft;
+
+      let x = item.xft;
+      let y = item.yft;
+      let w = item.wft;
+      let h = item.hft;
+
+      if(audienceView){
+        x = (stageW - (item.xft + item.wft));
+        y = (stageD - (item.yft + item.hft));
       }
 
-      const item = primaryId ? state.items.find(i => i.id === primaryId) : null;
+      return {
+        xpx: x * PPF,
+        ypx: y * PPF,
+        wpx: w * PPF,
+        hpx: h * PPF
+      };
+    }
+
+    function applyStageTransform(){
+      // Fit the stage into viewport at 100%, then apply view zoom inside the clip.
+      const vp = stageViewport.getBoundingClientRect();
+      const pad = 0; // already inset by stageViewport
+      const vw = Math.max(1, vp.width - pad*2);
+      const vh = Math.max(1, vp.height - pad*2);
+
+      const stageWpx = project.stageWft * PPF;
+      const stageDpx = project.stageDft * PPF;
+
+      const fitScale = Math.min(vw / stageWpx, vh / stageDpx);
+
+      const vz = (project.viewZoom || 100) / 100;
+      const scale = fitScale * vz;
+
+      stageInner.style.transform = `translate(-50%, -50%) scale(${scale})`;
+      // NOTE: translate(-50%, -50%) here uses the stageInner itself being positioned at center via left/top 50%.
+    }
+
+    function renderSelectionPanel(){
+      const item = getPrimaryItem();
       if(!item){
-        hint.textContent = "No item selected";
-        setEditorEnabled(false);
-
-        $("#fLabel").value = "";
-        $("#fType").value = "";
-        $("#fColor").value = "#4aa3ff";
-        $("#fInput").value = "";
-        $("#fMix").value = "";
-        $("#fNotes").value = "";
-        $("#fScale").value = 1.0;
-        $("#scaleReadout").textContent = "100%";
-        $("#rotReadout").textContent = "0°";
-        updateActionButtons();
+        selBadge.textContent = "No selection";
+        selPanel.style.display = "none";
         return;
       }
 
-      setEditorEnabled(true);
-      hint.textContent = `Editing: ${item.type}`;
-      $("#fLabel").value = item.label || "";
-      $("#fType").value = item.type || "";
-      $("#fColor").value = normalizeHex(item.color || "#4aa3ff");
-      $("#fInput").value = item.input || "";
-      $("#fMix").value = item.mix || "";
-      $("#fNotes").value = item.notes || "";
-      $("#fScale").value = clamp(parseFloat(item.scale || 1), 0.5, 2.0);
-      $("#scaleReadout").textContent = `${Math.round(parseFloat($("#fScale").value) * 100)}%`;
-      $("#rotReadout").textContent = `${Math.round((item.rot || 0))}°`;
-      updateActionButtons();
+      selPanel.style.display = "block";
+      selBadge.textContent = selectedIds.size > 1 ? `${selectedIds.size} selected` : `Selected: ${item.label || "Item"}`;
+
+      itLabel.value = item.label || "";
+      itInput.value = item.input || "";
+      itMix.value = item.mix || "";
+      itNotes.value = item.notes || "";
+      itColor.value = normalizeHex(item.color || "#4aa3ff");
+
+      itScale.value = String(item.scale || 100);
+      itScaleVal.textContent = `${item.scale || 100}%`;
     }
 
-    function updateSelected(patch){
-      if(selectedIds.size !== 1) return;
-      const item = primaryId ? state.items.find(i => i.id === primaryId) : null;
+    function openSelectionPanel(){
+      // on mobile you might want accordions later. For now, just keep it visible.
+      renderSelectionPanel();
+    }
+
+    // Info panel inputs
+    itLabel.addEventListener("input", () => {
+      const item = getPrimaryItem();
       if(!item) return;
-
-      Object.assign(item, patch);
-      if(item.rot == null) item.rot = 0;
-      enforceBounds(item);
-
-      save();
-      render();
-      syncEditor();
-    }
-
-    // Dragging items (move). Supports moving multi selection as a group.
-    let drag = null;
-
-    function onItemPointerDown(e){
-      if(e.target && (e.target.closest(".handle") || e.target.closest(".rotHandle"))) return;
-
-      e.preventDefault();
-      e.stopPropagation();
-
-      clearConfirms();
-
-      const id = e.currentTarget.dataset.id;
-      const mod = hasModifier(e);
-
-      if(mod){
-        toggleSelect(id);
-      }else{
-        if(!selectedIds.has(id)) selectOnly(id);
-        else setPrimary(id);
-      }
-
-      if(selectedIds.size === 0){
-        save();
-        render();
-        syncEditor();
-        return;
-      }
-
-      const start = pxToStage(e.clientX, e.clientY);
-      const group = selectedItems().map(it => ({
-        id: it.id,
-        startX: it.x,
-        startY: it.y
-      }));
-
-      drag = {
-        startClientX: e.clientX,
-        startClientY: e.clientY,
-        startXFt: start.xFt,
-        startYFt: start.yFt,
-        group
-      };
-
-      window.addEventListener("pointermove", onDragMove);
-      window.addEventListener("pointerup", onDragEnd, { once: true });
-
-      save();
-      render();
-      syncEditor();
-
-      autoAccordionBehaviorAfterSelection();
-    }
-
-    function onDragMove(e){
-      if(!drag) return;
-
-      const now = pxToStage(e.clientX, e.clientY);
-      const dxFt = now.xFt - drag.startXFt;
-      const dyFt = now.yFt - drag.startYFt;
-
-      for(const g of drag.group){
-        const item = state.items.find(i => i.id === g.id);
-        if(!item) continue;
-        item.x = g.startX + dxFt;
-        item.y = g.startY + dyFt;
-        enforceBounds(item);
-      }
-      render();
-    }
-
-    function onDragEnd(){
-      window.removeEventListener("pointermove", onDragMove);
-      drag = null;
-      save();
-      render();
-      syncEditor();
-    }
-
-    // Marquee selection (drag on empty stage)
-    let marquee = null;
-
-    function hitTestItemInRect(item, rectFt){
-      const wFt = item.w * (item.scale || 1);
-      const hFt = item.h * (item.scale || 1);
-      const ix1 = item.x;
-      const iy1 = item.y;
-      const ix2 = item.x + wFt;
-      const iy2 = item.y + hFt;
-
-      const rx1 = rectFt.x1;
-      const ry1 = rectFt.y1;
-      const rx2 = rectFt.x2;
-      const ry2 = rectFt.y2;
-
-      return !(ix2 < rx1 || ix1 > rx2 || iy2 < ry1 || iy1 > ry2);
-    }
-
-    function rectFromTwoPoints(a, b){
-      const x1 = Math.min(a.xFt, b.xFt);
-      const y1 = Math.min(a.yFt, b.yFt);
-      const x2 = Math.max(a.xFt, b.xFt);
-      const y2 = Math.max(a.yFt, b.yFt);
-      return { x1, y1, x2, y2 };
-    }
-
-    function ensureMarqueeDiv(){
-      const host = (stageInnerEl || stageEl);
-      let el = host.querySelector(".marquee");
-      if(!el){
-        el = document.createElement("div");
-        el.className = "marquee";
-        host.appendChild(el);
-      }
-      return el;
-    }
-
-    function removeMarqueeDiv(){
-      const host = (stageInnerEl || stageEl);
-      const el = host.querySelector(".marquee");
-      if(el) el.remove();
-    }
-
-    function updateMarqueeDiv(rectFt){
-      const p1 = stageToPx(rectFt.x1, rectFt.y1);
-      const p2 = stageToPx(rectFt.x2, rectFt.y2);
-
-      const left = Math.min(p1.x, p2.x);
-      const top = Math.min(p1.y, p2.y);
-      const width = Math.abs(p2.x - p1.x);
-      const height = Math.abs(p2.y - p1.y);
-
-      const el = ensureMarqueeDiv();
-      el.style.left = `${left}px`;
-      el.style.top = `${top}px`;
-      el.style.width = `${width}px`;
-      el.style.height = `${height}px`;
-    }
-
-    stageEl.addEventListener("pointerdown", (e) => {
-      if(e.target && e.target.closest(".item")) return;
-      if(e.target && e.target.closest(".handle")) return;
-      if(e.target && e.target.closest(".rotHandle")) return;
-
-      e.preventDefault();
-      e.stopPropagation();
-
-      clearConfirms();
-
-      const start = pxToStage(e.clientX, e.clientY);
-      marquee = {
-        start,
-        mod: hasModifier(e),
-        startedAt: { x: e.clientX, y: e.clientY }
-      };
-
-      updateMarqueeDiv({ x1:start.xFt, y1:start.yFt, x2:start.xFt, y2:start.xFt });
-
-      window.addEventListener("pointermove", onMarqueeMove);
-      window.addEventListener("pointerup", onMarqueeEnd, { once: true });
+      item.label = itLabel.value;
+      saveAndRender();
+    });
+    itInput.addEventListener("input", () => {
+      const item = getPrimaryItem();
+      if(!item) return;
+      item.input = itInput.value;
+      saveAndRender();
+    });
+    itMix.addEventListener("input", () => {
+      const item = getPrimaryItem();
+      if(!item) return;
+      item.mix = itMix.value;
+      saveAndRender();
+    });
+    itNotes.addEventListener("input", () => {
+      const item = getPrimaryItem();
+      if(!item) return;
+      item.notes = itNotes.value;
+      saveProject(project);
+    });
+    itColor.addEventListener("input", () => {
+      const item = getPrimaryItem();
+      if(!item) return;
+      item.color = itColor.value;
+      saveAndRender();
+    });
+    itScale.addEventListener("input", () => {
+      const item = getPrimaryItem();
+      if(!item) return;
+      item.scale = safeNum(itScale.value, 100);
+      itScaleVal.textContent = `${item.scale}%`;
+      saveAndRender();
     });
 
-    function onMarqueeMove(e){
-      if(!marquee) return;
+    rotReset.addEventListener("click", () => {
+      const item = getPrimaryItem();
+      if(!item) return;
+      item.rot = 0;
+      saveAndRender();
+    });
 
-      const now = pxToStage(e.clientX, e.clientY);
-      const rectFt = rectFromTwoPoints(marquee.start, now);
-      updateMarqueeDiv(rectFt);
+    scaleReset.addEventListener("click", () => {
+      const item = getPrimaryItem();
+      if(!item) return;
+      item.scale = 100;
+      itScale.value = "100";
+      itScaleVal.textContent = "100%";
+      saveAndRender();
+    });
 
-      const hit = state.items.filter(it => hitTestItemInRect(it, rectFt)).map(it => it.id);
+    function onStagePointerDown(e){
+      // clicking empty stage clears selection
+      if(e.target.closest(".item")) return;
 
-      if(marquee.mod){
-        const next = new Set(selectedIds);
-        hit.forEach(id => next.add(id));
-        selectedIds = next;
-        if(hit.length) primaryId = hit[hit.length - 1];
-      }else{
-        selectedIds = new Set(hit);
-        primaryId = hit.length ? hit[hit.length - 1] : null;
-      }
-
-      render();
-      syncEditor();
+      selectedIds.clear();
+      primaryId = null;
+      renderAll();
     }
 
-    function onMarqueeEnd(e){
-      window.removeEventListener("pointermove", onMarqueeMove);
+    function onItemPointerDown(e, id){
+      // ignore if grabbing handle
+      if(e.target && e.target.dataset && e.target.dataset.handle) return;
 
-      const startedAt = marquee && marquee.startedAt ? marquee.startedAt : { x: 0, y: 0 };
-      const mod = marquee && marquee.mod;
-
-      marquee = null;
-      removeMarqueeDiv();
-
-      const dx = Math.abs((e && e.clientX || 0) - startedAt.x);
-      const dy = Math.abs((e && e.clientY || 0) - startedAt.y);
-      if(!mod && !hasModifier(e) && (dx < 2 && dy < 2)){
-        clearSelection();
-      }
-
-      save();
-      render();
-      syncEditor();
-    }
-
-    // Resizing (primary only)
-    let resize = null;
-    const MIN_W_FT = 0.8;
-    const MIN_H_FT = 0.6;
-
-    function onResizeStart(e){
       e.preventDefault();
       e.stopPropagation();
 
-      const wrap = e.currentTarget.closest(".item");
-      const id = wrap && wrap.dataset && wrap.dataset.id;
-      if(!id) return;
+      const multi = e.shiftKey || e.metaKey || e.ctrlKey;
 
-      clearConfirms();
-      selectOnly(id);
+      if(multi){
+        if(selectedIds.has(id)) selectedIds.delete(id);
+        else selectedIds.add(id);
+        primaryId = id;
+      }else{
+        selectedIds = new Set([id]);
+        primaryId = id;
+      }
 
-      const item = state.items.find(i => i.id === id);
+      renderAll();
+
+      const item = findItem(id);
       if(!item) return;
 
-      const handle = e.currentTarget.dataset.h;
+      const p = clientToStageFt(e.clientX, e.clientY);
+      drag = {
+        id,
+        startX: e.clientX,
+        startY: e.clientY,
+        itemStartXft: item.xft,
+        itemStartYft: item.yft,
+        pointerStageXft: p.xft,
+        pointerStageYft: p.yft
+      };
 
-      const wFt = item.w;
-      const hFt = item.h;
+      e.target.setPointerCapture?.(e.pointerId);
+    }
+
+    function onResizeDown(e, id){
+      e.preventDefault();
+      e.stopPropagation();
+
+      const item = findItem(id);
+      if(!item) return;
+
+      selectedIds = new Set([id]);
+      primaryId = id;
+      renderAll();
 
       resize = {
         id,
-        handle,
         startX: e.clientX,
         startY: e.clientY,
-        startW: wFt,
-        startH: hFt,
-        startXFt: item.x,
-        startYFt: item.y,
-        startScale: item.scale || 1
+        w0ft: item.wft,
+        h0ft: item.hft
       };
-
-      e.currentTarget.setPointerCapture(e.pointerId);
-      window.addEventListener("pointermove", onResizeMove);
-      window.addEventListener("pointerup", onResizeEnd, { once: true });
-
-      render();
-      syncEditor();
+      e.target.setPointerCapture?.(e.pointerId);
     }
 
-    function onResizeMove(e){
-      if(!resize) return;
-      const item = state.items.find(i => i.id === resize.id);
-      if(!item) return;
-
-      const { sx, sy } = getStageScale();
-      const dxFt = (e.clientX - resize.startX) / sx;
-      const dyFt = (e.clientY - resize.startY) / sy;
-
-      let w = resize.startW;
-      let h = resize.startH;
-      let x = resize.startXFt;
-      let y = resize.startYFt;
-
-      const s = item.scale || 1;
-
-      const dxBase = dxFt / s;
-      const dyBase = dyFt / s;
-
-      const hh = resize.handle;
-
-      if(hh.includes("e")) w = resize.startW + dxBase;
-      if(hh.includes("s")) h = resize.startH + dyBase;
-      if(hh.includes("w")) { w = resize.startW - dxBase; x = resize.startXFt + dxFt; }
-      if(hh.includes("n")) { h = resize.startH - dyBase; y = resize.startYFt + dyFt; }
-
-      w = Math.max(MIN_W_FT, w);
-      h = Math.max(MIN_H_FT, h);
-
-      item.w = w;
-      item.h = h;
-      item.x = x;
-      item.y = y;
-
-      enforceBounds(item);
-      render();
-      syncEditor();
-    }
-
-    function onResizeEnd(){
-      window.removeEventListener("pointermove", onResizeMove);
-      resize = null;
-      save();
-      render();
-      syncEditor();
-    }
-
-    // Rotation (primary only)
-    let rotate = null;
-    function onRotateStart(e){
+    function onRotateDown(e, id){
       e.preventDefault();
       e.stopPropagation();
 
-      const wrap = e.currentTarget.closest(".item");
-      const id = wrap && wrap.dataset && wrap.dataset.id;
-      if(!id) return;
-
-      clearConfirms();
-      selectOnly(id);
-
-      const item = state.items.find(i => i.id === id);
+      const item = findItem(id);
       if(!item) return;
 
-      const { rect, pad, sx, sy } = getStageScale();
+      selectedIds = new Set([id]);
+      primaryId = id;
+      renderAll();
 
-      const wFt = item.w * (item.scale || 1);
-      const hFt = item.h * (item.scale || 1);
-
-      const cxFt = item.x + wFt/2;
-      const cyFt = item.y + hFt/2;
-
-      const cxPx = rect.left + pad + cxFt * sx;
-      const cyPx = rect.top + pad + cyFt * sy;
-
-      rotate = { id, cxPx, cyPx };
-
-      e.currentTarget.setPointerCapture(e.pointerId);
-      window.addEventListener("pointermove", onRotateMove);
-      window.addEventListener("pointerup", onRotateEnd, { once: true });
-
-      render();
-      syncEditor();
+      rotate = {
+        id,
+        startX: e.clientX,
+        startY: e.clientY,
+        a0: item.rot
+      };
+      e.target.setPointerCapture?.(e.pointerId);
     }
 
-    function onRotateMove(e){
-      if(!rotate) return;
-      const item = state.items.find(i => i.id === rotate.id);
-      if(!item) return;
+    function onPointerMove(e){
+      if(drag){
+        const item = findItem(drag.id);
+        if(!item) return;
 
-      const dx = e.clientX - rotate.cxPx;
-      const dy = e.clientY - rotate.cyPx;
+        const delta = screenDeltaToStageDeltaFt(e.clientX - drag.startX, e.clientY - drag.startY);
 
-      let deg = Math.atan2(dy, dx) * 180 / Math.PI + 90;
-      while(deg < 0) deg += 360;
-      while(deg >= 360) deg -= 360;
+        // if multi selection, move all selected
+        if(selectedIds.size > 1){
+          selectedIds.forEach(sid => {
+            const it = findItem(sid);
+            if(!it) return;
+            it.xft = clamp(it.xft + delta.dxft, 0, project.stageWft - it.wft);
+            it.yft = clamp(it.yft + delta.dyft, 0, project.stageDft - it.hft);
+          });
+        }else{
+          item.xft = clamp(drag.itemStartXft + delta.dxft, 0, project.stageWft - item.wft);
+          item.yft = clamp(drag.itemStartYft + delta.dyft, 0, project.stageDft - item.hft);
+        }
 
-      if(e.shiftKey){
-        deg = Math.round(deg / 15) * 15;
+        saveProject(project);
+        renderItems();
+        renderSelectionPanel();
+        applyStageTransform();
+        return;
       }
 
-      item.rot = deg;
-      enforceBounds(item);
+      if(resize){
+        const item = findItem(resize.id);
+        if(!item) return;
 
-      render();
-      syncEditor();
+        const delta = screenDeltaToStageDeltaFt(e.clientX - resize.startX, e.clientY - resize.startY);
+        item.wft = clamp(resize.w0ft + delta.dxft, 0.6, project.stageWft);
+        item.hft = clamp(resize.h0ft + delta.dyft, 0.6, project.stageDft);
+
+        // keep inside bounds
+        item.xft = clamp(item.xft, 0, project.stageWft - item.wft);
+        item.yft = clamp(item.yft, 0, project.stageDft - item.hft);
+
+        saveProject(project);
+        renderItems();
+        applyStageTransform();
+        return;
+      }
+
+      if(rotate){
+        const item = findItem(rotate.id);
+        if(!item) return;
+
+        // simple rotation based on horizontal movement
+        const dx = (e.clientX - rotate.startX);
+        item.rot = normalizeDeg(rotate.a0 + dx * 0.6);
+
+        saveProject(project);
+        renderItems();
+        applyStageTransform();
+        return;
+      }
     }
 
-    function onRotateEnd(){
-      window.removeEventListener("pointermove", onRotateMove);
+    function onPointerUp(){
+      drag = null;
+      resize = null;
       rotate = null;
-      save();
-      render();
-      syncEditor();
+      saveProject(project);
     }
 
-    // Delete + Reset double confirm
-    let confirmDelete = false;
-    let confirmReset = false;
+    function onKeyDown(e){
+      // duplicate
+      if((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "d"){
+        e.preventDefault();
+        duplicateSelection();
+        return;
+      }
 
-    function clearConfirms(){
-      confirmDelete = false;
-      confirmReset = false;
+      // delete
+      if(e.key === "Delete" || e.key === "Backspace"){
+        // do not delete while typing
+        const tag = (document.activeElement?.tagName || "").toLowerCase();
+        if(tag === "input" || tag === "textarea") return;
+        deleteSelection();
+        return;
+      }
 
-      const del = $("#btnDelete");
-      del.textContent = "Delete";
-      del.classList.add("danger");
+      // nudge (Shift+Arrows)
+      if(e.shiftKey && ["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)){
+        e.preventDefault();
+        nudgeSelection(e.key);
+      }
 
-      const reset = $("#btnReset");
-      reset.textContent = "Reset";
-      reset.classList.add("danger");
+      // escape clears selection
+      if(e.key === "Escape"){
+        selectedIds.clear();
+        primaryId = null;
+        renderAll();
+      }
     }
 
-    document.addEventListener("click", () => { clearConfirms(); });
-
-    $("#stagePreset").addEventListener("change", (e) => {
-      e.stopPropagation();
-      clearConfirms();
-
-      const v = $("#stagePreset").value;
-      if(v === "small"){ $("#stageW").value = 16; $("#stageD").value = 12; }
-      if(v === "medium"){ $("#stageW").value = 24; $("#stageD").value = 16; }
-      if(v === "large"){ $("#stageW").value = 32; $("#stageD").value = 20; }
-      setStageFromInputs();
-    });
-
-    $("#stageW").addEventListener("change", () => { clearConfirms(); setStageFromInputs(); });
-    $("#stageD").addEventListener("change", () => { clearConfirms(); setStageFromInputs(); });
-
-    function refreshCatalog(){ render(); }
-    $("#search").addEventListener("input", refreshCatalog);
-    $("#category").addEventListener("change", refreshCatalog);
-
-    $("#bandName").addEventListener("input", () => {
-      state.bandName = $("#bandName").value || "";
-      save();
-
-      const bn = (state.bandName || "").trim();
-      const pb = document.querySelector("#printBandName");
-      if (pb) pb.textContent = bn ? bn : "StagePlot";
-    });
-
-    $("#showNotes").addEventListener("input", () => {
-      state.notes = $("#showNotes").value || "";
-      $("#notesPreview").textContent = state.notes || "";
-      save();
-    });
-
-    $("#fLabel").addEventListener("input", () => updateSelected({ label: $("#fLabel").value }));
-    $("#fColor").addEventListener("input", () => updateSelected({ color: $("#fColor").value }));
-    $("#fInput").addEventListener("input", () => updateSelected({ input: $("#fInput").value }));
-    $("#fMix").addEventListener("input", () => updateSelected({ mix: $("#fMix").value }));
-    $("#fNotes").addEventListener("input", () => updateSelected({ notes: $("#fNotes").value }));
-    $("#fScale").addEventListener("input", () => {
-      $("#scaleReadout").textContent = `${Math.round(parseFloat($("#fScale").value) * 100)}%`;
-      updateSelected({ scale: parseFloat($("#fScale").value) });
-    });
-
-    // View zoom controls
-    $("#viewZoom").addEventListener("input", (e) => {
-      state.viewZoom = parseFloat($("#viewZoom").value);
-      $("#viewZoomReadout").textContent = `${Math.round(state.viewZoom * 100)}%`;
-      applyViewZoom();
-      save();
-    });
-
-    $("#btnResetViewZoom").addEventListener("click", (e) => {
-      e.stopPropagation();
-      clearConfirms();
-      state.viewZoom = 1;
-      $("#viewZoom").value = 1;
-      applyViewZoom();
-      save();
-    });
-
-    $("#btnResetRot").addEventListener("click", (e) => {
-      e.stopPropagation();
-      clearConfirms();
-      if(selectedIds.size !== 1) return;
-      updateSelected({ rot: 0 });
-    });
-
-    $("#btnAddMiscS").addEventListener("click", (e) => { e.stopPropagation(); clearConfirms(); addMisc("S"); });
-    $("#btnAddMiscM").addEventListener("click", (e) => { e.stopPropagation(); clearConfirms(); addMisc("M"); });
-    $("#btnAddMiscL").addEventListener("click", (e) => { e.stopPropagation(); clearConfirms(); addMisc("L"); });
-
-    $("#btnDelete").addEventListener("click", (e) => {
-      e.stopPropagation();
+    function nudgeSelection(key){
       if(selectedIds.size === 0) return;
 
-      if(!confirmDelete){
-        clearConfirms();
-        confirmDelete = true;
-        $("#btnDelete").textContent = "Confirm Delete";
-        return;
-      }
+      // 0.25 ft per nudge (classic), in meters mode this is still the same internally
+      const stepFt = 0.25;
 
-      const kill = new Set(selectedIds);
-      state.items = state.items.filter(i => !kill.has(i.id));
-      clearSelection();
-      clearConfirms();
-      save();
-      render();
-      syncEditor();
-    });
+      let dx = 0, dy = 0;
+      if(key === "ArrowLeft") dx = -stepFt;
+      if(key === "ArrowRight") dx = stepFt;
+      if(key === "ArrowUp") dy = -stepFt;
+      if(key === "ArrowDown") dy = stepFt;
 
-    function groupBounds(items){
-      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-      for(const it of items){
-        const wFt = it.w * (it.scale || 1);
-        const hFt = it.h * (it.scale || 1);
-        minX = Math.min(minX, it.x);
-        minY = Math.min(minY, it.y);
-        maxX = Math.max(maxX, it.x + wFt);
-        maxY = Math.max(maxY, it.y + hFt);
-      }
-      if(!isFinite(minX)) return null;
-      return { minX, minY, maxX, maxY, w: (maxX - minX), h: (maxY - minY) };
-    }
-
-    $("#btnCenter").addEventListener("click", (e) => {
-      e.stopPropagation();
-      clearConfirms();
-
-      const items = selectedItems();
-      if(items.length === 0) return;
-
-      const b = groupBounds(items);
-      if(!b) return;
-
-      const targetLeft = (state.stage.w - b.w) * 0.5;
-      const targetTop  = (state.stage.d - b.h) * 0.55;
-
-      const dx = targetLeft - b.minX;
-      const dy = targetTop - b.minY;
-
-      for(const it of items){
-        it.x += dx;
-        it.y += dy;
-        enforceBounds(it);
-      }
-
-      save();
-      render();
-      syncEditor();
-    });
-
-    function duplicateSelected(){
-      const items = selectedItems();
-      if(items.length === 0) return;
-
-      const clones = items.map(it => {
-        const copy = deepClone(it);
-        copy.id = uid();
-        copy.x = copy.x + 0.5;
-        copy.y = copy.y + 0.5;
-        enforceBounds(copy);
-        return copy;
+      selectedIds.forEach(id => {
+        const it = findItem(id);
+        if(!it) return;
+        it.xft = clamp(it.xft + dx, 0, project.stageWft - it.wft);
+        it.yft = clamp(it.yft + dy, 0, project.stageDft - it.hft);
       });
 
-      for(const c of clones) state.items.push(c);
-
-      selectedIds = new Set(clones.map(c => c.id));
-      primaryId = clones.length ? clones[clones.length - 1].id : null;
-
-      save();
-      render();
-      syncEditor();
+      saveAndRender();
     }
 
-    $("#btnDuplicate").addEventListener("click", (e) => {
-      e.stopPropagation();
-      clearConfirms();
-      duplicateSelected();
-    });
+    function centerSelection(){
+      if(selectedIds.size === 0) return;
 
-    $("#btnFlipView").addEventListener("click", (e) => {
-      e.stopPropagation();
-      clearConfirms();
-      flipPerspective180();
-    });
+      // center bounding box of selected within stage
+      const items = [...selectedIds].map(findItem).filter(Boolean);
+      if(items.length === 0) return;
 
-    // Accordion behavior (mobile) + persistence
-    const accLibrary = $("#accLibrary");
-    const accInfo = $("#accInfo");
+      const minX = Math.min(...items.map(i => i.xft));
+      const minY = Math.min(...items.map(i => i.yft));
+      const maxX = Math.max(...items.map(i => i.xft + i.wft));
+      const maxY = Math.max(...items.map(i => i.yft + i.hft));
 
-    function isMobileLayout(){
-      return window.innerWidth <= 1100;
+      const bw = maxX - minX;
+      const bh = maxY - minY;
+
+      const targetX = (project.stageWft - bw) / 2;
+      const targetY = (project.stageDft - bh) / 2;
+
+      items.forEach(i => {
+        i.xft = clamp(i.xft - minX + targetX, 0, project.stageWft - i.wft);
+        i.yft = clamp(i.yft - minY + targetY, 0, project.stageDft - i.hft);
+      });
+
+      saveAndRender();
     }
 
-    function loadAccState(){
-      const s = loadJSON(ACC_KEY) || null;
-      return s && typeof s === "object" ? s : null;
+    function duplicateSelection(){
+      if(selectedIds.size === 0) return;
+
+      const items = [...selectedIds].map(findItem).filter(Boolean);
+      if(items.length === 0) return;
+
+      const newIds = [];
+      items.forEach(it => {
+        const copy = structuredClone(it);
+        copy.id = project.nextId++;
+        copy.xft = clamp(copy.xft + 0.5, 0, project.stageWft - copy.wft);
+        copy.yft = clamp(copy.yft + 0.5, 0, project.stageDft - copy.hft);
+        project.items.push(copy);
+        newIds.push(copy.id);
+      });
+
+      selectedIds = new Set(newIds);
+      primaryId = newIds[newIds.length - 1] || null;
+
+      saveAndRender();
     }
-    function saveAccState(){
-      const s = {
-        libOpen: !!accLibrary.open,
-        infoOpen: !!accInfo.open
+
+    function deleteSelection(){
+      if(selectedIds.size === 0) return;
+      const ids = new Set(selectedIds);
+      project.items = project.items.filter(it => !ids.has(it.id));
+      selectedIds.clear();
+      primaryId = null;
+      saveAndRender();
+    }
+
+    function saveAndRender(force=false){
+      saveProject(project);
+      renderAll();
+    }
+
+    // Export / Import
+    function exportProject(){
+      // keep internal feet + units selection
+      const data = {
+        version: VERSION,
+        exportedAt: new Date().toISOString(),
+        project: project
       };
-      saveJSON(ACC_KEY, s);
-    }
-
-    function applyAccordionRules(){
-      // Desktop: keep both open
-      if(!isMobileLayout()){
-        accLibrary.open = true;
-        accInfo.open = true;
-        return;
-      }
-
-      // Mobile: restore last choice if available
-      const saved = loadAccState();
-      if(saved){
-        accLibrary.open = !!saved.libOpen;
-        accInfo.open = !!saved.infoOpen;
-      }else{
-        // Default mobile: keep library open, info closed until needed
-        accLibrary.open = true;
-        accInfo.open = false;
-      }
-    }
-
-    function autoAccordionBehaviorAfterSelection(){
-      if(!isMobileLayout()) return;
-      // When selecting/adding an item, open info panel (so edits are right there)
-      accInfo.open = true;
-      // Optionally collapse library to save scroll
-      accLibrary.open = false;
-      saveAccState();
-    }
-
-    // Keep state saved when user toggles
-    accLibrary.addEventListener("toggle", () => { if(isMobileLayout()) saveAccState(); });
-    accInfo.addEventListener("toggle", () => { if(isMobileLayout()) saveAccState(); });
-
-    /* Print: force stable layout before opening print dialog */
-    let prePrintAccState = null;
-
-    function preparePrintLayout(){
-      // remember accordion state
-      prePrintAccState = { libOpen: accLibrary.open, infoOpen: accInfo.open };
-
-      // force everything open so nothing disappears in print engine
-      accLibrary.open = true;
-      accInfo.open = true;
-
-      document.body.classList.add("printing");
-      stageEl.getBoundingClientRect();
-      render();
-      requestAnimationFrame(() => render());
-    }
-
-    function cleanupPrintLayout(){
-      document.body.classList.remove("printing");
-
-      // restore accordion state
-      if(prePrintAccState){
-        accLibrary.open = !!prePrintAccState.libOpen;
-        accInfo.open = !!prePrintAccState.infoOpen;
-        prePrintAccState = null;
-      }
-
-      requestAnimationFrame(() => render());
-    }
-
-    $("#btnPrint").addEventListener("click", (e) => {
-      e.stopPropagation();
-      clearConfirms();
-
-      preparePrintLayout();
-
-      setTimeout(() => {
-        window.print();
-      }, 60);
-    });
-
-    window.addEventListener("afterprint", cleanupPrintLayout);
-
-    $("#btnExportProject").addEventListener("click", (e) => {
-      e.stopPropagation();
-      clearConfirms();
-
-      const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type:"application/json" });
       const url = URL.createObjectURL(blob);
+
       const a = document.createElement("a");
       a.href = url;
-      const safeName = (state.bandName || "stageplot").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g,"");
-      a.download = `${safeName || "stageplot"}-project.json`;
+      a.download = `stageplot_project_v${VERSION.replaceAll(" ", "_").replaceAll("(", "").replaceAll(")", "").replaceAll(".", "_")}.json`;
+      document.body.appendChild(a);
       a.click();
-      URL.revokeObjectURL(url);
-    });
+      a.remove();
 
-    $("#fileImportProject").addEventListener("change", async (e) => {
-      const file = e.target.files && e.target.files[0];
-      if(!file) return;
-      const text = await file.text();
-      try{
-        const imported = JSON.parse(text);
-        if(!imported.stage || !imported.items) throw new Error("Invalid project file");
-        state = imported;
-
-        if(!state.view) state.view = "audience";
-        if(state.viewZoom == null) state.viewZoom = 1;
-
-        for(const it of (state.items || [])){
-          if(it.rot == null) it.rot = 0;
-        }
-
-        clearSelection();
-        clearConfirms();
-        save();
-        render();
-        syncEditor();
-        updateViewUI();
-      }catch(err){
-        alert("Could not import that project JSON.");
-      }finally{
-        $("#fileImportProject").value = "";
-      }
-    });
-
-    $("#btnExportLibrary").addEventListener("click", (e) => {
-      e.stopPropagation();
-      clearConfirms();
-
-      const lib = loadJSON(STORAGE_KEY_LIB) || { version: 1, items: [] };
-      const blob = new Blob([JSON.stringify(lib, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "stageplot-user-library.json";
-      a.click();
-      URL.revokeObjectURL(url);
-    });
-
-    function validateLibrary(obj){
-      if(!obj || typeof obj !== "object") return false;
-      if(!Array.isArray(obj.items)) return false;
-      for(const it of obj.items){
-        if(!it || typeof it !== "object") return false;
-        if(typeof it.type !== "string" || !it.type.trim()) return false;
-        if(typeof it.w !== "number" || typeof it.h !== "number") return false;
-      }
-      return true;
+      setTimeout(() => URL.revokeObjectURL(url), 6000);
     }
 
-    $("#fileImportLibrary").addEventListener("change", async (e) => {
-      const file = e.target.files && e.target.files[0];
-      if(!file) return;
-      const text = await file.text();
+    async function importProject(){
+      const f = importFile.files && importFile.files[0];
+      if(!f) return;
+
       try{
-        const imported = JSON.parse(text);
-        if(!validateLibrary(imported)) throw new Error("Invalid library file");
+        const txt = await f.text();
+        const json = JSON.parse(txt);
 
-        const existing = loadJSON(STORAGE_KEY_LIB) || { version: 1, items: [] };
-        const map = new Map();
+        const incoming = json.project ? json.project : json;
 
-        for(const it of (existing.items || [])){
-          map.set((it.type||"").toLowerCase(), it);
-        }
-        for(const it of (imported.items || [])){
-          map.set((it.type||"").toLowerCase(), it);
-        }
+        // minimal validation
+        if(!incoming || !Array.isArray(incoming.items)) throw new Error("Invalid project JSON");
 
-        const merged = { version: 1, items: [...map.values()] };
-        saveJSON(STORAGE_KEY_LIB, merged);
+        // migrate older projects
+        project = migrateProject(incoming);
 
-        buildCategoryOptions(mergedLibrary());
-        clearConfirms();
-        render();
+        // sync controls
+        stagePreset.value = project.preset || "custom";
+        unitsSelect.value = project.units || "ft";
+        viewZoom.value = String(project.viewZoom || 100);
+        bandName.value = project.bandName || "";
+        showNotes.value = project.showNotes || "";
+
+        applyUnitsUI();
+        setStageInputsFromProject();
+
+        selectedIds.clear();
+        primaryId = null;
+
+        saveAndRender(true);
+        alert("Imported project.");
       }catch(err){
-        alert("Could not import that library JSON.");
+        console.error(err);
+        alert("Could not import that file. Make sure it is a StagePlot project JSON.");
       }finally{
-        $("#fileImportLibrary").value = "";
+        importFile.value = "";
       }
-    });
-
-    $("#btnReset").addEventListener("click", (e) => {
-      e.stopPropagation();
-
-      if(!confirmReset){
-        clearConfirms();
-        confirmReset = true;
-        $("#btnReset").textContent = "Confirm Reset";
-        return;
-      }
-
-      state = deepClone(defaults);
-      clearSelection();
-      clearConfirms();
-      save();
-      render();
-      syncEditor();
-      updateViewUI();
-    });
-
-    function isTypingTarget(el){
-      if(!el) return false;
-      const t = (el.tagName || "").toLowerCase();
-      if(t === "input" || t === "textarea" || t === "select") return true;
-      if(el.isContentEditable) return true;
-      return false;
     }
 
-    window.addEventListener("keydown", (e) => {
-      if(isTypingTarget(document.activeElement)) return;
+    function migrateProject(p){
+      const out = structuredClone(DEFAULTS);
 
-      if((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === "d")){
-        e.preventDefault();
-        duplicateSelected();
-        return;
+      out.units = (p.units === "m" || p.units === "ft") ? p.units : "ft";
+      out.preset = p.preset || "custom";
+      out.stageWft = safeNum(p.stageWft, safeNum(p.stageW, 24));
+      out.stageDft = safeNum(p.stageDft, safeNum(p.stageD, 16));
+      out.audienceView = !!p.audienceView;
+      out.viewZoom = safeNum(p.viewZoom, 100);
+      out.bandName = p.bandName || "";
+      out.showNotes = p.showNotes || "";
+      out.nextId = safeNum(p.nextId, 1);
+
+      out.items = (p.items || []).map(it => ({
+        id: safeNum(it.id, out.nextId++),
+        type: it.type || "item",
+        label: it.label || "Item",
+        input: it.input || "",
+        mix: it.mix || "",
+        notes: it.notes || "",
+        color: normalizeHex(it.color || "#4aa3ff"),
+        xft: safeNum(it.xft, safeNum(it.x, 0)),
+        yft: safeNum(it.yft, safeNum(it.y, 0)),
+        wft: safeNum(it.wft, safeNum(it.w, 2)),
+        hft: safeNum(it.hft, safeNum(it.h, 1.2)),
+        rot: safeNum(it.rot, 0),
+        scale: safeNum(it.scale, 100)
+      }));
+
+      // keep nextId above max
+      const maxId = out.items.reduce((m,i) => Math.max(m, i.id), 0);
+      out.nextId = Math.max(out.nextId, maxId + 1);
+
+      return out;
+    }
+
+    // Helpers - coordinate conversion
+    function getStageCenterFt(){
+      return { x: project.stageWft/2, y: project.stageDft/2 };
+    }
+
+    function clientToStageFt(clientX, clientY){
+      // Convert screen coords to stage coords in feet, taking into account fitScale and viewZoom and center translate
+      const vp = stageViewport.getBoundingClientRect();
+      const x = clientX - vp.left - 10; // inner padding illusion, fine for feel
+      const y = clientY - vp.top - 10;
+
+      const vw = vp.width;
+      const vh = vp.height;
+
+      const stageWpx = project.stageWft * PPF;
+      const stageDpx = project.stageDft * PPF;
+
+      const fitScale = Math.min(vw / stageWpx, vh / stageDpx);
+      const vz = (project.viewZoom || 100) / 100;
+      const scale = fitScale * vz;
+
+      // stageInner is centered in viewport
+      const cx = vw / 2;
+      const cy = vh / 2;
+
+      // coordinates relative to stageInner top-left in pixels
+      const relXpx = (x - cx) / scale + (stageWpx / 2);
+      const relYpx = (y - cy) / scale + (stageDpx / 2);
+
+      return {
+        xft: relXpx / PPF,
+        yft: relYpx / PPF
+      };
+    }
+
+    function screenDeltaToStageDeltaFt(dxScreen, dyScreen){
+      const vp = stageViewport.getBoundingClientRect();
+      const vw = vp.width;
+      const vh = vp.height;
+
+      const stageWpx = project.stageWft * PPF;
+      const stageDpx = project.stageDft * PPF;
+
+      const fitScale = Math.min(vw / stageWpx, vh / stageDpx);
+      const vz = (project.viewZoom || 100) / 100;
+      const scale = fitScale * vz;
+
+      return {
+        dxft: (dxScreen / scale) / PPF,
+        dyft: (dyScreen / scale) / PPF
+      };
+    }
+
+    // Selection helpers
+    function findItem(id){ return project.items.find(it => it.id === id); }
+    function getPrimaryItem(){
+      if(primaryId != null) return findItem(primaryId);
+      const first = selectedIds.values().next().value;
+      if(first == null) return null;
+      return findItem(first);
+    }
+
+    // Storage
+    function loadProject(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return structuredClone(DEFAULTS);
+        const parsed = JSON.parse(raw);
+        return migrateProject(parsed);
+      }catch(e){
+        console.warn("loadProject failed", e);
+        return structuredClone(DEFAULTS);
       }
-
-      if(e.shiftKey && ["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"].includes(e.key) && selectedIds.size){
-        e.preventDefault();
-        const step = 0.25;
-        for(const it of selectedItems()){
-          if(e.key === "ArrowLeft") it.x -= step;
-          if(e.key === "ArrowRight") it.x += step;
-          if(e.key === "ArrowUp") it.y -= step;
-          if(e.key === "ArrowDown") it.y += step;
-          enforceBounds(it);
-        }
-        save();
-        render();
-        syncEditor();
+    }
+    function saveProject(p){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
+      // autosave badge stays
+    }
+    function loadUI(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY_UI);
+        return raw ? JSON.parse(raw) : {};
+      }catch(e){
+        return {};
       }
-    });
+    }
+    function saveUI(x){
+      localStorage.setItem(STORAGE_KEY_UI, JSON.stringify(x || {}));
+    }
 
-    // init
-    const lib0 = mergedLibrary();
-    buildCategoryOptions(lib0);
-    $("#stagePreset").value = "medium";
-    $("#search").value = "";
-    $("#category").value = "All";
+    // Unit conversion (display only)
+    function displayFromFt(ft, units){
+      if(units === "m") return ft / FT_PER_M;
+      return ft;
+    }
+    function ftFromDisplay(val, units){
+      if(units === "m") return val * FT_PER_M;
+      return val;
+    }
 
-    setStageFromInputs();
-    applyAccordionRules();
-    render();
-    syncEditor();
-    updateViewUI();
-    applyViewZoom();
-
-    let t = null;
-    window.addEventListener("resize", () => {
-      clearTimeout(t);
-      t = setTimeout(() => {
-        applyAccordionRules();
-        render();
-        syncEditor();
-      }, 80);
-    });
-
-    // PWA: register service worker
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./service-worker.js").catch(() => {});
-      });
+    // Utils
+    function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+    function safeNum(v, fallback){
+      const n = Number(v);
+      return Number.isFinite(n) ? n : fallback;
+    }
+    function round1(n){
+      const x = Number(n);
+      if(!Number.isFinite(x)) return "0";
+      return (Math.round(x * 10) / 10).toFixed(1).replace(/\.0$/, "");
+    }
+    function escapeHtml(s){
+      return String(s ?? "").replace(/[&<>"']/g, c => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+      }[c]));
+    }
+    function normalizeDeg(d){
+      let x = d % 360;
+      if(x < 0) x += 360;
+      return x;
+    }
+    function normalizeHex(h){
+      if(!h) return "#4aa3ff";
+      const s = String(h).trim();
+      if(/^#[0-9a-fA-F]{6}$/.test(s)) return s;
+      if(/^#[0-9a-fA-F]{3}$/.test(s)){
+        const r = s[1], g = s[2], b = s[3];
+        return `#${r}${r}${g}${g}${b}${b}`;
+      }
+      return "#4aa3ff";
+    }
+    function hexToRgba(hex, a){
+      const h = normalizeHex(hex);
+      const r = parseInt(h.slice(1,3),16);
+      const g = parseInt(h.slice(3,5),16);
+      const b = parseInt(h.slice(5,7),16);
+      return `rgba(${r},${g},${b},${clamp(a,0,1)})`;
     }
   </script>
 </body>
