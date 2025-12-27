@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0b0d12" />
-  <title>StagePlot v2</title>
+  <title>StagePlot v2 - v1.5.6 (metric and import)</title>
 
   <style>
     :root{
@@ -20,9 +20,9 @@
       --danger:#ff5a6a;
       --grid:rgba(255,255,255,.06);
 
-      --stageBg:#0f1420;
-      --stageBorder:rgba(255,255,255,.10);
       --shadow: 0 12px 30px rgba(0,0,0,.35);
+      --radius: 18px;
+      --radius2: 14px;
     }
 
     *{ box-sizing:border-box; }
@@ -32,87 +32,58 @@
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
       background: radial-gradient(1200px 700px at 50% -10%, #1a2540, var(--bg));
       color: var(--text);
-      line-height: 1.35;
-      overflow-x:hidden;
+      line-height: 1.45;
     }
 
     header{
       position: sticky;
       top: 0;
-      z-index: 20;
+      z-index: 50;
       border-bottom: 1px solid var(--line);
       background: rgba(10,12,18,.75);
       backdrop-filter: blur(10px);
     }
     .wrap{
-      max-width: 1280px;
+      max-width: 1220px;
       margin: 0 auto;
-      padding: 12px 14px;
+      padding: 14px 16px;
     }
     .top{
       display:flex;
-      gap:12px;
       align-items:center;
       justify-content:space-between;
+      gap:12px;
       flex-wrap:wrap;
     }
-    .brand{
+    .title{
       display:flex;
       align-items:center;
       gap:10px;
       min-width: 240px;
     }
     .logo{
-      width:32px; height:32px;
-      border-radius:12px;
+      width:30px; height:30px;
+      border-radius:10px;
       background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.12);
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      border: 1px solid rgba(255,255,255,.10);
+      display:flex; align-items:center; justify-content:center;
       color: var(--accent);
       font-weight: 900;
       user-select:none;
     }
-    .titleBlock{ display:flex; flex-direction:column; gap:2px; }
     h1{
       font-size: 16px;
       margin: 0;
       letter-spacing: .2px;
     }
     .sub{
-      font-size: 12px;
       color: var(--muted);
-      margin:0;
-    }
-
-    .actions{
+      font-size: 12px;
+      margin-top: 2px;
       display:flex;
-      align-items:center;
       gap:8px;
+      align-items:center;
       flex-wrap:wrap;
-    }
-    button, a.button{
-      font: inherit;
-      color: var(--text);
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 12px;
-      padding: 8px 10px;
-      text-decoration:none;
-      cursor:pointer;
-      transition: transform .05s ease, border-color .15s ease, background .15s ease;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      user-select:none;
-      white-space:nowrap;
-    }
-    button:hover, a.button:hover{ border-color: rgba(74,163,255,.8); }
-    button:active, a.button:active{ transform: translateY(1px); }
-    .primary{
-      background: rgba(74,163,255,.14);
-      border-color: rgba(74,163,255,.55);
     }
     .pill{
       display:inline-flex;
@@ -129,23 +100,55 @@
     }
     .dot{ width:8px; height:8px; border-radius:50%; background: var(--ok); display:inline-block; }
 
-    /* Layout */
-    .app{
-      max-width: 1280px;
+    .actions{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    a.button, button, .button{
+      font: inherit;
+      color: var(--text);
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 12px;
+      padding: 8px 10px;
+      text-decoration:none;
+      cursor:pointer;
+      transition: transform .05s ease, border-color .15s ease, background .15s ease;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      user-select:none;
+    }
+    a.button:hover, button:hover, .button:hover{ border-color: rgba(74,163,255,.8); }
+    a.button:active, button:active, .button:active{ transform: translateY(1px); }
+    .button.primary{
+      background: rgba(74,163,255,.14);
+      border-color: rgba(74,163,255,.55);
+    }
+    .button.danger{
+      background: rgba(255,90,106,.10);
+      border-color: rgba(255,90,106,.35);
+    }
+
+    main{
+      max-width: 1220px;
       margin: 0 auto;
-      padding: 14px;
+      padding: 16px 16px 28px 16px;
       display:grid;
-      grid-template-columns: 330px 1fr 360px;
-      gap: 12px;
+      grid-template-columns: 320px 1fr 360px;
+      gap: 14px;
       align-items:start;
     }
 
     .card{
       background: linear-gradient(180deg, rgba(18,24,38,.9), rgba(12,16,26,.9));
       border: 1px solid var(--line);
-      border-radius: 18px;
+      border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow:hidden;
+      min-width: 0;
     }
     .card .hd{
       padding: 12px 14px;
@@ -162,239 +165,313 @@
       color: var(--muted);
       text-transform: uppercase;
       letter-spacing: .3px;
-      font-weight: 800;
+      font-weight: 750;
     }
     .card .bd{
       padding: 12px 14px 14px 14px;
     }
 
-    .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
     .row.tight{ gap:8px; }
-    .row.between{ justify-content:space-between; }
-    .muted{ color: var(--muted); }
-    .small{ font-size: 12px; color: var(--muted); }
-    .sep{
-      height:1px;
-      background: rgba(255,255,255,.08);
-      margin: 12px 0;
-      border:0;
+    .row > *{ min-width: 0; }
+
+    label.small{
+      display:block;
+      color: var(--muted);
+      font-size: 12px;
+      margin: 0 0 6px 0;
     }
 
-    label{
-      font-size: 12px;
-      color: var(--muted);
-      display:block;
-      margin-bottom: 4px;
-    }
     input[type="text"], input[type="number"], select, textarea{
       width:100%;
-      padding: 10px 10px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.04);
       color: var(--text);
-      outline: none;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 12px;
+      padding: 9px 10px;
+      outline:none;
       font: inherit;
     }
-    input[type="number"]{ appearance:textfield; }
-    textarea{ min-height: 84px; resize: vertical; }
+    textarea{ min-height: 92px; resize: vertical; }
     input:focus, select:focus, textarea:focus{
-      border-color: rgba(74,163,255,.75);
+      border-color: rgba(74,163,255,.7);
+      box-shadow: 0 0 0 3px rgba(74,163,255,.12);
     }
 
-    .grid2{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-    }
-    .grid3{
-      display:grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap:10px;
+    .hint{
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 6px;
     }
 
-    .miniBtn{
-      padding: 8px 10px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-      cursor:pointer;
-      color: var(--text);
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      user-select:none;
+    .divider{
+      border-top: 1px solid rgba(255,255,255,.08);
+      margin: 12px 0;
     }
-    .miniBtn:hover{ border-color: rgba(74,163,255,.7); }
-    .miniBtn.primary{ border-color: rgba(74,163,255,.55); background: rgba(74,163,255,.14); }
-    .miniBtn.danger{ border-color: rgba(255,90,106,.55); background: rgba(255,90,106,.12); }
-    .miniBtn.ok{ border-color: rgba(64,217,138,.40); background: rgba(64,217,138,.10); }
 
     /* Stage area */
-    .stageShell{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
+    .stageOuter{
+      padding: 12px 12px 14px 12px;
     }
 
-    /* The square viewport */
-    .stageViewport{
-      width:100%;
+    /* Square that never changes - stage ALWAYS fits inside this at 100% */
+    .stageSquare{
+      width: 100%;
       aspect-ratio: 1 / 1;
-      border-radius: 18px;
-      background: rgba(255,255,255,.03);
+      border-radius: 16px;
       border: 1px solid rgba(255,255,255,.10);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+      position: relative;
       overflow:hidden;
-      position:relative;
     }
 
-    .stageCanvas{
+    .stageRect{
       position:absolute;
-      inset: 10px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
       border-radius: 14px;
-      background: var(--stageBg);
-      border: 1px solid var(--stageBorder);
+      border: 2px solid rgba(74,163,255,.55);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
       overflow:hidden;
+      touch-action: none;
     }
 
-    .gridOverlay{
+    .stageInner{
+      position:absolute;
+      inset:0;
+      transform-origin: center center;
+      will-change: transform;
+    }
+
+    .stageGrid{
       position:absolute;
       inset:0;
       background-image:
-        linear-gradient(var(--grid) 1px, transparent 1px),
-        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-      background-size: 24px 24px;
-      opacity: .55;
+        linear-gradient(to right, rgba(255,255,255,.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,.05) 1px, transparent 1px);
+      opacity: .25;
       pointer-events:none;
-    }
-
-    /* Inner stage world that we can zoom/pan inside the fixed square */
-    .stageWorld{
-      position:absolute;
-      inset:0;
-      transform-origin: 50% 50%;
-      touch-action: none;
     }
 
     .stageLabel{
       position:absolute;
-      left: 12px;
+      left: 10px;
       top: 10px;
       font-size: 12px;
-      color: rgba(233,238,251,.92);
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.10);
-      backdrop-filter: blur(6px);
-      user-select:none;
-      pointer-events:none;
-    }
-
-    .audienceTag{
-      position:absolute;
-      left: 50%;
-      bottom: 10px;
-      transform: translateX(-50%);
-      font-size: 11px;
       color: rgba(233,238,251,.85);
-      padding: 5px 10px;
+      background: rgba(0,0,0,.25);
+      border: 1px solid rgba(255,255,255,.12);
+      padding: 4px 8px;
       border-radius: 999px;
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.10);
       user-select:none;
       pointer-events:none;
     }
 
-    /* Item tokens */
+    .stageFooter{
+      position:absolute;
+      left: 10px;
+      bottom: 10px;
+      font-size: 12px;
+      color: rgba(233,238,251,.85);
+      background: rgba(0,0,0,.25);
+      border: 1px solid rgba(255,255,255,.12);
+      padding: 4px 8px;
+      border-radius: 999px;
+      user-select:none;
+      pointer-events:none;
+    }
+
     .item{
       position:absolute;
-      min-width: 72px;
-      min-height: 44px;
-      padding: 8px 10px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      box-shadow: 0 10px 18px rgba(0,0,0,.25);
-      cursor: grab;
-      user-select:none;
-      touch-action:none;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.05);
+      backdrop-filter: blur(2px);
       display:flex;
-      flex-direction:column;
-      gap:4px;
       align-items:center;
       justify-content:center;
       text-align:center;
+      padding: 6px 8px;
+      cursor: grab;
+      user-select:none;
+      touch-action:none;
+      min-width: 40px;
+      min-height: 30px;
     }
     .item:active{ cursor: grabbing; }
-    .item .name{ font-weight: 800; font-size: 12px; }
-    .item .meta{ font-size: 11px; color: rgba(233,238,251,.80); }
     .item.selected{
       border-color: rgba(74,163,255,.85);
-      box-shadow: 0 0 0 2px rgba(74,163,255,.20), 0 14px 22px rgba(0,0,0,.35);
+      box-shadow: 0 0 0 3px rgba(74,163,255,.18);
+      background: rgba(74,163,255,.10);
+    }
+    .item .lbl{
+      font-size: 12px;
+      line-height: 1.15;
+      color: rgba(233,238,251,.95);
+      pointer-events:none;
+      max-width: 140px;
+      word-wrap: break-word;
+    }
+    .item .icon{
+      font-size: 16px;
+      margin-right: 6px;
+      pointer-events:none;
     }
 
-    /* Mobile */
-    .accordionBtn{
-      display:none;
-      width:100%;
-      justify-content:space-between;
+    .flip180{
+      transform: rotate(180deg);
     }
-    .accBody{ display:block; }
-
-    @media (max-width: 1080px){
-      .app{
-        grid-template-columns: 1fr;
-      }
-      .accordionBtn{ display:flex; }
-      .accBody{ display:none; }
-      .accBody.open{ display:block; }
-      .card{ border-radius: 18px; }
+    .upright{
+      transform: rotate(180deg);
     }
 
-    /* Sliders */
-    input[type="range"]{
-      width:100%;
-      accent-color: var(--accent);
+    /* Controls below layout (so stage stays at top on mobile) */
+    .toolsBelow{
+      margin-top: 12px;
     }
 
-    .kbd{
-      display:inline-flex;
+    .sliderRow{
+      display:flex;
       align-items:center;
-      padding: 2px 8px;
-      border-radius: 10px;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    input[type="range"]{
+      width: 100%;
+    }
+    .sliderMeta{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    /* Library */
+    .libSearch{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    .libList{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .libItem{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding: 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+    }
+    .libItem .left{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+    .libItem .ico{
+      width:30px; height:30px;
+      border-radius: 12px;
+      display:flex; align-items:center; justify-content:center;
       background: rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.10);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      color: rgba(233,238,251,.92);
+      flex: 0 0 auto;
+    }
+    .libItem .name{
+      font-weight: 750;
+      font-size: 13px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .libItem .cat{
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .mini2{
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.03);
+      border-radius: var(--radius2);
+      padding: 10px;
+    }
+    .mini2 .t{
+      font-weight: 800;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    /* One-page panel tables */
+    table{
+      width:100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    th, td{
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      padding: 6px 6px;
+      vertical-align: top;
+      text-align:left;
+    }
+    th{ color: var(--muted); font-weight: 800; }
+    .muted{ color: var(--muted); }
+
+    .chipRow{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .chip{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
       font-size: 12px;
       color: rgba(233,238,251,.92);
-      white-space:nowrap;
-      margin: 0 2px;
     }
 
-    .toast{
-      position: fixed;
-      left: 50%;
-      bottom: 16px;
-      transform: translateX(-50%);
-      background: rgba(18,24,38,.92);
-      border: 1px solid rgba(255,255,255,.12);
-      color: var(--text);
-      padding: 10px 12px;
-      border-radius: 14px;
-      box-shadow: var(--shadow);
-      z-index: 50;
-      opacity: 0;
-      pointer-events:none;
-      transition: opacity .18s ease;
-      font-size: 13px;
-      max-width: 92vw;
+    /* Mobile layout - stage always at top, tools below it */
+    @media (max-width: 1080px){
+      main{ grid-template-columns: 1fr; }
     }
-    .toast.show{ opacity: 1; }
 
-    .mono{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    @media (max-width: 720px){
+      .actions{ width:100%; }
+      .title{ width:100%; }
+      .wrap{ padding: 12px 14px; }
+      main{ padding: 12px 14px 18px 14px; }
+    }
+
+    /* Print: one page */
+    @media print{
+      header{ display:none !important; }
+      body{ background:#fff !important; color:#000 !important; }
+      main{ display:block !important; max-width: 8in !important; padding:0 !important; }
+      .card{ box-shadow:none !important; background:#fff !important; border:1px solid #ddd !important; }
+      .card .hd{ border-bottom: 1px solid #ddd !important; }
+      .muted{ color:#333 !important; }
+      .button, button{ display:none !important; }
+      #libraryCard{ display:none !important; }
+      #editorCard{ break-inside: avoid; page-break-inside: avoid; }
+      #stageCard{ break-inside: avoid; page-break-inside: avoid; }
+      .stageSquare{ border: 1px solid #ccc !important; }
+      .stageRect{ border: 2px solid #444 !important; }
+      .stageLabel, .stageFooter{ background:#fff !important; color:#000 !important; border: 1px solid #ddd !important; }
     }
   </style>
 </head>
@@ -403,505 +480,552 @@
   <header>
     <div class="wrap">
       <div class="top">
-        <div class="brand">
+        <div class="title">
           <div class="logo" aria-hidden="true">SP</div>
-          <div class="titleBlock">
+          <div>
             <h1>StagePlot v2</h1>
-            <p class="sub">v1.5.5 (metric) - fast stage plots, no spreadsheet punishment</p>
+            <div class="sub">
+              <span class="pill"><span class="dot"></span>v1.5.6 (metric and import)</span>
+              <span class="pill" id="autosavePill">Autosave on</span>
+            </div>
           </div>
         </div>
 
         <div class="actions">
-          <span class="pill"><span class="dot"></span>Autosave on</span>
-          <a class="button" href="./guide.html">Guide</a>
-          <button class="primary" id="printBtn">Print</button>
-          <button id="exportBtn">Export Project</button>
-          <button id="importBtn">Import Project</button>
-          <input id="importFile" type="file" accept="application/json" style="display:none;" />
+          <a class="button" href="./guide.html" title="Open guide">Guide</a>
+
+          <button class="button" id="btnExport">Export project (JSON)</button>
+          <button class="button" id="btnImport">Import project</button>
+          <input id="fileImport" type="file" accept="application/json,.json" style="display:none" />
+
+          <button class="button" id="btnResetAll" title="Reset everything">Reset all</button>
+          <button class="button primary" id="btnPrint">Print</button>
         </div>
       </div>
     </div>
   </header>
 
-  <div class="app">
-    <!-- LEFT: STAGE + TOOLS (layout at top; tools below) -->
+  <main>
+    <!-- Stage + View -->
     <section class="card" id="stageCard">
       <div class="hd">
-        <h2>Stage</h2>
-        <button class="accordionBtn" type="button" data-acc="stageAcc">
-          Stage controls <span class="muted">tap</span>
-        </button>
+        <h2>Stage + View</h2>
+        <span class="pill" id="unitsPill">Units: ft</span>
       </div>
-      <div class="bd accBody open" id="stageAcc">
 
-        <!-- Stage layout ALWAYS first -->
-        <div class="row between">
-          <div>
-            <div style="font-weight:800;">Stage layout</div>
-            <div class="small">Width x Depth in <span id="unitWord">ft</span></div>
-          </div>
-          <div class="pill"><span class="dot"></span><span id="unitPill">Feet</span></div>
-        </div>
-
-        <div class="grid3" style="margin-top:10px;">
-          <button class="miniBtn" type="button" data-preset="small">Small</button>
-          <button class="miniBtn" type="button" data-preset="medium">Medium</button>
-          <button class="miniBtn" type="button" data-preset="large">Large</button>
-        </div>
-
-        <div class="grid2" style="margin-top:10px;">
-          <div>
-            <label for="stageW">Width (<span class="unitShort">ft</span>)</label>
-            <input id="stageW" type="number" min="1" step="0.1" />
-          </div>
-          <div>
-            <label for="stageD">Depth (<span class="unitShort">ft</span>)</label>
-            <input id="stageD" type="number" min="1" step="0.1" />
-          </div>
-        </div>
-
-        <div class="row tight" style="margin-top:10px;">
-          <button class="miniBtn" type="button" id="flipBtn">Toggle Audience View</button>
-          <button class="miniBtn danger" type="button" id="clearBtn">Clear All</button>
-        </div>
-
-        <hr class="sep" />
-
-        <!-- Tools BELOW layout -->
-        <div style="font-weight:800; margin-bottom:6px;">Tools</div>
-
-        <div class="grid2">
-          <div>
-            <label for="unitsSel">Units</label>
-            <select id="unitsSel">
-              <option value="ft">Feet</option>
-              <option value="m">Meters</option>
-            </select>
-            <div class="small" style="margin-top:6px;">
-              This changes stage size + nudges + labels.
-            </div>
-          </div>
-          <div>
-            <label for="viewZoom">View Zoom (<span id="viewZoomVal">100%</span>)</label>
-            <input id="viewZoom" type="range" min="50" max="180" step="1" value="100" />
-            <div class="row tight" style="margin-top:8px;">
-              <button class="miniBtn ok" type="button" id="resetViewBtn">Reset View (100%)</button>
+      <div class="stageOuter">
+        <!-- Layout always first (top) -->
+        <div class="stageSquare" id="stageSquare">
+          <div class="stageRect" id="stageRect">
+            <div class="stageInner" id="stageInner">
+              <div class="stageGrid" id="stageGrid"></div>
+              <div class="stageLabel" id="stageLabel">Upstage</div>
+              <div class="stageFooter" id="stageFooter">Audience</div>
+              <!-- items injected here -->
             </div>
           </div>
         </div>
 
-        <div style="margin-top:10px;">
-          <div class="small">
-            Tip: Scale changes an item. View Zoom changes your “camera” inside the stage square.
-          </div>
-        </div>
+        <!-- Tools BELOW layout (better mobile flow) -->
+        <div class="toolsBelow" id="toolsBelow">
+          <div class="mini2">
+            <div class="t">Stage settings</div>
 
-      </div>
-    </section>
+            <div class="row tight">
+              <div style="flex:1; min-width: 160px;">
+                <label class="small">Stage preset</label>
+                <select id="stagePreset">
+                  <option value="small">Small - 16 x 12</option>
+                  <option value="medium" selected>Medium - 24 x 16</option>
+                  <option value="large">Large - 32 x 24</option>
+                  <option value="custom">Custom</option>
+                </select>
+                <div class="hint">Dimensions are W x D.</div>
+              </div>
 
-    <!-- CENTER: STAGE CANVAS -->
-    <section class="stageShell">
-      <div class="stageViewport" aria-label="Stage viewport">
-        <div class="stageCanvas" id="stageCanvas">
-          <div class="gridOverlay"></div>
-          <div class="stageLabel" id="stageDims">Stage 24 x 16 ft</div>
-          <div class="audienceTag" id="audTag">Audience</div>
+              <div style="flex:1; min-width: 160px;">
+                <label class="small">Units</label>
+                <select id="unitsSelect">
+                  <option value="ft" selected>Feet (ft)</option>
+                  <option value="m">Metric (m)</option>
+                </select>
+                <div class="hint">Switching units changes inputs + labels.</div>
+              </div>
+            </div>
 
-          <div class="stageWorld" id="stageWorld">
-            <!-- items live here -->
-          </div>
-        </div>
-      </div>
+            <div class="row tight" style="margin-top:10px;">
+              <div style="flex:1; min-width: 120px;">
+                <label class="small">Width</label>
+                <input id="stageW" type="number" step="0.1" min="1" value="24">
+              </div>
+              <div style="flex:1; min-width: 120px;">
+                <label class="small">Depth</label>
+                <input id="stageD" type="number" step="0.1" min="1" value="16">
+              </div>
+              <div style="flex:1; min-width: 160px;">
+                <label class="small">Perspective</label>
+                <div class="row tight">
+                  <button class="button" id="btnViewToggle" title="Toggle stage/audience view">Stage view</button>
+                  <button class="button" id="btnCenterAll" title="Center all items">Center all</button>
+                </div>
+              </div>
+            </div>
 
-      <div class="card">
-        <div class="hd">
-          <h2>Quick add</h2>
-          <span class="pill"><span class="dot"></span>Tap to drop</span>
-        </div>
-        <div class="bd">
-          <div class="grid3">
-            <button class="miniBtn primary" type="button" data-add="Vocal">+ Vocal</button>
-            <button class="miniBtn primary" type="button" data-add="Guitar">+ Guitar</button>
-            <button class="miniBtn primary" type="button" data-add="Keys">+ Keys</button>
-          </div>
-          <div class="grid3" style="margin-top:10px;">
-            <button class="miniBtn" type="button" data-add="Bass">+ Bass</button>
-            <button class="miniBtn" type="button" data-add="Drums">+ Drums</button>
-            <button class="miniBtn" type="button" data-add="Wedge">+ Wedge</button>
-          </div>
-          <div class="grid3" style="margin-top:10px;">
-            <button class="miniBtn" type="button" data-add="Mic">+ Mic</button>
-            <button class="miniBtn" type="button" data-add="DI">+ DI</button>
-            <button class="miniBtn" type="button" data-add="Power">+ Power</button>
-          </div>
-          <div class="grid3" style="margin-top:10px;">
-            <button class="miniBtn" type="button" data-add="Amp">+ Amp</button>
-            <button class="miniBtn" type="button" data-add="IEM">+ IEM</button>
-            <button class="miniBtn" type="button" data-add="Misc">+ Misc</button>
-          </div>
-          <div class="small" style="margin-top:10px;">
-            Want more item types? We can wire back the full library panel anytime - keeping this build lean for v1.5.x.
+            <div class="divider"></div>
+
+            <div class="t">View controls</div>
+
+            <label class="small">View Zoom (inside the square)</label>
+            <input id="viewZoom" type="range" min="50" max="200" value="100" />
+            <div class="sliderMeta">
+              <span id="viewZoomLeft">50%</span>
+              <span><strong id="viewZoomVal">100%</strong></span>
+              <span id="viewZoomRight">200%</span>
+            </div>
+            <div class="row tight" style="margin-top:10px;">
+              <button class="button" id="btnResetView">Reset View to 100%</button>
+            </div>
+            <div class="hint">
+              View Zoom is just your magnifying glass. It does not change item sizes or print layout.
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- RIGHT: ONE-PAGE INFO -->
-    <section class="card" id="infoCard">
+    <!-- Library -->
+    <section class="card" id="libraryCard">
+      <div class="hd">
+        <h2>Item library</h2>
+        <span class="pill" id="itemCountPill">0 items</span>
+      </div>
+      <div class="bd">
+        <div class="libSearch">
+          <input id="libSearch" type="text" placeholder="Search - guitar, vocal, wedge, power..." />
+          <select id="libCat" style="max-width: 170px;">
+            <option value="all" selected>All</option>
+            <option value="people">People</option>
+            <option value="instruments">Instruments</option>
+            <option value="gear">Stage gear</option>
+            <option value="power">Electrical</option>
+          </select>
+        </div>
+
+        <div class="hint">
+          Add a thing, click it, then fill label/input/mix/notes on the right.
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="row tight">
+          <button class="button" id="btnMiscSm">+ Misc 1</button>
+          <button class="button" id="btnMiscMd">+ Misc 2</button>
+          <button class="button" id="btnMiscLg">+ Misc 3</button>
+        </div>
+        <div class="hint">Misc blocks are perfect for mystery gear, pedals, odd props, and “that one thing.”</div>
+
+        <div class="divider"></div>
+
+        <div class="libList" id="libList"></div>
+      </div>
+    </section>
+
+    <!-- Editor / One-page info -->
+    <section class="card" id="editorCard">
       <div class="hd">
         <h2>One-page info</h2>
-        <button class="accordionBtn" type="button" data-acc="infoAcc">
-          Info panel <span class="muted">tap</span>
-        </button>
+        <span class="pill" id="selPill">No selection</span>
       </div>
-      <div class="bd accBody open" id="infoAcc">
-        <div class="grid2">
-          <div>
-            <label for="bandName">Band / Act name</label>
-            <input id="bandName" type="text" placeholder="Optional" />
+      <div class="bd">
+        <label class="small">Band / Artist name (prints)</label>
+        <input id="bandName" type="text" placeholder="Optional - your band name" />
+
+        <div class="divider"></div>
+
+        <div class="mini2" style="margin-bottom: 12px;">
+          <div class="t">Selected item</div>
+
+          <div class="row tight">
+            <div style="flex:1; min-width: 160px;">
+              <label class="small">Label</label>
+              <input id="itLabel" type="text" placeholder="Pete Vox" />
+            </div>
+            <div style="flex:1; min-width: 120px;">
+              <label class="small">Color</label>
+              <select id="itColor">
+                <option value="">Default</option>
+                <option value="#4aa3ff">Blue</option>
+                <option value="#40d98a">Green</option>
+                <option value="#ffcc66">Yellow</option>
+                <option value="#ff5a6a">Red</option>
+                <option value="#b388ff">Purple</option>
+                <option value="#00e5ff">Cyan</option>
+              </select>
+            </div>
           </div>
-          <div>
-            <label for="showDate">Show date</label>
-            <input id="showDate" type="text" placeholder="Optional" />
+
+          <div class="row tight" style="margin-top:10px;">
+            <div style="flex:1; min-width: 120px;">
+              <label class="small">Input</label>
+              <input id="itInput" type="text" placeholder="Ch 1 / DI / Multi" />
+            </div>
+            <div style="flex:1; min-width: 120px;">
+              <label class="small">Mix</label>
+              <input id="itMix" type="text" placeholder="M1 / IEM / Wedge 2" />
+            </div>
+          </div>
+
+          <div style="margin-top:10px;">
+            <label class="small">Item notes</label>
+            <textarea id="itNotes" placeholder="Boom stand, DI after pedals, phantom power..."></textarea>
+          </div>
+
+          <div class="divider"></div>
+
+          <label class="small">Item Scale (footprint)</label>
+          <input id="itScale" type="range" min="50" max="200" value="100" />
+          <div class="sliderMeta">
+            <span>50%</span>
+            <span><strong id="itScaleVal">100%</strong></span>
+            <span>200%</span>
+          </div>
+
+          <div class="row tight" style="margin-top:10px;">
+            <button class="button" id="btnDup">Duplicate</button>
+            <button class="button danger" id="btnDelete">Delete</button>
+          </div>
+
+          <div class="hint">
+            Tip: Shift + Arrow nudges selected item by a small step.
           </div>
         </div>
 
-        <hr class="sep" />
+        <label class="small">Show notes (prints)</label>
+        <textarea id="showNotes" placeholder="Load-in notes, contact, backline, set length, parking..."></textarea>
 
-        <div class="row between">
-          <div>
-            <div style="font-weight:800;">Selected item</div>
-            <div class="small" id="selHint">Tap an item on the stage</div>
+        <div class="divider"></div>
+
+        <div class="mini2">
+          <div class="t">Auto lists (print-friendly)</div>
+
+          <div class="chipRow" style="margin-bottom: 8px;">
+            <span class="chip" id="stageDimChip">Stage: 24 x 16 ft</span>
+            <span class="chip" id="viewChip">View: Stage</span>
           </div>
-          <button class="miniBtn" type="button" id="dupBtn">Duplicate</button>
-        </div>
 
-        <div class="grid2" style="margin-top:10px;">
-          <div>
-            <label for="itemLabel">Label</label>
-            <input id="itemLabel" type="text" placeholder="e.g., Pete Vox" />
+          <div class="row" style="margin-top: 8px;">
+            <div style="flex:1; min-width: 220px;">
+              <div class="muted" style="font-weight:800; margin-bottom:6px;">Inputs</div>
+              <div id="inputsWrap"></div>
+            </div>
+            <div style="flex:1; min-width: 220px;">
+              <div class="muted" style="font-weight:800; margin-bottom:6px;">Monitor mixes</div>
+              <div id="mixesWrap"></div>
+            </div>
           </div>
-          <div>
-            <label for="itemType">Type</label>
-            <input id="itemType" type="text" placeholder="e.g., Vocal" />
+
+          <div class="hint" style="margin-top:10px;">
+            These tables are generated from item Input and Mix fields.
           </div>
-        </div>
-
-        <div class="grid2" style="margin-top:10px;">
-          <div>
-            <label for="itemInput">Input</label>
-            <input id="itemInput" type="text" placeholder="e.g., Ch 1 / DI" />
-          </div>
-          <div>
-            <label for="itemMix">Mix</label>
-            <input id="itemMix" type="text" placeholder="e.g., M1 / IEM" />
-          </div>
-        </div>
-
-        <div style="margin-top:10px;">
-          <label for="itemNotes">Item notes</label>
-          <textarea id="itemNotes" placeholder="boom stand, DI after pedals, phantom power..."></textarea>
-        </div>
-
-        <div style="margin-top:10px;">
-          <label for="itemScale">Scale (<span id="itemScaleVal">100%</span>)</label>
-          <input id="itemScale" type="range" min="60" max="180" step="1" value="100" />
-        </div>
-
-        <div class="row tight" style="margin-top:10px;">
-          <button class="miniBtn" type="button" id="centerBtn">Center item</button>
-          <button class="miniBtn danger" type="button" id="delBtn">Delete</button>
-        </div>
-
-        <hr class="sep" />
-
-        <div>
-          <label for="showNotes">Show notes (prints)</label>
-          <textarea id="showNotes" placeholder="load-in, parking, contact, backline, set length..."></textarea>
-        </div>
-
-        <div class="small" style="margin-top:10px;">
-          Nudges: <span class="kbd">Shift</span> + <span class="kbd">Arrow</span> uses 0.25 (ft) or 0.1 (m).
         </div>
       </div>
     </section>
-  </div>
-
-  <div class="toast" id="toast"></div>
+  </main>
 
   <script>
     /**********************
-     * v1.5.5 (metric)
-     * - Units toggle (ft/m)
-     * - Stage layout always top; tools below (this change)
-     * - View Zoom inside fixed square viewport
-     * - Basic stage items + one-page info
+     * StagePlot v2
+     * v1.5.6 (metric and import)
+     * - Metric (m) display + entry, stored internally in feet (for safety)
+     * - Import compatibility: old projects missing units still load
      **********************/
 
-    // ---- constants ----
-    const VERSION = "1.5.5 (metric)";
-    const LS_KEY = "stageplot_v2_project";
-    const LS_UI  = "stageplot_v2_ui";
+    const VERSION = "1.5.6 (metric and import)";
+    const STORAGE_KEY = "stageplot_project_v2";
+    const AUTOSAVE_DEBOUNCE_MS = 250;
 
-    // Presets defined in FEET (we convert if in meters)
-    const PRESETS_FT = {
-      small:  { w: 20, d: 14 },
-      medium: { w: 24, d: 16 },
-      large:  { w: 32, d: 20 }
-    };
+    // Canonical unit for internal storage/coords: feet
+    const FT_PER_M = 3.280839895; // 1 meter = 3.28084 ft
+    const round2 = (n) => Math.round(n * 100) / 100;
 
-    // Unit conversions
-    const FT_TO_M = 0.3048;
-    const M_TO_FT = 1 / FT_TO_M;
+    const $ = (id) => document.getElementById(id);
 
-    // Nudges
-    const NUDGE_FT = 0.25;
-    const NUDGE_M  = 0.10;
+    // DOM
+    const stageSquare = $("stageSquare");
+    const stageRect = $("stageRect");
+    const stageInner = $("stageInner");
+    const stageGrid = $("stageGrid");
+    const stageLabel = $("stageLabel");
+    const stageFooter = $("stageFooter");
 
-    // ---- state ----
+    const stagePreset = $("stagePreset");
+    const unitsSelect = $("unitsSelect");
+    const unitsPill = $("unitsPill");
+    const stageW = $("stageW");
+    const stageD = $("stageD");
+    const btnViewToggle = $("btnViewToggle");
+    const btnCenterAll = $("btnCenterAll");
+
+    const viewZoom = $("viewZoom");
+    const viewZoomVal = $("viewZoomVal");
+    const btnResetView = $("btnResetView");
+
+    const libSearch = $("libSearch");
+    const libCat = $("libCat");
+    const libList = $("libList");
+    const itemCountPill = $("itemCountPill");
+
+    const bandName = $("bandName");
+    const showNotes = $("showNotes");
+
+    const selPill = $("selPill");
+    const itLabel = $("itLabel");
+    const itColor = $("itColor");
+    const itInput = $("itInput");
+    const itMix = $("itMix");
+    const itNotes = $("itNotes");
+    const itScale = $("itScale");
+    const itScaleVal = $("itScaleVal");
+    const btnDup = $("btnDup");
+    const btnDelete = $("btnDelete");
+
+    const stageDimChip = $("stageDimChip");
+    const viewChip = $("viewChip");
+    const inputsWrap = $("inputsWrap");
+    const mixesWrap = $("mixesWrap");
+
+    const btnExport = $("btnExport");
+    const btnImport = $("btnImport");
+    const fileImport = $("fileImport");
+    const btnResetAll = $("btnResetAll");
+    const btnPrint = $("btnPrint");
+
+    // Library (simple starter pack)
+    const LIB = [
+      { id:"vocal", name:"Vocal", cat:"people", ico:"🎤", w:2.0, h:2.0 },
+      { id:"guitar", name:"Guitar", cat:"instruments", ico:"🎸", w:2.5, h:2.0 },
+      { id:"bass", name:"Bass", cat:"instruments", ico:"🎸", w:2.5, h:2.0 },
+      { id:"keys", name:"Keys", cat:"instruments", ico:"🎹", w:3.0, h:2.0 },
+      { id:"drums", name:"Drums", cat:"instruments", ico:"🥁", w:5.0, h:4.0 },
+      { id:"wedge", name:"Wedge", cat:"gear", ico:"🔊", w:2.0, h:1.2 },
+      { id:"amp", name:"Amp", cat:"gear", ico:"🟦", w:2.0, h:1.5 },
+      { id:"risers", name:"Riser", cat:"gear", ico:"⬛", w:6.0, h:3.0 },
+      { id:"power", name:"Power drop", cat:"power", ico:"🔌", w:1.5, h:1.5 },
+      { id:"di", name:"DI Box", cat:"power", ico:"📦", w:1.2, h:1.0 },
+      { id:"foh", name:"FOH", cat:"gear", ico:"🎚️", w:4.0, h:2.0 },
+    ];
+
+    // App state (all feet internally)
     let state = {
-      units: "ft",       // "ft" | "m"
-      stageW: 24,        // in current units
-      stageD: 16,        // in current units
-      flipped: false,
-      viewZoom: 100,     // percent
+      version: VERSION,
+      units: "ft",                // UI units: "ft" or "m"
       bandName: "",
-      showDate: "",
-      showNotes: "",
+      notes: "",
+      stage: { w: 24, d: 16 },     // feet
+      view: "stage",               // "stage" or "audience"
+      viewZoom: 1.0,               // 1.0 = 100%
       items: [],
-      selectedId: null
+      selectedId: null,
     };
 
-    // item model:
-    // { id, type, label, input, mix, notes, x, y, w, h, scale }
-    // x/y/w/h stored as normalized (0..1) of stage width/depth (unit-agnostic)
+    let autosaveTimer = null;
 
-    // ---- DOM ----
-    const stageWEl = document.getElementById("stageW");
-    const stageDEl = document.getElementById("stageD");
-    const stageDimsEl = document.getElementById("stageDims");
-    const stageWorld = document.getElementById("stageWorld");
-    const stageCanvas = document.getElementById("stageCanvas");
-    const audTag = document.getElementById("audTag");
-
-    const unitsSel = document.getElementById("unitsSel");
-    const unitPill = document.getElementById("unitPill");
-    const unitWord = document.getElementById("unitWord");
-    const unitShortEls = document.querySelectorAll(".unitShort");
-
-    const viewZoomEl = document.getElementById("viewZoom");
-    const viewZoomValEl = document.getElementById("viewZoomVal");
-    const resetViewBtn = document.getElementById("resetViewBtn");
-
-    const flipBtn = document.getElementById("flipBtn");
-    const clearBtn = document.getElementById("clearBtn");
-
-    const bandNameEl = document.getElementById("bandName");
-    const showDateEl = document.getElementById("showDate");
-    const showNotesEl = document.getElementById("showNotes");
-
-    const selHint = document.getElementById("selHint");
-    const itemLabelEl = document.getElementById("itemLabel");
-    const itemTypeEl = document.getElementById("itemType");
-    const itemInputEl = document.getElementById("itemInput");
-    const itemMixEl = document.getElementById("itemMix");
-    const itemNotesEl = document.getElementById("itemNotes");
-    const itemScaleEl = document.getElementById("itemScale");
-    const itemScaleValEl = document.getElementById("itemScaleVal");
-
-    const dupBtn = document.getElementById("dupBtn");
-    const delBtn = document.getElementById("delBtn");
-    const centerBtn = document.getElementById("centerBtn");
-
-    const printBtn = document.getElementById("printBtn");
-    const exportBtn = document.getElementById("exportBtn");
-    const importBtn = document.getElementById("importBtn");
-    const importFile = document.getElementById("importFile");
-
-    const toastEl = document.getElementById("toast");
-
-    // Accordions on mobile
-    document.querySelectorAll(".accordionBtn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const id = btn.getAttribute("data-acc");
-        const body = document.getElementById(id);
-        body.classList.toggle("open");
-        saveUI();
-      });
-    });
-
-    function saveUI(){
-      const ui = {
-        stageOpen: document.getElementById("stageAcc").classList.contains("open"),
-        infoOpen: document.getElementById("infoAcc").classList.contains("open"),
-      };
-      localStorage.setItem(LS_UI, JSON.stringify(ui));
+    function scheduleAutosave(){
+      if(autosaveTimer) clearTimeout(autosaveTimer);
+      autosaveTimer = setTimeout(saveToLocal, AUTOSAVE_DEBOUNCE_MS);
     }
-    function loadUI(){
+
+    function saveToLocal(){
       try{
-        const ui = JSON.parse(localStorage.getItem(LS_UI) || "null");
-        if(!ui) return;
-        document.getElementById("stageAcc").classList.toggle("open", !!ui.stageOpen);
-        document.getElementById("infoAcc").classList.toggle("open", !!ui.infoOpen);
-      }catch(e){}
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(exportProjectObject()));
+      }catch(e){
+        // ignore
+      }
     }
 
-    // ---- helpers ----
-    const uid = () => Math.random().toString(16).slice(2) + Date.now().toString(16);
-
-    function toast(msg){
-      toastEl.textContent = msg;
-      toastEl.classList.add("show");
-      clearTimeout(toastEl._t);
-      toastEl._t = setTimeout(()=>toastEl.classList.remove("show"), 1800);
+    function loadFromLocal(){
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return false;
+      try{
+        const obj = JSON.parse(raw);
+        importProjectObject(obj);
+        return true;
+      }catch(e){
+        return false;
+      }
     }
 
-    function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
-
-    function round1(v){ return Math.round(v * 10) / 10; }
-
+    // Units helpers (UI <-> internal feet)
+    function uiToFt(value){
+      const v = parseFloat(value);
+      if(!isFinite(v)) return null;
+      return (state.units === "m") ? v * FT_PER_M : v;
+    }
+    function ftToUi(ft){
+      const v = (state.units === "m") ? (ft / FT_PER_M) : ft;
+      return v;
+    }
     function unitLabel(){
       return state.units === "m" ? "m" : "ft";
     }
 
-    function setUnitsUI(){
-      unitsSel.value = state.units;
-      const isM = state.units === "m";
-      unitPill.textContent = isM ? "Meters" : "Feet";
-      unitWord.textContent = isM ? "m" : "ft";
-      unitShortEls.forEach(el => el.textContent = isM ? "m" : "ft");
-      renderStageDims();
-      renderNudgeHint();
-    }
+    // Stage fitting into square
+    function layoutStageRect(){
+      const sq = stageSquare.getBoundingClientRect();
+      const pad = 16; // breathing room inside square
+      const maxW = Math.max(10, sq.width - pad);
+      const maxH = Math.max(10, sq.height - pad);
 
-    function renderNudgeHint(){
-      // we only show in text - already placed in UI, but could be expanded later
-    }
+      const wFt = state.stage.w;
+      const dFt = state.stage.d;
 
-    function renderStageDims(){
-      stageWEl.value = state.stageW;
-      stageDEl.value = state.stageD;
-      stageDimsEl.textContent = `Stage ${state.stageW} x ${state.stageD} ${unitLabel()}`;
-      audTag.textContent = state.flipped ? "Stage" : "Audience";
-    }
+      // Fit stage rectangle inside square
+      const scale = Math.min(maxW / wFt, maxH / dFt);
 
-    function applyViewZoom(){
-      const z = state.viewZoom / 100;
-      stageWorld.style.transform = `scale(${z}) rotate(${state.flipped ? 180 : 0}deg)`;
-      viewZoomEl.value = state.viewZoom;
-      viewZoomValEl.textContent = `${state.viewZoom}%`;
-    }
+      const pxW = Math.max(40, wFt * scale);
+      const pxH = Math.max(40, dFt * scale);
 
-    function save(){
-      localStorage.setItem(LS_KEY, JSON.stringify(state));
-    }
-    function load(){
-      try{
-        const raw = localStorage.getItem(LS_KEY);
-        if(!raw) return;
-        const parsed = JSON.parse(raw);
-        if(parsed && parsed.items) state = parsed;
-      }catch(e){}
-    }
+      stageRect.style.width = pxW + "px";
+      stageRect.style.height = pxH + "px";
 
-    // Convert current stageW/D when switching units
-    function convertStageNumbers(toUnits){
-      const from = state.units;
-      if(from === toUnits) return;
-
-      if(from === "ft" && toUnits === "m"){
-        state.stageW = round1(state.stageW * FT_TO_M);
-        state.stageD = round1(state.stageD * FT_TO_M);
-      }else if(from === "m" && toUnits === "ft"){
-        state.stageW = round1(state.stageW * M_TO_FT);
-        state.stageD = round1(state.stageD * M_TO_FT);
+      // Grid size: 1ft or 1m-ish (converted)
+      let gridStepFt = 1;
+      if(state.units === "m"){
+        // grid every 1 meter (converted to ft)
+        gridStepFt = FT_PER_M; // 1m in ft
       }
-      state.units = toUnits;
+      const gridStepPx = gridStepFt * scale;
+      stageGrid.style.backgroundSize = `${gridStepPx}px ${gridStepPx}px`;
+
+      // Update labels
+      stageLabel.textContent = (state.view === "stage") ? "Upstage" : "Audience";
+      stageFooter.textContent = (state.view === "stage") ? "Audience" : "Upstage";
+
+      renderItems(); // re-render positions with new scale
     }
 
-    function presetToCurrentUnits(p){
-      if(state.units === "ft") return { w: p.w, d: p.d };
-      return { w: round1(p.w * FT_TO_M), d: round1(p.d * FT_TO_M) };
+    function stageScalePxPerFt(){
+      const rect = stageRect.getBoundingClientRect();
+      return rect.width / state.stage.w;
     }
 
-    // ---- Items / Rendering ----
-    function defaultItemDims(type){
-      // relative sizes (normalized)
-      // Keeping simple: these are proportions of stage, tuned to look good.
-      const map = {
-        "Vocal":  { w: 0.12, h: 0.08 },
-        "Guitar": { w: 0.14, h: 0.09 },
-        "Keys":   { w: 0.16, h: 0.10 },
-        "Bass":   { w: 0.14, h: 0.09 },
-        "Drums":  { w: 0.18, h: 0.13 },
-        "Wedge":  { w: 0.12, h: 0.07 },
-        "Mic":    { w: 0.10, h: 0.06 },
-        "DI":     { w: 0.10, h: 0.06 },
-        "Power":  { w: 0.12, h: 0.07 },
-        "Amp":    { w: 0.14, h: 0.09 },
-        "IEM":    { w: 0.12, h: 0.07 },
-        "Misc":   { w: 0.14, h: 0.09 },
-      };
-      return map[type] || { w: 0.14, h: 0.09 };
+    function setViewZoomFromSlider(){
+      const z = parseInt(viewZoom.value, 10) / 100;
+      state.viewZoom = z;
+      viewZoomVal.textContent = Math.round(z * 100) + "%";
+      applyStageTransforms();
+      scheduleAutosave();
     }
 
-    function addItem(type){
-      const d = defaultItemDims(type);
+    function applyStageTransforms(){
+      // Stage view zoom inside the rectangle (cropped by rect overflow)
+      const z = state.viewZoom || 1;
+
+      // Flip entire inner content for audience view
+      // - Rotate stageInner 180 so positions flip
+      // - Rotate each item label back upright
+      const isFlip = (state.view === "audience");
+      stageInner.classList.toggle("flip180", isFlip);
+
+      // Combine flip + zoom
+      stageInner.style.transform = `${isFlip ? "rotate(180deg) " : ""}scale(${z})`;
+      // Note: rotate is handled by class; we include it in transform for a single pipeline
+      // But since class also sets transform, we avoid double-transform:
+      // We'll remove class usage from transform and set it purely here.
+      stageInner.classList.remove("flip180");
+      stageInner.style.transform = `${isFlip ? "rotate(180deg) " : ""}scale(${z})`;
+
+      // Update view button label
+      btnViewToggle.textContent = (state.view === "stage") ? "Stage view" : "Audience view";
+      viewChip.textContent = "View: " + (state.view === "stage" ? "Stage" : "Audience");
+
+      // Make item labels upright if flipped
+      document.querySelectorAll(".item .lbl").forEach(el => {
+        el.classList.toggle("upright", isFlip);
+      });
+    }
+
+    function updateStageInputsFromState(){
+      unitsPill.textContent = "Units: " + state.units;
+
+      // Preset inputs shown in UI units
+      stageW.value = round2(ftToUi(state.stage.w));
+      stageD.value = round2(ftToUi(state.stage.d));
+
+      stageDimChip.textContent = `Stage: ${round2(ftToUi(state.stage.w))} x ${round2(ftToUi(state.stage.d))} ${unitLabel()}`;
+
+      // View zoom UI
+      viewZoom.value = Math.round((state.viewZoom || 1) * 100);
+      viewZoomVal.textContent = Math.round((state.viewZoom || 1) * 100) + "%";
+
+      unitsSelect.value = state.units;
+    }
+
+    function clamp(n, lo, hi){ return Math.max(lo, Math.min(hi, n)); }
+
+    function uid(){
+      return "it_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+    }
+
+    function addItemFromLib(libEntry){
       const id = uid();
-      const item = {
+      const x = (state.stage.w / 2) - (libEntry.w / 2);
+      const y = (state.stage.d / 2) - (libEntry.h / 2);
+
+      state.items.push({
         id,
-        type,
-        label: type,
+        type: libEntry.id,
+        name: libEntry.name,
+        icon: libEntry.ico,
+        x: clamp(x, 0, state.stage.w - libEntry.w),
+        y: clamp(y, 0, state.stage.d - libEntry.h),
+        w: libEntry.w,
+        h: libEntry.h,
+        scale: 1.0,
+        label: libEntry.name,
         input: "",
         mix: "",
         notes: "",
-        x: 0.5, y: 0.5,
-        w: d.w, h: d.h,
-        scale: 100
+        color: "",
+      });
+
+      state.selectedId = id;
+      renderItems();
+      refreshEditor();
+      refreshLists();
+      scheduleAutosave();
+    }
+
+    function addMisc(size){
+      const sizes = {
+        sm: { w: 2.0, h: 1.5, name: "Misc 1", ico: "📦" },
+        md: { w: 3.0, h: 2.0, name: "Misc 2", ico: "📦" },
+        lg: { w: 4.5, h: 3.0, name: "Misc 3", ico: "📦" },
       };
-      state.items.push(item);
-      select(id);
-      nudgeSelectedToVisible();
-      save();
-      render();
+      const m = sizes[size];
+      addItemFromLib({ id:"misc", name:m.name, cat:"gear", ico:m.ico, w:m.w, h:m.h });
     }
 
     function getSelected(){
       return state.items.find(it => it.id === state.selectedId) || null;
     }
 
-    function select(id){
+    function selectItem(id){
       state.selectedId = id;
-      const it = getSelected();
-      if(!it){
-        selHint.textContent = "Tap an item on the stage";
-        itemLabelEl.value = "";
-        itemTypeEl.value = "";
-        itemInputEl.value = "";
-        itemMixEl.value = "";
-        itemNotesEl.value = "";
-        itemScaleEl.value = 100;
-        itemScaleValEl.textContent = "100%";
-        return;
-      }
-      selHint.textContent = `Selected: ${it.label || it.type}`;
-      itemLabelEl.value = it.label || "";
-      itemTypeEl.value = it.type || "";
-      itemInputEl.value = it.input || "";
-      itemMixEl.value = it.mix || "";
-      itemNotesEl.value = it.notes || "";
-      itemScaleEl.value = it.scale || 100;
-      itemScaleValEl.textContent = `${it.scale || 100}%`;
-      save();
+      renderItems();
+      refreshEditor();
+      scheduleAutosave();
     }
 
     function deleteSelected(){
-      if(!state.selectedId) return;
-      state.items = state.items.filter(it => it.id !== state.selectedId);
+      const id = state.selectedId;
+      if(!id) return;
+      state.items = state.items.filter(it => it.id !== id);
       state.selectedId = null;
-      select(null);
-      save();
-      render();
+      renderItems();
+      refreshEditor();
+      refreshLists();
+      scheduleAutosave();
     }
 
     function duplicateSelected(){
@@ -909,365 +1033,735 @@
       if(!it) return;
       const copy = JSON.parse(JSON.stringify(it));
       copy.id = uid();
-      copy.x = clamp(copy.x + 0.04, 0.08, 0.92);
-      copy.y = clamp(copy.y + 0.04, 0.08, 0.92);
+      copy.x = clamp(copy.x + 1, 0, state.stage.w - copy.w);
+      copy.y = clamp(copy.y + 1, 0, state.stage.d - copy.h);
       state.items.push(copy);
-      select(copy.id);
-      save();
-      render();
+      state.selectedId = copy.id;
+      renderItems();
+      refreshEditor();
+      refreshLists();
+      scheduleAutosave();
     }
 
-    function centerSelected(){
-      const it = getSelected();
-      if(!it) return;
-      it.x = 0.5;
-      it.y = 0.5;
-      save();
-      render();
+    function centerAll(){
+      if(state.items.length === 0) return;
+      const minX = Math.min(...state.items.map(i => i.x));
+      const minY = Math.min(...state.items.map(i => i.y));
+      const maxX = Math.max(...state.items.map(i => i.x + i.w * (i.scale || 1)));
+      const maxY = Math.max(...state.items.map(i => i.y + i.h * (i.scale || 1)));
+
+      const groupW = maxX - minX;
+      const groupH = maxY - minY;
+
+      const targetX = (state.stage.w - groupW) / 2;
+      const targetY = (state.stage.d - groupH) / 2;
+
+      state.items.forEach(i => {
+        i.x = clamp(i.x - minX + targetX, 0, state.stage.w - i.w);
+        i.y = clamp(i.y - minY + targetY, 0, state.stage.d - i.h);
+      });
+
+      renderItems();
+      scheduleAutosave();
     }
 
-    function nudgeSelectedToVisible(){
-      const it = getSelected();
-      if(!it) return;
-      it.x = clamp(it.x, 0.08, 0.92);
-      it.y = clamp(it.y, 0.08, 0.92);
-    }
+    // Rendering items to pixels
+    function renderItems(){
+      // Remove existing item nodes
+      stageInner.querySelectorAll(".item").forEach(n => n.remove());
 
-    function render(){
-      renderStageDims();
-      setUnitsUI();
-      applyViewZoom();
+      const pxPerFt = stageScalePxPerFt();
 
-      stageWorld.innerHTML = "";
-      const rect = stageWorld.getBoundingClientRect();
-
-      // stageWorld uses absolute coords within stageCanvas; items positioned as percentage
       state.items.forEach(it => {
-        const el = document.createElement("div");
-        el.className = "item" + (it.id === state.selectedId ? " selected" : "");
-        el.setAttribute("data-id", it.id);
+        const div = document.createElement("div");
+        div.className = "item" + (it.id === state.selectedId ? " selected" : "");
+        div.dataset.id = it.id;
 
-        const name = document.createElement("div");
-        name.className = "name";
-        name.textContent = it.label || it.type || "Item";
+        const s = (it.scale || 1);
+        const wPx = it.w * s * pxPerFt;
+        const hPx = it.h * s * pxPerFt;
+        const xPx = it.x * pxPerFt;
+        const yPx = it.y * pxPerFt;
 
-        const meta = document.createElement("div");
-        meta.className = "meta";
-        const bits = [];
-        if(it.input) bits.push(it.input);
-        if(it.mix) bits.push(it.mix);
-        meta.textContent = bits.join(" • ");
+        div.style.left = xPx + "px";
+        div.style.top  = yPx + "px";
+        div.style.width = Math.max(40, wPx) + "px";
+        div.style.height = Math.max(30, hPx) + "px";
 
-        el.appendChild(name);
-        el.appendChild(meta);
+        if(it.color){
+          div.style.borderColor = "rgba(255,255,255,.18)";
+          div.style.boxShadow = it.id === state.selectedId ? "0 0 0 3px rgba(74,163,255,.18)" : "none";
+          div.style.background = "linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03))";
+          div.style.outline = "2px solid " + it.color;
+          div.style.outlineOffset = "-2px";
+        }else{
+          div.style.outline = "none";
+        }
 
-        // size/pos
-        const sc = (it.scale || 100) / 100;
-        const w = (it.w * sc) * 100;
-        const h = (it.h * sc) * 100;
+        div.innerHTML = `
+          <div class="icon">${escapeHtml(it.icon || "⬚")}</div>
+          <div class="lbl">${escapeHtml(it.label || it.name || "Item")}</div>
+        `;
 
-        el.style.left = `${it.x * 100}%`;
-        el.style.top  = `${it.y * 100}%`;
-        el.style.width  = `${w}%`;
-        el.style.height = `${h}%`;
-        el.style.transform = "translate(-50%, -50%)";
-
-        // pointer events
-        el.addEventListener("pointerdown", onItemPointerDown);
-
-        el.addEventListener("click", (e) => {
+        div.addEventListener("pointerdown", (e) => onItemPointerDown(e, it.id));
+        div.addEventListener("click", (e) => {
           e.stopPropagation();
-          select(it.id);
-          render(); // update selection highlight
+          selectItem(it.id);
         });
 
-        stageWorld.appendChild(el);
+        stageInner.appendChild(div);
       });
+
+      itemCountPill.textContent = state.items.length + (state.items.length === 1 ? " item" : " items");
+      applyStageTransforms();
     }
 
-    // ---- Dragging ----
+    // Dragging
     let drag = null;
 
-    function onItemPointerDown(e){
-      const id = e.currentTarget.getAttribute("data-id");
-      select(id);
-      render();
+    function onItemPointerDown(e, id){
+      e.preventDefault();
+      e.stopPropagation();
 
-      const it = getSelected();
+      const it = state.items.find(x => x.id === id);
       if(!it) return;
 
-      e.currentTarget.setPointerCapture(e.pointerId);
+      selectItem(id);
 
-      const worldRect = stageWorld.getBoundingClientRect();
-      const px = e.clientX - worldRect.left;
-      const py = e.clientY - worldRect.top;
+      const rect = stageRect.getBoundingClientRect();
+      const pxPerFt = stageScalePxPerFt();
 
+      // Account for viewZoom and flip
+      const z = state.viewZoom || 1;
+      const isFlip = (state.view === "audience");
+
+      // pointer position inside stageRect
+      const startPxX = e.clientX - rect.left;
+      const startPxY = e.clientY - rect.top;
+
+      // item position in pixels (unzoomed)
+      const itemStartX = it.x * pxPerFt;
+      const itemStartY = it.y * pxPerFt;
+
+      // If zoomed, the displayed inner is scaled from center; dragging still feels fine if we correct by zoom.
+      // We'll map pointer movement to unzoomed pixels by dividing by zoom.
       drag = {
         id,
-        startX: it.x,
-        startY: it.y,
-        startPX: px,
-        startPY: py,
-        worldW: worldRect.width,
-        worldH: worldRect.height,
-        pointerId: e.pointerId
+        pointerId: e.pointerId,
+        rect,
+        pxPerFt,
+        z,
+        isFlip,
+        startPxX,
+        startPxY,
+        itemStartX,
+        itemStartY,
       };
 
-      window.addEventListener("pointermove", onPointerMove);
-      window.addEventListener("pointerup", onPointerUp, { once:true });
+      stageRect.setPointerCapture(e.pointerId);
+      stageRect.addEventListener("pointermove", onPointerMove);
+      stageRect.addEventListener("pointerup", onPointerUp);
+      stageRect.addEventListener("pointercancel", onPointerUp);
     }
 
     function onPointerMove(e){
-      if(!drag) return;
-      const it = getSelected();
+      if(!drag || e.pointerId !== drag.pointerId) return;
+
+      const it = state.items.find(x => x.id === drag.id);
       if(!it) return;
 
-      const worldRect = stageWorld.getBoundingClientRect();
-      const px = e.clientX - worldRect.left;
-      const py = e.clientY - worldRect.top;
+      const rect = drag.rect;
+      const pxPerFt = drag.pxPerFt;
+      const z = drag.z;
 
-      const dx = (px - drag.startPX) / worldRect.width;
-      const dy = (py - drag.startPY) / worldRect.height;
+      // current pointer inside stageRect
+      let pxX = e.clientX - rect.left;
+      let pxY = e.clientY - rect.top;
 
-      it.x = clamp(drag.startX + dx, 0.04, 0.96);
-      it.y = clamp(drag.startY + dy, 0.04, 0.96);
-      render();
-      save();
+      // Convert movement to unzoomed pixels
+      const dx = (pxX - drag.startPxX) / z;
+      const dy = (pxY - drag.startPxY) / z;
+
+      // If flipped, movement feels reversed visually (because stage is rotated)
+      const moveX = drag.isFlip ? -dx : dx;
+      const moveY = drag.isFlip ? -dy : dy;
+
+      const newXPx = drag.itemStartX + moveX;
+      const newYPx = drag.itemStartY + moveY;
+
+      const s = (it.scale || 1);
+      const maxXFt = state.stage.w - (it.w * s);
+      const maxYFt = state.stage.d - (it.h * s);
+
+      it.x = clamp(newXPx / pxPerFt, 0, Math.max(0, maxXFt));
+      it.y = clamp(newYPx / pxPerFt, 0, Math.max(0, maxYFt));
+
+      renderItems();
+      refreshLists();
+      scheduleAutosave();
     }
 
-    function onPointerUp(){
-      window.removeEventListener("pointermove", onPointerMove);
+    function onPointerUp(e){
+      if(!drag || e.pointerId !== drag.pointerId) return;
+      stageRect.releasePointerCapture(e.pointerId);
+      stageRect.removeEventListener("pointermove", onPointerMove);
+      stageRect.removeEventListener("pointerup", onPointerUp);
+      stageRect.removeEventListener("pointercancel", onPointerUp);
       drag = null;
+      scheduleAutosave();
     }
 
-    // ---- Events ----
-    // click empty stage to clear selection
-    stageCanvas.addEventListener("click", () => {
+    // Click empty stage to clear selection
+    stageRect.addEventListener("click", () => {
       state.selectedId = null;
-      select(null);
-      render();
-      save();
+      renderItems();
+      refreshEditor();
+      scheduleAutosave();
     });
 
-    // stage inputs
-    stageWEl.addEventListener("input", () => {
-      state.stageW = clamp(parseFloat(stageWEl.value || "1"), 1, 9999);
-      renderStageDims();
-      save();
-    });
-    stageDEl.addEventListener("input", () => {
-      state.stageD = clamp(parseFloat(stageDEl.value || "1"), 1, 9999);
-      renderStageDims();
-      save();
-    });
-
-    // presets
-    document.querySelectorAll("[data-preset]").forEach(b => {
-      b.addEventListener("click", () => {
-        const key = b.getAttribute("data-preset");
-        const p = PRESETS_FT[key];
-        const v = presetToCurrentUnits(p);
-        state.stageW = v.w;
-        state.stageD = v.d;
-        toast(`Stage preset: ${key}`);
-        save();
-        render();
-      });
-    });
-
-    // tools
-    unitsSel.addEventListener("change", () => {
-      const to = unitsSel.value;
-      convertStageNumbers(to);
-      toast(`Units: ${to === "m" ? "meters" : "feet"}`);
-      save();
-      render();
-    });
-
-    viewZoomEl.addEventListener("input", () => {
-      state.viewZoom = parseInt(viewZoomEl.value, 10);
-      applyViewZoom();
-      save();
-    });
-
-    resetViewBtn.addEventListener("click", () => {
-      state.viewZoom = 100;
-      applyViewZoom();
-      save();
-      toast("View reset to 100%");
-    });
-
-    flipBtn.addEventListener("click", () => {
-      state.flipped = !state.flipped;
-      applyViewZoom();
-      save();
-      toast(state.flipped ? "Audience View" : "Stage View");
-    });
-
-    clearBtn.addEventListener("click", () => {
-      if(!confirm("Clear everything? This removes all items and notes.")) return;
-      state.items = [];
-      state.selectedId = null;
-      state.bandName = "";
-      state.showDate = "";
-      state.showNotes = "";
-      bandNameEl.value = "";
-      showDateEl.value = "";
-      showNotesEl.value = "";
-      select(null);
-      save();
-      render();
-      toast("Cleared");
-    });
-
-    // quick add
-    document.querySelectorAll("[data-add]").forEach(b => {
-      b.addEventListener("click", (e) => {
-        e.preventDefault();
-        addItem(b.getAttribute("data-add"));
-      });
-    });
-
-    // info fields
-    bandNameEl.addEventListener("input", () => { state.bandName = bandNameEl.value; save(); });
-    showDateEl.addEventListener("input", () => { state.showDate = showDateEl.value; save(); });
-    showNotesEl.addEventListener("input", () => { state.showNotes = showNotesEl.value; save(); });
-
-    itemLabelEl.addEventListener("input", () => {
-      const it = getSelected(); if(!it) return;
-      it.label = itemLabelEl.value;
-      save(); render();
-    });
-    itemTypeEl.addEventListener("input", () => {
-      const it = getSelected(); if(!it) return;
-      it.type = itemTypeEl.value;
-      save(); render();
-    });
-    itemInputEl.addEventListener("input", () => {
-      const it = getSelected(); if(!it) return;
-      it.input = itemInputEl.value;
-      save(); render();
-    });
-    itemMixEl.addEventListener("input", () => {
-      const it = getSelected(); if(!it) return;
-      it.mix = itemMixEl.value;
-      save(); render();
-    });
-    itemNotesEl.addEventListener("input", () => {
-      const it = getSelected(); if(!it) return;
-      it.notes = itemNotesEl.value;
-      save();
-    });
-
-    itemScaleEl.addEventListener("input", () => {
-      const it = getSelected(); if(!it) return;
-      it.scale = parseInt(itemScaleEl.value, 10);
-      itemScaleValEl.textContent = `${it.scale}%`;
-      save(); render();
-    });
-
-    dupBtn.addEventListener("click", duplicateSelected);
-    delBtn.addEventListener("click", deleteSelected);
-    centerBtn.addEventListener("click", centerSelected);
-
-    // keyboard nudges
+    // Keyboard nudges
     window.addEventListener("keydown", (e) => {
-      if(!(e.shiftKey && ["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"].includes(e.key))) return;
       const it = getSelected();
       if(!it) return;
-      e.preventDefault();
 
-      const step = (state.units === "m") ? NUDGE_M : NUDGE_FT;
-      // Convert "real" nudge into normalized delta relative to stage size
-      const dx = step / state.stageW;
-      const dy = step / state.stageD;
+      // avoid when typing
+      const tag = (document.activeElement && document.activeElement.tagName) ? document.activeElement.tagName.toLowerCase() : "";
+      if(tag === "input" || tag === "textarea" || tag === "select") return;
 
-      if(e.key === "ArrowLeft")  it.x -= dx;
-      if(e.key === "ArrowRight") it.x += dx;
-      if(e.key === "ArrowUp")    it.y -= dy;
-      if(e.key === "ArrowDown")  it.y += dy;
+      const s = it.scale || 1;
+      const maxXFt = state.stage.w - (it.w * s);
+      const maxYFt = state.stage.d - (it.h * s);
 
-      it.x = clamp(it.x, 0.04, 0.96);
-      it.y = clamp(it.y, 0.04, 0.96);
+      // Nudge size
+      // - feet: 0.25 ft
+      // - meters: 0.1 m (converted to ft)
+      let stepFt = 0.25;
+      if(state.units === "m") stepFt = 0.1 * FT_PER_M;
 
-      save();
-      render();
-    });
+      if(e.shiftKey && ["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"].includes(e.key)){
+        e.preventDefault();
+        if(e.key === "ArrowLeft")  it.x = clamp(it.x - stepFt, 0, maxXFt);
+        if(e.key === "ArrowRight") it.x = clamp(it.x + stepFt, 0, maxXFt);
+        if(e.key === "ArrowUp")    it.y = clamp(it.y - stepFt, 0, maxYFt);
+        if(e.key === "ArrowDown")  it.y = clamp(it.y + stepFt, 0, maxYFt);
+        renderItems();
+        refreshLists();
+        scheduleAutosave();
+      }
 
-    // export/import
-    exportBtn.addEventListener("click", () => {
-      const payload = {
-        version: VERSION,
-        exportedAt: new Date().toISOString(),
-        state
-      };
-      const blob = new Blob([JSON.stringify(payload, null, 2)], { type:"application/json" });
-      const a = document.createElement("a");
-      const stamp = new Date().toISOString().slice(0,19).replace(/[:T]/g,"-");
-      a.href = URL.createObjectURL(blob);
-      a.download = `StagePlot_project_${stamp}.json`;
-      a.click();
-      URL.revokeObjectURL(a.href);
-      toast("Exported project JSON");
-    });
-
-    importBtn.addEventListener("click", () => importFile.click());
-
-    importFile.addEventListener("change", async () => {
-      const file = importFile.files?.[0];
-      if(!file) return;
-      try{
-        const text = await file.text();
-        const data = JSON.parse(text);
-
-        // Accept either raw state or wrapped payload
-        const next = data.state && data.state.items ? data.state : data;
-        if(!next || !next.items) throw new Error("Invalid project format.");
-
-        state = next;
-
-        // Refresh form fields
-        bandNameEl.value = state.bandName || "";
-        showDateEl.value = state.showDate || "";
-        showNotesEl.value = state.showNotes || "";
-
-        select(state.selectedId || null);
-        save();
-        render();
-        toast("Imported project");
-      }catch(err){
-        alert("Could not import that file. Make sure it is a StagePlot project JSON.");
-      }finally{
-        importFile.value = "";
+      // Duplicate hotkey Cmd/Ctrl + D
+      if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "d"){
+        e.preventDefault();
+        duplicateSelected();
       }
     });
 
-    // printing (simple: let browser print)
-    printBtn.addEventListener("click", () => {
-      toast("Opening print...");
-      setTimeout(() => window.print(), 100);
+    // Editor sync
+    function refreshEditor(){
+      bandName.value = state.bandName || "";
+      showNotes.value = state.notes || "";
+
+      const it = getSelected();
+      if(!it){
+        selPill.textContent = "No selection";
+        itLabel.value = "";
+        itInput.value = "";
+        itMix.value = "";
+        itNotes.value = "";
+        itColor.value = "";
+        itScale.value = 100;
+        itScaleVal.textContent = "100%";
+        btnDup.disabled = true;
+        btnDelete.disabled = true;
+        return;
+      }
+
+      selPill.textContent = "Selected: " + (it.label || it.name || "Item");
+      itLabel.value = it.label || "";
+      itInput.value = it.input || "";
+      itMix.value = it.mix || "";
+      itNotes.value = it.notes || "";
+      itColor.value = it.color || "";
+      itScale.value = Math.round((it.scale || 1) * 100);
+      itScaleVal.textContent = Math.round((it.scale || 1) * 100) + "%";
+      btnDup.disabled = false;
+      btnDelete.disabled = false;
+    }
+
+    function refreshLists(){
+      // Inputs = items with input non-empty
+      const inputs = state.items
+        .filter(i => (i.input || "").trim().length > 0)
+        .map(i => ({ ch: (i.input || "").trim(), src: (i.label || i.name || "").trim() }))
+        .sort((a,b) => a.ch.localeCompare(b.ch, undefined, { numeric:true, sensitivity:"base" }));
+
+      // Mixes grouped
+      const mixMap = new Map();
+      state.items.forEach(i => {
+        const mix = (i.mix || "").trim();
+        if(!mix) return;
+        if(!mixMap.has(mix)) mixMap.set(mix, []);
+        mixMap.get(mix).push(i);
+      });
+
+      inputsWrap.innerHTML = inputs.length ? renderInputsTable(inputs) : `<div class="muted">No inputs yet.</div>`;
+      mixesWrap.innerHTML = mixMap.size ? renderMixesTable(mixMap) : `<div class="muted">No monitor mixes yet.</div>`;
+
+      stageDimChip.textContent = `Stage: ${round2(ftToUi(state.stage.w))} x ${round2(ftToUi(state.stage.d))} ${unitLabel()}`;
+      viewChip.textContent = "View: " + (state.view === "stage" ? "Stage" : "Audience");
+      scheduleAutosave();
+    }
+
+    function renderInputsTable(rows){
+      let html = `<table><thead><tr><th>Input</th><th>Source</th></tr></thead><tbody>`;
+      rows.forEach(r => {
+        html += `<tr><td>${escapeHtml(r.ch)}</td><td>${escapeHtml(r.src)}</td></tr>`;
+      });
+      html += `</tbody></table>`;
+      return html;
+    }
+
+    function renderMixesTable(map){
+      const mixes = Array.from(map.keys()).sort((a,b) => a.localeCompare(b, undefined, { numeric:true, sensitivity:"base" }));
+      let html = `<table><thead><tr><th>Mix</th><th>Who</th></tr></thead><tbody>`;
+      mixes.forEach(m => {
+        const who = map.get(m).map(i => (i.label || i.name || "").trim()).filter(Boolean).join(", ");
+        html += `<tr><td>${escapeHtml(m)}</td><td>${escapeHtml(who || "-")}</td></tr>`;
+      });
+      html += `</tbody></table>`;
+      return html;
+    }
+
+    function escapeHtml(s){
+      return String(s ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    // Library UI
+    function renderLibrary(){
+      const q = (libSearch.value || "").trim().toLowerCase();
+      const cat = libCat.value;
+
+      const items = LIB.filter(it => {
+        const matchQ = !q || it.name.toLowerCase().includes(q) || it.id.toLowerCase().includes(q);
+        const matchC = (cat === "all") || (it.cat === cat);
+        return matchQ && matchC;
+      });
+
+      libList.innerHTML = "";
+      items.forEach(it => {
+        const row = document.createElement("div");
+        row.className = "libItem";
+        row.innerHTML = `
+          <div class="left">
+            <div class="ico">${escapeHtml(it.ico)}</div>
+            <div style="min-width:0;">
+              <div class="name">${escapeHtml(it.name)}</div>
+              <div class="cat">${escapeHtml(it.cat)}</div>
+            </div>
+          </div>
+          <button class="button">Add</button>
+        `;
+        row.querySelector("button").addEventListener("click", () => addItemFromLib(it));
+        libList.appendChild(row);
+      });
+
+      if(items.length === 0){
+        libList.innerHTML = `<div class="muted">No matches. Try “wedge”, “power”, or “vocal”.</div>`;
+      }
+    }
+
+    // Stage settings
+    function applyPreset(p){
+      const presetsFt = {
+        small:  { w:16, d:12 },
+        medium: { w:24, d:16 },
+        large:  { w:32, d:24 },
+      };
+      if(p === "custom") return;
+
+      const s = presetsFt[p] || presetsFt.medium;
+      state.stage.w = s.w;
+      state.stage.d = s.d;
+      updateStageInputsFromState();
+      layoutStageRect();
+      refreshLists();
+      scheduleAutosave();
+    }
+
+    function onStageDimChange(){
+      const wFt = uiToFt(stageW.value);
+      const dFt = uiToFt(stageD.value);
+      if(!wFt || !dFt) return;
+
+      state.stage.w = clamp(wFt, 1, 200);
+      state.stage.d = clamp(dFt, 1, 200);
+
+      // Keep items within bounds
+      state.items.forEach(it => {
+        const s = it.scale || 1;
+        const maxX = Math.max(0, state.stage.w - (it.w * s));
+        const maxY = Math.max(0, state.stage.d - (it.h * s));
+        it.x = clamp(it.x, 0, maxX);
+        it.y = clamp(it.y, 0, maxY);
+      });
+
+      // If user edits dimensions, it's custom
+      stagePreset.value = "custom";
+
+      stageDimChip.textContent = `Stage: ${round2(ftToUi(state.stage.w))} x ${round2(ftToUi(state.stage.d))} ${unitLabel()}`;
+      layoutStageRect();
+      refreshLists();
+      scheduleAutosave();
+    }
+
+    function setUnits(newUnits){
+      if(newUnits !== "ft" && newUnits !== "m") return;
+      state.units = newUnits;
+      unitsPill.textContent = "Units: " + state.units;
+
+      // Update inputs to show same underlying feet in new units
+      updateStageInputsFromState();
+      refreshLists();
+      layoutStageRect();
+      scheduleAutosave();
+    }
+
+    function toggleView(){
+      state.view = (state.view === "stage") ? "audience" : "stage";
+      applyStageTransforms();
+      refreshLists();
+      scheduleAutosave();
+    }
+
+    function resetView(){
+      state.viewZoom = 1.0;
+      updateStageInputsFromState();
+      applyStageTransforms();
+      scheduleAutosave();
+    }
+
+    // Editor events
+    bandName.addEventListener("input", () => {
+      state.bandName = bandName.value;
+      scheduleAutosave();
+    });
+    showNotes.addEventListener("input", () => {
+      state.notes = showNotes.value;
+      scheduleAutosave();
     });
 
-    // ---- init ----
-    loadUI();
-    load();
+    itLabel.addEventListener("input", () => {
+      const it = getSelected(); if(!it) return;
+      it.label = itLabel.value;
+      selPill.textContent = "Selected: " + (it.label || it.name || "Item");
+      renderItems();
+      refreshLists();
+      scheduleAutosave();
+    });
+    itInput.addEventListener("input", () => {
+      const it = getSelected(); if(!it) return;
+      it.input = itInput.value;
+      refreshLists();
+      scheduleAutosave();
+    });
+    itMix.addEventListener("input", () => {
+      const it = getSelected(); if(!it) return;
+      it.mix = itMix.value;
+      refreshLists();
+      scheduleAutosave();
+    });
+    itNotes.addEventListener("input", () => {
+      const it = getSelected(); if(!it) return;
+      it.notes = itNotes.value;
+      scheduleAutosave();
+    });
+    itColor.addEventListener("change", () => {
+      const it = getSelected(); if(!it) return;
+      it.color = itColor.value;
+      renderItems();
+      scheduleAutosave();
+    });
+    itScale.addEventListener("input", () => {
+      const it = getSelected(); if(!it) return;
+      it.scale = clamp(parseInt(itScale.value, 10) / 100, 0.5, 2.0);
+      itScaleVal.textContent = Math.round(it.scale * 100) + "%";
 
-    // Ensure defaults present
-    if(!state.units) state.units = "ft";
-    if(!state.stageW) state.stageW = 24;
-    if(!state.stageD) state.stageD = 16;
-    if(!state.viewZoom) state.viewZoom = 100;
-    if(!Array.isArray(state.items)) state.items = [];
+      // Keep within stage
+      const maxX = Math.max(0, state.stage.w - (it.w * it.scale));
+      const maxY = Math.max(0, state.stage.d - (it.h * it.scale));
+      it.x = clamp(it.x, 0, maxX);
+      it.y = clamp(it.y, 0, maxY);
 
-    // bind UI from state
-    bandNameEl.value = state.bandName || "";
-    showDateEl.value = state.showDate || "";
-    showNotesEl.value = state.showNotes || "";
-    viewZoomEl.value = state.viewZoom || 100;
+      renderItems();
+      refreshLists();
+      scheduleAutosave();
+    });
 
-    select(state.selectedId || null);
-    render();
-    save();
+    btnDelete.addEventListener("click", deleteSelected);
+    btnDup.addEventListener("click", duplicateSelected);
+
+    // Top actions
+    btnMiscSm.addEventListener("click", () => addMisc("sm"));
+    btnMiscMd.addEventListener("click", () => addMisc("md"));
+    btnMiscLg.addEventListener("click", () => addMisc("lg"));
+
+    btnCenterAll.addEventListener("click", centerAll);
+
+    btnViewToggle.addEventListener("click", toggleView);
+
+    viewZoom.addEventListener("input", setViewZoomFromSlider);
+    btnResetView.addEventListener("click", resetView);
+
+    stagePreset.addEventListener("change", () => applyPreset(stagePreset.value));
+    unitsSelect.addEventListener("change", () => setUnits(unitsSelect.value));
+    stageW.addEventListener("input", onStageDimChange);
+    stageD.addEventListener("input", onStageDimChange);
+
+    libSearch.addEventListener("input", renderLibrary);
+    libCat.addEventListener("change", renderLibrary);
+
+    btnPrint.addEventListener("click", () => {
+      // Best practice: reset view zoom to 100% before printing (keeps everything consistent)
+      // BUT: user may want to print zoomed; we'll keep current viewZoom.
+      window.print();
+    });
+
+    btnResetAll.addEventListener("click", () => {
+      if(!confirm("Reset StagePlot? This clears the current project from this browser.")) return;
+      localStorage.removeItem(STORAGE_KEY);
+      state = defaultState();
+      updateStageInputsFromState();
+      renderItems();
+      refreshEditor();
+      refreshLists();
+      renderLibrary();
+      layoutStageRect();
+      scheduleAutosave();
+    });
+
+    btnExport.addEventListener("click", () => {
+      const obj = exportProjectObject();
+      const blob = new Blob([JSON.stringify(obj, null, 2)], { type:"application/json" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      const safeName = (state.bandName || "stageplot").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+      a.href = url;
+      a.download = `${safeName || "stageplot"}-project.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      setTimeout(() => URL.revokeObjectURL(url), 3000);
+    });
+
+    btnImport.addEventListener("click", () => fileImport.click());
+    fileImport.addEventListener("change", async () => {
+      const f = fileImport.files && fileImport.files[0];
+      fileImport.value = "";
+      if(!f) return;
+      try{
+        const text = await f.text();
+        const obj = JSON.parse(text);
+        importProjectObject(obj);
+        saveToLocal();
+      }catch(e){
+        alert("Could not import that JSON. If you want, forward it to Pete and he’ll fix it.");
+      }
+    });
+
+    function defaultState(){
+      return {
+        version: VERSION,
+        units: "ft",
+        bandName: "",
+        notes: "",
+        stage: { w: 24, d: 16 },
+        view: "stage",
+        viewZoom: 1.0,
+        items: [],
+        selectedId: null,
+      };
+    }
+
+    // Export format (keeps old keys so older versions still can read stage/items in feet)
+    function exportProjectObject(){
+      return {
+        bandName: state.bandName || "",
+        notes: state.notes || "",
+        stage: { w: state.stage.w, d: state.stage.d }, // feet (backward-safe)
+        view: state.view || "stage",
+        viewZoom: state.viewZoom || 1.0,
+        // New in 1.5.5+: units hint (importers can use this to interpret UI fields)
+        units: state.units || "ft",
+        // Future-proof: explicit canonical units for stage/items
+        stageFt: { w: state.stage.w, d: state.stage.d },
+        items: state.items.map(i => ({
+          id: i.id,
+          type: i.type,
+          name: i.name,
+          icon: i.icon,
+          x: i.x, y: i.y, w: i.w, h: i.h,   // feet
+          scale: i.scale || 1.0,
+          label: i.label || "",
+          input: i.input || "",
+          mix: i.mix || "",
+          notes: i.notes || "",
+          color: i.color || "",
+        })),
+        version: VERSION,
+      };
+    }
+
+    // Import compatibility:
+    // - Old projects (pre-units) have { bandName, notes, stage:{w,d}, view, viewZoom, items:[...]} in feet
+    // - New projects may have units:"m" and store stageFt/items in feet anyway (we do)
+    // - If someone creates a metric-only export elsewhere (units:"m" and stage in meters), we attempt a safe conversion
+    function importProjectObject(obj){
+      if(!obj || typeof obj !== "object") throw new Error("bad");
+
+      // Start from default but preserve current units preference if desired
+      const prevUnits = state.units || "ft";
+      state = defaultState();
+
+      // band + notes
+      state.bandName = String(obj.bandName || "");
+      state.notes = String(obj.notes || "");
+
+      // view + viewZoom
+      state.view = (obj.view === "audience" || obj.view === "stage") ? obj.view : "stage";
+      state.viewZoom = (typeof obj.viewZoom === "number" && isFinite(obj.viewZoom)) ? obj.viewZoom : 1.0;
+
+      // units (UI)
+      // If the project has units, use it; otherwise keep user preference (or default ft)
+      if(obj.units === "ft" || obj.units === "m"){
+        state.units = obj.units;
+      }else{
+        state.units = prevUnits;
+      }
+
+      // Stage dimensions
+      // Priority:
+      // 1) stageFt.w/d (explicit feet)
+      // 2) stage.w/d (assume feet - old format)
+      // 3) fallback to defaults
+      let wFt = null, dFt = null;
+
+      if(obj.stageFt && isFinite(obj.stageFt.w) && isFinite(obj.stageFt.d)){
+        wFt = Number(obj.stageFt.w);
+        dFt = Number(obj.stageFt.d);
+      }else if(obj.stage && isFinite(obj.stage.w) && isFinite(obj.stage.d)){
+        // Could be feet (old), or meters from a different exporter.
+        // Heuristic:
+        // - If obj.units === "m" AND stage.w/d are small-ish (<= 40) AND no stageFt provided,
+        //   treat as meters and convert to feet.
+        const sw = Number(obj.stage.w);
+        const sd = Number(obj.stage.d);
+
+        const looksLikeMeters = (obj.units === "m") && (sw <= 40) && (sd <= 40);
+        if(looksLikeMeters){
+          wFt = sw * FT_PER_M;
+          dFt = sd * FT_PER_M;
+        }else{
+          wFt = sw;
+          dFt = sd;
+        }
+      }else{
+        wFt = 24;
+        dFt = 16;
+      }
+
+      state.stage.w = clamp(wFt, 1, 200);
+      state.stage.d = clamp(dFt, 1, 200);
+
+      // Items
+      const itemsIn = Array.isArray(obj.items) ? obj.items : [];
+      state.items = itemsIn.map((i) => {
+        const id = String(i.id || uid());
+        const name = String(i.name || "Item");
+        const icon = String(i.icon || "⬚");
+
+        // If someone exported in meters but didn't include stageFt/itemsFt, apply same heuristic:
+        const inMeters = (obj.units === "m") && !(obj.stageFt) && (typeof i.x === "number" || typeof i.w === "number");
+
+        const x = inMeters ? Number(i.x || 0) * FT_PER_M : Number(i.x || 0);
+        const y = inMeters ? Number(i.y || 0) * FT_PER_M : Number(i.y || 0);
+        const w = inMeters ? Number(i.w || 2) * FT_PER_M : Number(i.w || 2);
+        const h = inMeters ? Number(i.h || 2) * FT_PER_M : Number(i.h || 2);
+
+        const scale = (typeof i.scale === "number" && isFinite(i.scale)) ? i.scale : 1.0;
+
+        return {
+          id,
+          type: String(i.type || "custom"),
+          name,
+          icon,
+          x: clamp(x, 0, Math.max(0, state.stage.w - w)),
+          y: clamp(y, 0, Math.max(0, state.stage.d - h)),
+          w: clamp(w, 0.3, 100),
+          h: clamp(h, 0.3, 100),
+          scale: clamp(scale, 0.5, 2.0),
+          label: String(i.label || name),
+          input: String(i.input || ""),
+          mix: String(i.mix || ""),
+          notes: String(i.notes || ""),
+          color: String(i.color || ""),
+        };
+      });
+
+      // Selection
+      state.selectedId = null;
+
+      // Update UI
+      updateStageInputsFromState();
+      bandName.value = state.bandName;
+      showNotes.value = state.notes;
+
+      renderItems();
+      refreshEditor();
+      refreshLists();
+      renderLibrary();
+      layoutStageRect();
+      applyStageTransforms();
+    }
+
+    // Init
+    function init(){
+      // If local exists, load it; else create defaults
+      const loaded = loadFromLocal();
+      if(!loaded){
+        state = defaultState();
+      }
+
+      updateStageInputsFromState();
+      bandName.value = state.bandName || "";
+      showNotes.value = state.notes || "";
+
+      renderLibrary();
+      renderItems();
+      refreshEditor();
+      refreshLists();
+
+      // stage fit
+      layoutStageRect();
+
+      // Resize observer
+      const ro = new ResizeObserver(() => layoutStageRect());
+      ro.observe(stageSquare);
+
+      // Also re-fit on orientation changes
+      window.addEventListener("resize", () => layoutStageRect());
+
+      // Ensure transforms are applied
+      applyStageTransforms();
+    }
+
+    init();
   </script>
 </body>
 </html>
