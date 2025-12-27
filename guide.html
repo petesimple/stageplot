@@ -179,6 +179,12 @@
       font-size: 15px;
       letter-spacing:.1px;
     }
+    h4{
+      margin: 10px 0 6px 0;
+      font-size: 14px;
+      letter-spacing:.1px;
+      color: rgba(233,238,251,.95);
+    }
     p{ margin: 0 0 10px 0; color: rgba(233,238,251,.92); }
     ul{ margin: 8px 0 14px 20px; padding:0; color: rgba(233,238,251,.92); }
     li{ margin: 6px 0; }
@@ -326,7 +332,7 @@
           <div class="logo" aria-hidden="true">SP</div>
           <div>
             <h1>StagePlot Guide</h1>
-            <div class="sub">How to use StagePlot - updated for version 1.5.4</div>
+            <div class="sub">How to use StagePlot - updated for version 1.5.5 (metric)</div>
           </div>
         </div>
 
@@ -344,12 +350,11 @@
       <div class="hd"><h2>Jump to</h2></div>
       <div class="bd">
         <a href="#quickstart">Quick start</a>
-        <a href="#new">What’s new in 1.5.4</a>
+        <a href="#new">What’s new in 1.5.5</a>
         <a href="#share">Share the love</a>
-        <a href="#support">Support StagePlot</a>
-        <a href="#stage">Stage basics</a>
-        <a href="#view">View controls (Scale + View Zoom)</a>
-        <a href="#mobile">Mobile layout and accordions</a>
+        <a href="#layout">Layout (desktop vs mobile)</a>
+        <a href="#stageview">Stage and View</a>
+        <a href="#units">Units (Feet vs Meters)</a>
         <a href="#add">Add items</a>
         <a href="#select">Select and multi select</a>
         <a href="#move">Move, nudge, center</a>
@@ -369,8 +374,9 @@
     <section class="card">
       <div class="hd">
         <h2>Welcome</h2>
-        <span class="pill">Guide for v1.5.4</span>
+        <span class="pill">Guide for v1.5.5</span>
       </div>
+
       <div class="bd">
         <p>
           StagePlot is a drag and drop stage plot builder. You can place players and gear on a stage, add inputs and monitor mixes,
@@ -397,37 +403,24 @@
 
         <h3 id="quickstart">Quick start</h3>
         <ul>
-          <li>Pick your stage size in the Stage panel (small, medium, large, or custom).</li>
-          <li>Search the library and hit Add to drop gear on the stage.</li>
+          <li>Pick your stage size in the Stage panel (preset or custom).</li>
+          <li>Add items from the Library (or drop Misc blocks for mystery gear).</li>
           <li>Click an item to edit it in the One-page info panel (label, input, mix, notes, color, scale, rotation).</li>
+          <li>Use View Zoom for tight placement, then Reset View to 100% when you want the clean “fits in the square” view.</li>
           <li>When it looks right, hit Print for the clean one page view.</li>
         </ul>
 
-        <h3 id="new">What’s new in 1.5.4</h3>
+        <h3 id="new">What’s new in 1.5.5 (metric)</h3>
         <div class="callout ok">
           <ul>
-            <li><strong>Stage always stays inside the square at 100%:</strong> no more bottom edge getting cut off on desktop.</li>
-            <li><strong>View Zoom slider:</strong> a second slider under Scale that zooms in/out <em>inside</em> the stage square.</li>
-            <li><strong>Reset View button:</strong> snaps View Zoom back to <strong>100%</strong> instantly.</li>
+            <li><strong>Metric units option:</strong> toggle the stage measurements between <strong>Feet</strong> and <strong>Meters</strong>.</li>
+            <li><strong>Stage presets updated:</strong> stage sizes can display in meters, with clean readable values.</li>
+            <li><strong>No layout chaos:</strong> switching units is display-friendly and keeps your plot sensible.</li>
+            <li><strong>View tools still rock:</strong> stage stays inside the square at 100%, plus View Zoom + Reset View.</li>
           </ul>
           <div class="footer">
-            Remember: <strong>Scale</strong> changes item footprint. <strong>View Zoom</strong> changes how zoomed your view is, without changing item sizes.
+            Translation: you can talk to venues in meters without rethinking your entire life.
           </div>
-        </div>
-
-        <h3 id="view">View controls (Scale + View Zoom)</h3>
-        <p>
-          StagePlot has two different “zoom-ish” controls on purpose. They solve different problems.
-        </p>
-        <ul>
-          <li><strong>Scale (item scale):</strong> changes the selected item’s size on the stage.</li>
-          <li><strong>View Zoom (new):</strong> zooms the view in/out within the stage square. Great for detailed placement without changing the plot’s print layout.</li>
-          <li><strong>Reset View:</strong> sets View Zoom to 100% so you can always get back to the clean “fits in the square” view.</li>
-        </ul>
-
-        <div class="callout warn">
-          <strong>Best habit:</strong> Do your detailed placement using View Zoom, then hit Reset View before printing.
-          (Print should look good either way, but this keeps everything consistent.)
         </div>
 
         <h3 id="share">Share the love</h3>
@@ -468,61 +461,93 @@
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- NEW: Support StagePlot (PayPal) -->
-        <h3 id="support">Support StagePlot</h3>
-        <div class="callout">
-          <strong>Help keep this thing afloat</strong>
-          <p style="margin-top:8px;">
-            StagePlot is free, offline-friendly, and built by a working musician who got tired of bad stage plots and
-            “wait, where do you want the keys?” conversations.
-          </p>
-
-          <p>
-            If this app saved you time, reduced confusion, or prevented at least one awkward load-in moment,
-            you can help keep it alive by tossing a few bucks into the tip jar.
-          </p>
-
-          <div class="shareRow">
-            <a
-              class="button primary"
-              href="https://www.paypal.com/ncp/payment/LTXDLQ6W4JZV8"
-              target="_blank"
-              rel="noopener"
-            >
-              Toss a coin to your stage plotter
-            </a>
-          </div>
-
-          <div class="footer" style="margin-top:8px;">
-            No pressure. No guilt. Just gratitude. And probably coffee.
+          <div class="callout warn" style="margin:12px 0 0 0;">
+            <strong>Keep this little project afloat</strong>
+            <p style="margin-top:8px;">
+              If StagePlot saved you even 10 minutes of load-in chaos, consider tossing a few bucks in the tip jar.
+              It helps cover the “miscellaneous tech gremlins” budget and keeps updates coming.
+            </p>
+            <div class="shareRow">
+              <a class="tinyLink" href="https://www.paypal.com/ncp/payment/LTXDLQ6W4JZV8" target="_blank" rel="noopener">
+                Donate via PayPal (no pressure)
+              </a>
+              <span class="pill">If not, share it and roast me gently</span>
+            </div>
           </div>
         </div>
-        <!-- /NEW -->
 
-        <h3 id="stage">Stage basics</h3>
+        <!-- Layout first (requested), then tools below -->
+        <h3 id="layout">Layout (desktop vs mobile)</h3>
         <p>
-          The stage is measured in feet using Width x Depth. Upstage is at the top of the plot and audience is downstage at the bottom.
-          Items are positioned relative to the stage scale, so if you change stage size later, your layout should stay sensible.
+          StagePlot keeps the stage at the top of the experience, especially on mobile.
+          The goal is simple: you should always see the plot first, then the controls underneath.
         </p>
+
+        <div class="callout ok">
+          <strong>Desktop (wide screens):</strong>
+          <ul>
+            <li>Classic multi-panel layout.</li>
+            <li>Stage stays prominent, with your library and info panel nearby.</li>
+            <li>Great for fast building with mouse/trackpad.</li>
+          </ul>
+          <strong>Mobile (narrow screens):</strong>
+          <ul>
+            <li>Stacked layout: stage and plot preview first.</li>
+            <li>Tools appear below the stage so you are not hunting for them.</li>
+            <li>Library and One-page info use accordions to save scroll space.</li>
+          </ul>
+          <div class="footer">
+            Tip: Add item, tap it, edit it, repeat. The app tries to put the next step right in your face.
+          </div>
+        </div>
+
+        <h3 id="stageview">Stage and View</h3>
+        <p>
+          This section covers stage sizing, keeping the plot inside the square, and the view tools that help with fine placement.
+          In the app, the stage layout stays at the top, and these tools live underneath (especially on mobile).
+        </p>
+
+        <h4>Stage basics</h4>
         <ul>
-          <li><strong>Stage preset:</strong> swaps stage W and D quickly.</li>
-          <li><strong>Custom stage:</strong> type W and D yourself.</li>
+          <li><strong>Upstage is at the top</strong>, audience is downstage at the bottom (standard stage plot convention).</li>
+          <li><strong>Stage size:</strong> set Width x Depth using presets or custom values.</li>
           <li><strong>Click empty stage space:</strong> clears selection.</li>
         </ul>
 
-        <h3 id="mobile">Mobile layout and accordions</h3>
+        <h4>View tools (under the layout)</h4>
+        <div class="callout ok">
+          <ul>
+            <li><strong>Stage stays inside the square at 100%:</strong> when View Zoom is 100%, you get the clean “fits in the square” view.</li>
+            <li><strong>View Zoom:</strong> zooms the view in/out inside the stage square for detail work (without changing item sizes).</li>
+            <li><strong>Reset View:</strong> snaps View Zoom back to <strong>100%</strong> instantly.</li>
+          </ul>
+          <div class="footer">
+            Remember: <strong>Scale</strong> changes an item’s footprint. <strong>View Zoom</strong> changes how close you are while editing.
+          </div>
+        </div>
+
+        <h3 id="units">Units (Feet vs Meters)</h3>
         <p>
-          On narrow screens, StagePlot switches to a stacked layout so you can work top to bottom.
-          The library and info panels become accordions, and StagePlot remembers what you left open.
+          Version 1.5.5 adds a units toggle so you can talk in the measurement system your venue actually uses.
         </p>
-        <ul>
-          <li><strong>Stage goes first:</strong> stage panel is at the top for quick drag and place.</li>
-          <li><strong>Accordion panels:</strong> Item library and One-page info can collapse to save scroll.</li>
-          <li><strong>Auto open info on selection:</strong> when you add/select an item, the info panel opens automatically.</li>
-          <li><strong>Desktop stays normal:</strong> wide screens keep the classic three panel layout.</li>
-        </ul>
+
+        <div class="callout ok">
+          <strong>How to use it</strong>
+          <ul>
+            <li><strong>Units toggle:</strong> switch between <strong>Feet</strong> and <strong>Meters</strong> in the stage controls.</li>
+            <li><strong>Presets:</strong> stage preset values display in the current unit.</li>
+            <li><strong>Custom values:</strong> type the size in the unit you selected.</li>
+          </ul>
+          <div class="footer">
+            Pro vibe: if a venue says “our stage is 6m wide,” you can match that without doing parking-lot math.
+          </div>
+        </div>
+
+        <div class="callout warn">
+          <strong>Printing tip:</strong> If you care about a consistent one-page print look, keep View Zoom at 100% (use Reset View).
+          Use View Zoom for editing, then reset before printing.
+        </div>
 
         <h3 id="add">Add items</h3>
         <p>Use the Item library panel to add stuff.</p>
@@ -549,7 +574,7 @@
         <ul>
           <li><strong>Drag:</strong> click and drag an item to move it.</li>
           <li><strong>Group drag:</strong> multi select + drag any selected item to move the group.</li>
-          <li><strong>Nudge:</strong> <span class="kbd">Shift</span> + <span class="kbd">Arrow</span> moves selection by 0.25 ft.</li>
+          <li><strong>Nudge:</strong> <span class="kbd">Shift</span> + <span class="kbd">Arrow</span> moves selection by 0.25 ft (or equivalent spacing conceptually).</li>
           <li><strong>Center selection:</strong> centers selected group into a sensible position.</li>
           <li><strong>Duplicate:</strong> duplicates selected item(s). Also supports hotkey below.</li>
         </ul>
@@ -578,7 +603,7 @@
         <p>StagePlot automatically builds two readable tables from your items:</p>
         <ul>
           <li><strong>Inputs table:</strong> lists channel + source, sorted by channel text.</li>
-          <li><strong>Monitor mixes table:</strong> groups by mix and lists who is on it + notes.</li>
+          <li><strong>Monitor mix table:</strong> groups by mix and lists who is on it + notes.</li>
         </ul>
 
         <h3 id="print">Printing</h3>
@@ -620,6 +645,7 @@
           <li>Use Show notes for the stuff that prevents ten questions at load in.</li>
           <li>Export the project before a big edit spree (email it to yourself as a backup).</li>
           <li>Do tight placement with View Zoom, then Reset View to 100% before printing.</li>
+          <li>If you are working with international venues, switch units to meters early so your stage size is correct from the start.</li>
         </ul>
 
         <h3 id="trouble">Troubleshooting</h3>
@@ -628,7 +654,7 @@
           <strong>Print preview is blank</strong>
           <ul>
             <li>Click the app Print button again (it forces a print-safe rerender).</li>
-            <li>Wait a second - some browsers lag before painting.</li>
+            <li>Wait a second. Some browsers lag before painting.</li>
             <li>Try a different browser (Chrome, Edge, Safari).</li>
             <li>If you installed the PWA, try printing from a normal browser tab once.</li>
           </ul>
@@ -638,7 +664,7 @@
           <strong>Stage looks cut off or “cropped” while editing</strong>
           <ul>
             <li>Hit <strong>Reset View</strong> to return View Zoom to 100%.</li>
-            <li>If you’re zoomed in (View Zoom &gt; 100%), some edges may be off-screen by design - that’s the point of zooming in.</li>
+            <li>If you’re zoomed in (View Zoom &gt; 100%), some edges may be off-screen by design.</li>
             <li>On smaller screens, the app switches layouts and the stage square can change size. That is normal.</li>
           </ul>
         </div>
@@ -699,7 +725,7 @@
           sel.removeAllRanges();
           sel.addRange(r);
         }
-        alert("Could not auto-copy on this browser. The link is highlighted - copy it.");
+        alert("Could not auto-copy on this browser. The link is highlighted. Copy it.");
       }
     }
   </script>
