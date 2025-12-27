@@ -179,12 +179,6 @@
       font-size: 15px;
       letter-spacing:.1px;
     }
-    h4{
-      margin: 10px 0 6px 0;
-      font-size: 14px;
-      letter-spacing:.1px;
-      color: rgba(233,238,251,.95);
-    }
     p{ margin: 0 0 10px 0; color: rgba(233,238,251,.92); }
     ul{ margin: 8px 0 14px 20px; padding:0; color: rgba(233,238,251,.92); }
     li{ margin: 6px 0; }
@@ -300,6 +294,27 @@
       background: rgba(74,163,255,.06);
     }
 
+    /* Donation block */
+    .donateRow{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-top: 10px;
+    }
+    .donateCard{
+      border: 1px dashed rgba(74,163,255,.45);
+      background: rgba(74,163,255,.08);
+      border-radius: 14px;
+      padding: 12px;
+      margin-top: 12px;
+    }
+    .donateTitle{
+      font-weight: 900;
+      letter-spacing: .2px;
+      margin-bottom: 6px;
+    }
+
     @media (max-width: 980px){
       main{ grid-template-columns: 1fr; }
       .nav a{ display:inline-block; margin-right: 8px; }
@@ -314,7 +329,7 @@
       .nav{ display:none !important; }
       main{ display:block !important; max-width: 7.8in !important; }
       a{ color:#000 !important; text-decoration:none !important; }
-      .callout, .mini{ border:1px solid #ddd !important; background:#fff !important; }
+      .callout, .mini, .donateCard{ border:1px solid #ddd !important; background:#fff !important; }
 
       /* Print-friendly share section */
       .qrWrap{ display:block !important; }
@@ -332,7 +347,7 @@
           <div class="logo" aria-hidden="true">SP</div>
           <div>
             <h1>StagePlot Guide</h1>
-            <div class="sub">How to use StagePlot - updated for version 1.5.5 (metric)</div>
+            <div class="sub">How to use StagePlot - updated for version 1.5.7 (lucky)</div>
           </div>
         </div>
 
@@ -350,11 +365,13 @@
       <div class="hd"><h2>Jump to</h2></div>
       <div class="bd">
         <a href="#quickstart">Quick start</a>
-        <a href="#new">What’s new in 1.5.5</a>
-        <a href="#share">Share the love</a>
-        <a href="#layout">Layout (desktop vs mobile)</a>
-        <a href="#stageview">Stage and View</a>
-        <a href="#units">Units (Feet vs Meters)</a>
+        <a href="#new">What’s new in 1.5.7</a>
+        <a href="#share">Share and send</a>
+        <a href="#donate">Keep it afloat (donations)</a>
+        <a href="#stage">Stage basics</a>
+        <a href="#units">Units (Feet and Meters)</a>
+        <a href="#view">View controls (Layout, Scale, View Zoom)</a>
+        <a href="#mobile">Mobile layout and accordions</a>
         <a href="#add">Add items</a>
         <a href="#select">Select and multi select</a>
         <a href="#move">Move, nudge, center</a>
@@ -364,6 +381,7 @@
         <a href="#print">Printing</a>
         <a href="#pdf">Exporting a PDF</a>
         <a href="#export">Export and import</a>
+        <a href="#compat">Importing older projects</a>
         <a href="#shortcuts">Keyboard shortcuts</a>
         <a href="#tips">Pro tips</a>
         <a href="#trouble">Troubleshooting</a>
@@ -374,28 +392,27 @@
     <section class="card">
       <div class="hd">
         <h2>Welcome</h2>
-        <span class="pill">Guide for v1.5.5</span>
+        <span class="pill">Guide for v1.5.7</span>
       </div>
 
       <div class="bd">
         <p>
-          StagePlot is a drag and drop stage plot builder. You can place players and gear on a stage, add inputs and monitor mixes,
-          and print a clean one page handoff. It is meant to be fast, readable, and not a spreadsheet punishment.
+          StagePlot is a drag-and-drop stage plot builder. Place players and gear on a stage, label inputs and monitor mixes,
+          add notes, then print a clean one-page handoff. Fast, readable, and not spreadsheet punishment.
         </p>
 
         <div class="callout ok">
-          <strong>Autosave:</strong> Everything saves automatically in your browser. No login. No cloud. If you close the tab and come back,
-          it should still be there.
+          <strong>Autosave:</strong> Everything saves automatically in your browser. No login. No cloud. Close the tab, come back later - your stuff should still be there.
         </div>
 
         <div class="grid">
           <div class="mini">
             <div class="t">What you build</div>
-            <div class="d">A stage plot plus a one page info sheet: inputs, mixes, and notes.</div>
+            <div class="d">A stage diagram plus a one-page info sheet: inputs, mixes, and notes.</div>
           </div>
           <div class="mini">
             <div class="t">What you can share</div>
-            <div class="d">Export a project JSON to send to the band or venue, then import it later.</div>
+            <div class="d">Export a Project JSON and send it to bandmates, venues, or FOH.</div>
           </div>
         </div>
 
@@ -403,31 +420,31 @@
 
         <h3 id="quickstart">Quick start</h3>
         <ul>
-          <li>Pick your stage size in the Stage panel (preset or custom).</li>
-          <li>Add items from the Library (or drop Misc blocks for mystery gear).</li>
-          <li>Click an item to edit it in the One-page info panel (label, input, mix, notes, color, scale, rotation).</li>
-          <li>Use View Zoom for tight placement, then Reset View to 100% when you want the clean “fits in the square” view.</li>
-          <li>When it looks right, hit Print for the clean one page view.</li>
+          <li>Pick your stage size (preset or custom).</li>
+          <li>Add items from the library (or drop Misc blocks for mystery gear).</li>
+          <li>Click an item to edit label, input, mix, notes, color, scale, rotation.</li>
+          <li>When it looks right, hit Print for the clean one-page output.</li>
         </ul>
 
-        <h3 id="new">What’s new in 1.5.5 (metric)</h3>
+        <h3 id="new">What’s new in 1.5.7 (lucky)</h3>
         <div class="callout ok">
           <ul>
-            <li><strong>Metric units option:</strong> toggle the stage measurements between <strong>Feet</strong> and <strong>Meters</strong>.</li>
-            <li><strong>Stage presets updated:</strong> stage sizes can display in meters, with clean readable values.</li>
-            <li><strong>No layout chaos:</strong> switching units is display-friendly and keeps your plot sensible.</li>
-            <li><strong>View tools still rock:</strong> stage stays inside the square at 100%, plus View Zoom + Reset View.</li>
+            <li><strong>Metric support:</strong> stage size can be displayed/entered in <strong>meters</strong> (while still supporting feet workflows too).</li>
+            <li><strong>Older JSON import still works:</strong> projects exported from earlier versions should import cleanly.</li>
+            <li><strong>Mobile accordions are back:</strong> library and info panels collapse/expand on narrow screens to keep the stage usable.</li>
+            <li><strong>Item scaling restored:</strong> instrument/gear footprint sizing behavior is back on the stage (scale is scale again).</li>
           </ul>
           <div class="footer">
-            Translation: you can talk to venues in meters without rethinking your entire life.
+            “Lucky” means you get the goodies <em>and</em> the basics stay solid.
           </div>
         </div>
 
-        <h3 id="share">Share the love</h3>
+        <h3 id="share">Share and send</h3>
         <div class="callout ok">
           <strong>Please share the love.</strong>
           <p style="margin-top:8px;">
-            If StagePlot saves you time (or saves your band from the “wait, where do you want the keys?” conversation), pass it along.
+            If StagePlot saves you time (or prevents the “wait, where do you want the keys?” debate), pass it along.
+            The easiest share is the app link, and the most powerful share is an exported Project JSON.
           </p>
 
           <div class="shareRow">
@@ -462,100 +479,98 @@
             </div>
           </div>
 
-          <div class="callout warn" style="margin:12px 0 0 0;">
-            <strong>Keep this little project afloat</strong>
-            <p style="margin-top:8px;">
-              If StagePlot saved you even 10 minutes of load-in chaos, consider tossing a few bucks in the tip jar.
-              It helps cover the “miscellaneous tech gremlins” budget and keeps updates coming.
-            </p>
-            <div class="shareRow">
-              <a class="tinyLink" href="https://www.paypal.com/ncp/payment/LTXDLQ6W4JZV8" target="_blank" rel="noopener">
-                Donate via PayPal (no pressure)
-              </a>
-              <span class="pill">If not, share it and roast me gently</span>
+          <div class="callout warn">
+            <strong>Best way to share a Project JSON:</strong>
+            <ul>
+              <li>Send the JSON as an attachment in text/email/Slack.</li>
+              <li>Recipient opens StagePlot, clicks <strong>Import Project</strong>, selects the file.</li>
+              <li>Done - their StagePlot loads your plot exactly.</li>
+            </ul>
+            <div class="footer">
+              Bonus: tell them “don’t paste it into chat” - just attach the file like a normal grown-up sound person.
             </div>
           </div>
         </div>
 
-        <!-- Layout first (requested), then tools below -->
-        <h3 id="layout">Layout (desktop vs mobile)</h3>
-        <p>
-          StagePlot keeps the stage at the top of the experience, especially on mobile.
-          The goal is simple: you should always see the plot first, then the controls underneath.
-        </p>
-
-        <div class="callout ok">
-          <strong>Desktop (wide screens):</strong>
-          <ul>
-            <li>Classic multi-panel layout.</li>
-            <li>Stage stays prominent, with your library and info panel nearby.</li>
-            <li>Great for fast building with mouse/trackpad.</li>
-          </ul>
-          <strong>Mobile (narrow screens):</strong>
-          <ul>
-            <li>Stacked layout: stage and plot preview first.</li>
-            <li>Tools appear below the stage so you are not hunting for them.</li>
-            <li>Library and One-page info use accordions to save scroll space.</li>
-          </ul>
+        <h3 id="donate">Keep it afloat (donations)</h3>
+        <div class="donateCard">
+          <div class="donateTitle">Help keep StagePlot afloat</div>
+          <p style="margin:0 0 10px 0;">
+            If this little app saved you even <em>one</em> load-in argument, consider tossing a few bucks in the tip jar.
+            I promise it goes directly to the “keep the lights on” fund and not to a fog machine shaped like my ego.
+          </p>
+          <div class="donateRow">
+            <a class="button primary" href="https://www.paypal.com/ncp/payment/LTXDLQ6W4JZV8" target="_blank" rel="noopener">
+              Donate via PayPal
+            </a>
+            <button class="button" type="button" onclick="copyDonateLink()">Copy donation link</button>
+          </div>
           <div class="footer">
-            Tip: Add item, tap it, edit it, repeat. The app tries to put the next step right in your face.
+            Thank you for supporting small, practical tools built by musicians for musicians.
           </div>
         </div>
 
-        <h3 id="stageview">Stage and View</h3>
+        <h3 id="stage">Stage basics</h3>
         <p>
-          This section covers stage sizing, keeping the plot inside the square, and the view tools that help with fine placement.
-          In the app, the stage layout stays at the top, and these tools live underneath (especially on mobile).
+          The stage is measured in Width x Depth. Upstage is at the top of the plot and audience is downstage at the bottom.
+          Items stay positioned relative to the stage scale, so changing stage size later should keep your layout sensible.
         </p>
-
-        <h4>Stage basics</h4>
         <ul>
-          <li><strong>Upstage is at the top</strong>, audience is downstage at the bottom (standard stage plot convention).</li>
-          <li><strong>Stage size:</strong> set Width x Depth using presets or custom values.</li>
+          <li><strong>Stage preset:</strong> swaps stage sizes quickly.</li>
+          <li><strong>Custom stage:</strong> type width/depth yourself.</li>
           <li><strong>Click empty stage space:</strong> clears selection.</li>
         </ul>
 
-        <h4>View tools (under the layout)</h4>
-        <div class="callout ok">
-          <ul>
-            <li><strong>Stage stays inside the square at 100%:</strong> when View Zoom is 100%, you get the clean “fits in the square” view.</li>
-            <li><strong>View Zoom:</strong> zooms the view in/out inside the stage square for detail work (without changing item sizes).</li>
-            <li><strong>Reset View:</strong> snaps View Zoom back to <strong>100%</strong> instantly.</li>
-          </ul>
-          <div class="footer">
-            Remember: <strong>Scale</strong> changes an item’s footprint. <strong>View Zoom</strong> changes how close you are while editing.
-          </div>
-        </div>
-
-        <h3 id="units">Units (Feet vs Meters)</h3>
+        <h3 id="units">Units (Feet and Meters)</h3>
         <p>
-          Version 1.5.5 adds a units toggle so you can talk in the measurement system your venue actually uses.
+          StagePlot now supports metric workflows.
         </p>
-
+        <ul>
+          <li><strong>Feet:</strong> classic stage plot world (especially in the US).</li>
+          <li><strong>Meters:</strong> great for international stages and “the venue gave us a spec sheet in metric.”</li>
+          <li><strong>What changes:</strong> stage dimensions and labels reflect the chosen unit. Your layout still behaves the same.</li>
+        </ul>
         <div class="callout ok">
-          <strong>How to use it</strong>
+          <strong>Tip:</strong> If you switch units, you’re not “changing the room,” you’re changing how the room is described.
+          Your plot should still look right.
+        </div>
+
+        <h3 id="view">View controls (Layout, Scale, View Zoom)</h3>
+        <p>
+          Layout stays at the top (especially on mobile), and view controls live below it so the flow is:
+          <strong>layout first</strong>, then <strong>fine-tuning</strong>.
+        </p>
+        <div class="callout ok">
           <ul>
-            <li><strong>Units toggle:</strong> switch between <strong>Feet</strong> and <strong>Meters</strong> in the stage controls.</li>
-            <li><strong>Presets:</strong> stage preset values display in the current unit.</li>
-            <li><strong>Custom values:</strong> type the size in the unit you selected.</li>
+            <li><strong>Layout:</strong> stage size + unit choice. This is your foundation.</li>
+            <li><strong>Scale (item scale):</strong> changes the selected item’s footprint on the stage.</li>
+            <li><strong>View Zoom:</strong> zooms the view inside the stage square (for detailed placement).</li>
+            <li><strong>Reset View:</strong> snaps View Zoom back to 100% instantly.</li>
           </ul>
           <div class="footer">
-            Pro vibe: if a venue says “our stage is 6m wide,” you can match that without doing parking-lot math.
+            Remember: <strong>Scale</strong> changes item size. <strong>View Zoom</strong> changes how close your “camera” is.
           </div>
         </div>
 
-        <div class="callout warn">
-          <strong>Printing tip:</strong> If you care about a consistent one-page print look, keep View Zoom at 100% (use Reset View).
-          Use View Zoom for editing, then reset before printing.
-        </div>
+        <h3 id="mobile">Mobile layout and accordions</h3>
+        <p>
+          On narrow screens, StagePlot switches to a stacked layout so you can work top-to-bottom.
+          Library and One-page info become accordions to save scroll and keep the stage usable.
+        </p>
+        <ul>
+          <li><strong>Stage first:</strong> stage panel sits at the top for quick drag and place.</li>
+          <li><strong>Accordions:</strong> library and info panels collapse/expand.</li>
+          <li><strong>Auto open info on selection:</strong> when you add/select an item, the info panel opens so edits are right there.</li>
+          <li><strong>Remembers state:</strong> if you leave a panel open/closed, StagePlot tries to keep it that way.</li>
+        </ul>
 
         <h3 id="add">Add items</h3>
-        <p>Use the Item library panel to add stuff.</p>
+        <p>Use the Item library panel to add gear and people.</p>
         <ul>
-          <li><strong>Search:</strong> type guitar, outlet, riser, mic, etc.</li>
-          <li><strong>Category:</strong> filter by People, Instruments, Stage gear, Electrical, and so on.</li>
-          <li><strong>Add:</strong> drops the item onto the stage near center.</li>
-          <li><strong>Misc blocks:</strong> quick drop generic blocks for mystery gear, pedals, props, or the thing nobody can name.</li>
+          <li><strong>Search:</strong> guitar, keys, wedge, riser, DI, mic, outlet, etc.</li>
+          <li><strong>Category:</strong> filter by People, Instruments, Stage gear, Electrical, and more.</li>
+          <li><strong>Add:</strong> drops the item near center stage.</li>
+          <li><strong>Misc blocks:</strong> quick generic boxes for oddball gear.</li>
         </ul>
 
         <h3 id="select">Select and multi select</h3>
@@ -566,7 +581,7 @@
             <li><strong>Shift + Click</strong> toggles an item into/out of selection.</li>
             <li><strong>Cmd + Click</strong> (Mac) or <strong>Ctrl + Click</strong> (Windows) does the same.</li>
             <li><strong>Drag select:</strong> drag on empty stage space to draw a selection box.</li>
-            <li><strong>Click empty stage space:</strong> clears selection (unless using a modifier).</li>
+            <li><strong>Click empty space:</strong> clears selection (unless using a modifier).</li>
           </ul>
         </div>
 
@@ -574,7 +589,7 @@
         <ul>
           <li><strong>Drag:</strong> click and drag an item to move it.</li>
           <li><strong>Group drag:</strong> multi select + drag any selected item to move the group.</li>
-          <li><strong>Nudge:</strong> <span class="kbd">Shift</span> + <span class="kbd">Arrow</span> moves selection by 0.25 ft (or equivalent spacing conceptually).</li>
+          <li><strong>Nudge:</strong> <span class="kbd">Shift</span> + <span class="kbd">Arrow</span> moves selection by 0.25 ft (or equivalent step).</li>
           <li><strong>Center selection:</strong> centers selected group into a sensible position.</li>
           <li><strong>Duplicate:</strong> duplicates selected item(s). Also supports hotkey below.</li>
         </ul>
@@ -586,10 +601,11 @@
           <li><strong>Rotate:</strong> drag the blue dot above the item.</li>
           <li><strong>Rotate snap:</strong> hold <span class="kbd">Shift</span> while rotating to snap 15 degrees.</li>
           <li><strong>Reset rotation:</strong> use Reset rotation in the info panel.</li>
+          <li><strong>Scale:</strong> use the Scale slider/field to adjust footprint without changing the base item type.</li>
         </ul>
 
         <h3 id="edit">Edit details</h3>
-        <p>The One-page info panel is where the real world info lives.</p>
+        <p>The One-page info panel is where the real-world info lives.</p>
         <ul>
           <li><strong>Band name:</strong> prints at the top of the one-page output.</li>
           <li><strong>Label:</strong> what shows on the item (Pete Vox, Dave Guitar, etc.).</li>
@@ -603,21 +619,21 @@
         <p>StagePlot automatically builds two readable tables from your items:</p>
         <ul>
           <li><strong>Inputs table:</strong> lists channel + source, sorted by channel text.</li>
-          <li><strong>Monitor mix table:</strong> groups by mix and lists who is on it + notes.</li>
+          <li><strong>Monitor mix table:</strong> grouped by mix and lists who is on it + notes.</li>
         </ul>
 
         <h3 id="print">Printing</h3>
         <p>
-          Hit Print to get the one page view. StagePlot temporarily switches into a print-safe layout, then restores your normal layout after printing.
+          Hit Print to get the one-page view. StagePlot temporarily switches into a print-safe layout, then restores your normal layout after printing.
         </p>
         <ul>
           <li><strong>Best results:</strong> Portrait, default margins.</li>
-          <li><strong>Tip:</strong> use the app Print button (not the browser menu) so the print layout hook runs.</li>
+          <li><strong>Tip:</strong> use the in-app Print button (not the browser menu) so the print layout hook runs.</li>
         </ul>
 
         <h3 id="pdf">Exporting a PDF</h3>
         <p>
-          StagePlot uses your device’s built in print system to create PDFs. This keeps text sharp and preserves the one page layout.
+          StagePlot uses your device’s built-in print system to create PDFs. This keeps text sharp and preserves the one-page layout.
         </p>
         <div class="callout ok">
           <strong>Best practice:</strong> Click StagePlot <span class="kbd">Print</span> then choose “Save as PDF” in your system print dialog.
@@ -630,10 +646,23 @@
           <li><strong>Library:</strong> your custom item types (export/import your personalized gear zoo).</li>
         </ul>
 
+        <h3 id="compat">Importing older projects</h3>
+        <div class="callout ok">
+          <strong>Good news:</strong> 1.5.7 is designed to import older JSON exports.
+          <ul>
+            <li>If an older file is missing newer fields (like units or view zoom), StagePlot fills in safe defaults.</li>
+            <li>If units weren’t in the file, it loads in the classic behavior and you can switch units after.</li>
+            <li>Core stuff (stage size, items, labels, inputs, mixes, notes) should come through intact.</li>
+          </ul>
+          <div class="footer">
+            If anything imports weird: export the project again from 1.5.7 and re-send - that “re-saves” it into the latest format.
+          </div>
+        </div>
+
         <h3 id="shortcuts">Keyboard shortcuts</h3>
         <ul>
           <li><span class="kbd">Cmd</span> or <span class="kbd">Ctrl</span> + <span class="kbd">D</span> - Duplicate selected</li>
-          <li><span class="kbd">Shift</span> + <span class="kbd">Arrow</span> - Nudge 0.25 ft</li>
+          <li><span class="kbd">Shift</span> + <span class="kbd">Arrow</span> - Nudge selection</li>
           <li><span class="kbd">Shift</span> + click - Multi select toggle</li>
           <li><span class="kbd">Cmd</span> or <span class="kbd">Ctrl</span> + click - Multi select toggle</li>
         </ul>
@@ -642,10 +671,10 @@
         <ul>
           <li>Color code by role: vocals, instruments, power, wedges, IEMs.</li>
           <li>Use the Mix field consistently (M1, M2, M3) for quick reading.</li>
-          <li>Use Show notes for the stuff that prevents ten questions at load in.</li>
+          <li>Use Show notes for the stuff that prevents ten questions at load-in.</li>
           <li>Export the project before a big edit spree (email it to yourself as a backup).</li>
           <li>Do tight placement with View Zoom, then Reset View to 100% before printing.</li>
-          <li>If you are working with international venues, switch units to meters early so your stage size is correct from the start.</li>
+          <li>If you’re sending to FOH: include a PDF (for quick viewing) and the JSON (for edits/import).</li>
         </ul>
 
         <h3 id="trouble">Troubleshooting</h3>
@@ -654,7 +683,7 @@
           <strong>Print preview is blank</strong>
           <ul>
             <li>Click the app Print button again (it forces a print-safe rerender).</li>
-            <li>Wait a second. Some browsers lag before painting.</li>
+            <li>Wait a second - some browsers lag before painting.</li>
             <li>Try a different browser (Chrome, Edge, Safari).</li>
             <li>If you installed the PWA, try printing from a normal browser tab once.</li>
           </ul>
@@ -665,7 +694,7 @@
           <ul>
             <li>Hit <strong>Reset View</strong> to return View Zoom to 100%.</li>
             <li>If you’re zoomed in (View Zoom &gt; 100%), some edges may be off-screen by design.</li>
-            <li>On smaller screens, the app switches layouts and the stage square can change size. That is normal.</li>
+            <li>On smaller screens, layout changes and the stage square can resize. That is normal.</li>
           </ul>
         </div>
 
@@ -673,7 +702,7 @@
           <strong>My stuff disappeared</strong>
           <ul>
             <li>StagePlot saves in localStorage. If you cleared browser site data, it resets.</li>
-            <li>Use Export project as your backup habit.</li>
+            <li>Use Export Project as your backup habit.</li>
             <li>Each browser/device has its own local save.</li>
           </ul>
         </div>
@@ -699,6 +728,7 @@
     });
 
     const APP_LINK = "https://petesimple.github.io/stageplot/";
+    const DONATE_LINK = "https://www.paypal.com/ncp/payment/LTXDLQ6W4JZV8";
 
     function toggleQR(){
       const el = document.getElementById("qrWrap");
@@ -717,15 +747,16 @@
         await navigator.clipboard.writeText(APP_LINK);
         alert("Copied StagePlot link to clipboard.");
       }catch(e){
-        const t = document.getElementById("appLinkText");
-        if(t){
-          const r = document.createRange();
-          r.selectNodeContents(t);
-          const sel = window.getSelection();
-          sel.removeAllRanges();
-          sel.addRange(r);
-        }
-        alert("Could not auto-copy on this browser. The link is highlighted. Copy it.");
+        alert("Could not auto-copy on this browser. Long-press or select the link text and copy it.");
+      }
+    }
+
+    async function copyDonateLink(){
+      try{
+        await navigator.clipboard.writeText(DONATE_LINK);
+        alert("Copied donation link to clipboard. Thank you!");
+      }catch(e){
+        alert("Could not auto-copy on this browser. You can copy the PayPal link from the button.");
       }
     }
   </script>
