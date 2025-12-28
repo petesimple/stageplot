@@ -1,4 +1,4 @@
-🎤 StagePlot v2 (v1.5.4 – zoomzoomzoom)
+🎤 StagePlot v2 (v1.5.9 – reset)
 
 StagePlot v2 is a fast, offline-capable stage plot builder for bands, venues, and sound engineers.
 
@@ -14,9 +14,9 @@ No accounts. No clutter. Works on desktop, tablet, and phone.
 	•	Auto-generate readable Inputs and Monitor Mix lists
 	•	Add item notes and show notes (load-in, backline, contact, etc.)
 	•	Flip between Stage View and Audience View
-	•	Zoom in and out to place items precisely without changing scale
+	•	Zoom your view for precision without changing physical scale
 	•	Print a clean one-page sheet for venues and engineers
-	•	Export and import a project JSON to share with bandmates or FOH
+	•	Export and import project files as JSON to share with bandmates or FOH
 
 ⸻
 
@@ -27,7 +27,7 @@ No accounts. No clutter. Works on desktop, tablet, and phone.
 	•	Drag-and-drop musicians, instruments, wedges, risers, power, and more
 	•	Scale and rotate items
 	•	Color-code and label for fast reading
-	•	Works with mouse, touch, trackpad
+	•	Works with mouse, touch, and trackpad
 
 🔍 Scale vs View Zoom (important distinction)
 	•	Scale changes the physical size of an item on the stage
@@ -67,6 +67,17 @@ No accounts. No clutter. Works on desktop, tablet, and phone.
 	•	Accordion panels on mobile to save space
 	•	Installable on iOS, Android, and desktop
 	•	Works offline (no backend required)
+
+⸻
+
+🆕 What’s new in v1.5.9
+	•	Minor UI and layout polish
+	•	Improved zoom and reset behavior
+	•	Better print consistency across browsers
+	•	Small interaction fixes and stability improvements
+	•	Prep work for future v2.x refinements
+
+(No breaking changes. Existing projects remain compatible.)
 
 ⸻
 
@@ -141,7 +152,6 @@ Troubleshooting
    ├─ icon-512.png
    ├─ maskable-192.png
    └─ maskable-512.png
-
 
 ⸻
 
