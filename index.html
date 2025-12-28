@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0b0d12" />
-  <title>StagePlot v2 - v1.5.8 (pinch)</title>
+  <title>StagePlot v2 - v1.5.9 (reset)</title>
 
   <style>
     :root{
@@ -503,7 +503,7 @@
         <div class="logo" aria-hidden="true">SP</div>
         <div>
           <h1>StagePlot v2</h1>
-          <div class="sub">v1.5.8 (pinch) - pinch-to-scale + item size sliders + under-stage tools</div>
+          <div class="sub">v1.5.9 (reset) - reset stage button + pinch-to-scale + item size sliders + under-stage tools</div>
         </div>
       </div>
 
@@ -568,7 +568,8 @@
         <span class="pill" id="unitsPill">Units: ft</span>
         <button class="btn" id="btnUnits">Toggle ft/m</button>
         <button class="btn" id="btnFlip">Stage View</button>
-        <button class="btn" id="btnClearSel">Clear</button>
+        <button class="btn danger" id="btnResetStage" title="Reset stage and clear all items">Reset Stage</button>
+        <button class="btn" id="btnClearSel" title="Clear selection only">Clear Selection</button>
       </div>
     </div>
     <div class="bd">
@@ -824,7 +825,7 @@
 
 <script>
 (() => {
-  const APP_VERSION = "1.5.8 (pinch)";
+  const APP_VERSION = "1.5.9 (reset)";
 
   // Internal units are FEET for compatibility.
   const FT_PER_M = 3.280839895;
@@ -885,6 +886,8 @@
     btnResetView: document.getElementById("btnResetView"),
 
     btnRot0: document.getElementById("btnRot0"),
+
+    btnResetStage: document.getElementById("btnResetStage"),
 
     accLibBtn: document.getElementById("accLibBtn"),
     accInfoBtn: document.getElementById("accInfoBtn"),
@@ -980,7 +983,7 @@
     }catch(e){}
   }
 
-  // Backward compatible import (same logic as 1.5.7)
+  // Backward compatible import
   function migrateProject(obj){
     const migrated = {
       version: APP_VERSION,
@@ -1187,7 +1190,6 @@
     const primary = getPrimary();
     els.selLabel.textContent = primary ? primary.label : "none";
 
-    // Under-stage tools visibility
     if(primary){
       els.underStageTools.style.display = "block";
       els.underSelName.textContent = primary.label || "Item";
@@ -1458,8 +1460,35 @@
     openInfoAccordionIfMobile();
   }
 
+  // ---------- Reset Stage ----------
+  function resetStage(){
+    const ok = confirm("Reset stage?\n\nThis clears all items, clears selection, resets stage to Medium (24 x 16), resets view zoom to 100%, and turns off flip.\n\nBand name and show notes stay.");
+    if(!ok) return;
+
+    state.items = [];
+    state.selectedIds = [];
+    state.primaryId = null;
+
+    // Stage + view defaults
+    state.stage.w = 24;
+    state.stage.d = 16;
+    state.view.flip = false;
+    state.viewZoom = 1.0;
+
+    // Update preset highlight to Medium
+    document.querySelectorAll('[data-preset]').forEach(b => b.classList.remove("on"));
+    const medBtn = document.querySelector('[data-preset="med"]');
+    if(medBtn) medBtn.classList.add("on");
+
+    updateUnitsUI();
+    updateViewUI();
+    updateSelectionUI();
+    renderLibrary();
+    render();
+    save();
+  }
+
   // ---------- Drag + Pinch handling ----------
-  // One pointer = drag. Two pointers on the selected item = pinch to scale (primary).
   let drag = null;
 
   let pinch = {
@@ -1494,14 +1523,11 @@
       openInfoAccordionIfMobile();
     }
 
-    // Track pointers for pinch (only if interacting with primary item)
     const primary = getPrimary();
     if(primary && primary.id === id){
       pinch.pointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
 
-      // If we now have two pointers, start pinch
       if(pinch.pointers.size === 2){
-        // Cancel drag if it was starting
         drag = null;
 
         const pts = Array.from(pinch.pointers.values());
@@ -1514,13 +1540,11 @@
         window.addEventListener("pointerup", onPinchUp, { once:false });
         window.addEventListener("pointercancel", onPinchUp, { once:false });
 
-        // Capture pointer so moves keep coming
         try{ e.currentTarget.setPointerCapture(e.pointerId); }catch(_){}
         return;
       }
     }
 
-    // Otherwise, start drag with this pointer
     const start = stagePointFromPointer(e);
     const selectedSet = new Set(state.selectedIds);
 
@@ -1590,7 +1614,6 @@
     primary.scale = nextScale;
     clampItemInStage(primary);
 
-    // sync sliders (both places)
     const pct = Math.round(nextScale * 100);
     els.itemScale.value = pct;
     els.itemScalePill.textContent = pct + "%";
@@ -1698,6 +1721,7 @@
       if(p === "small"){ setStageFeet(20, 14); }
       if(p === "med"){ setStageFeet(24, 16); }
       if(p === "large"){ setStageFeet(30, 20); }
+      // custom just means you type numbers
     });
   });
   document.querySelector('[data-preset="med"]').classList.add("on");
@@ -1722,7 +1746,7 @@
   els.btnUnits.addEventListener("click", () => {
     state.units = (state.units === "ft") ? "m" : "ft";
     updateUnitsUI();
-    updateSelectionUI(); // refresh item W/H display
+    updateSelectionUI();
     save();
   });
 
@@ -1745,6 +1769,9 @@
     render();
     save();
   });
+
+  els.btnResetStage.addEventListener("click", resetStage);
+  els.btnClearSel.addEventListener("click", clearSelection);
 
   els.bandName.addEventListener("input", () => { state.bandName = els.bandName.value; save(); });
   els.showNotes.addEventListener("input", () => { state.showNotes = els.showNotes.value; save(); });
@@ -1879,7 +1906,6 @@
   els.nRight.addEventListener("click", () => nudgeBtn(1, 0));
   els.nCenter.addEventListener("click", () => {
     const it = getPrimary(); if(!it) return;
-    // center primary on stage (respect scaled size)
     const w = it.w * it.scale;
     const h = it.h * it.scale;
     it.x = clamp((state.stage.w - w)/2, 0, Math.max(0, state.stage.w - w));
@@ -1894,7 +1920,6 @@
   els.btnMisc2.addEventListener("click", () => addMisc(2));
   els.btnMisc3.addEventListener("click", () => addMisc(3));
   els.btnDeleteSel.addEventListener("click", deleteSelected);
-  els.btnClearSel.addEventListener("click", clearSelection);
   els.btnDup.addEventListener("click", duplicateSelected);
 
   // Export / Import
