@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+
+  <!-- UPDATED: disable double-tap / pinch zoom -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+
   <meta name="theme-color" content="#0b0d12" />
   <title>StagePlot v2 - v1.5.9 (reset)</title>
 
@@ -26,17 +29,28 @@
       --stageBorder: rgba(255,255,255,.14);
       --stageGrid: rgba(255,255,255,.06);
 
-      --sqPad: 10px; /* inner padding for the stage square so 100% never clips */
+      --sqPad: 10px;
     }
 
     *{ box-sizing:border-box; }
     html,body{ height:100%; }
+
     body{
       margin:0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
       background: radial-gradient(1200px 700px at 50% -10%, #1a2540, var(--bg));
       color: var(--text);
       line-height:1.4;
+    }
+
+    /* NEW: stop double-tap zoom on controls */
+    button,
+    .btn,
+    a.button,
+    .nbtn,
+    .libBtn,
+    .accBtn {
+      touch-action: manipulation;
     }
 
     header{
@@ -47,6 +61,7 @@
       background: rgba(10,12,18,.78);
       backdrop-filter: blur(10px);
     }
+
     .wrap{
       max-width: 1200px;
       margin: 0 auto;
