@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0b0d12" />
-  <title>StagePlot v2 - v1.5.7 (lucky)</title>
+  <title>StagePlot v2 - v1.5.8 (pinch)</title>
 
   <style>
     :root{
@@ -233,8 +233,7 @@
       aspect-ratio: 1 / 1;
       border-radius: 18px;
       border: 1px solid var(--line);
-      background:
-        linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
       position: relative;
       overflow: hidden;
@@ -272,10 +271,8 @@
       background-size: 10% 10%;
     }
 
-    .upLabel{
+    .upLabel,.downLabel{
       position:absolute;
-      left:10px;
-      top:10px;
       font-size:12px;
       color: rgba(233,238,251,.9);
       background: rgba(0,0,0,.28);
@@ -283,19 +280,10 @@
       padding: 4px 8px;
       border-radius: 999px;
       user-select:none;
+      pointer-events:none;
     }
-    .downLabel{
-      position:absolute;
-      right:10px;
-      bottom:10px;
-      font-size:12px;
-      color: rgba(233,238,251,.85);
-      background: rgba(0,0,0,.22);
-      border: 1px solid rgba(255,255,255,.10);
-      padding: 4px 8px;
-      border-radius: 999px;
-      user-select:none;
-    }
+    .upLabel{ left:10px; top:10px; }
+    .downLabel{ right:10px; bottom:10px; opacity:.95; }
 
     /* Items */
     .item{
@@ -305,7 +293,7 @@
       background: rgba(255,255,255,.06);
       box-shadow: 0 8px 18px rgba(0,0,0,.28);
       user-select:none;
-      touch-action:none;
+      touch-action:none; /* we handle pinch + drag ourselves */
       display:flex;
       align-items:center;
       justify-content:center;
@@ -335,6 +323,43 @@
       outline: 2px solid rgba(64,217,138,.75);
       outline-offset: 2px;
     }
+
+    /* Under-stage selected tools */
+    .toolsCard{
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.02);
+      border-radius: 16px;
+      padding: 12px;
+    }
+    .toolsTitle{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-bottom: 10px;
+    }
+    .toolsTitle .t{
+      font-size:12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing:.35px;
+      font-weight:900;
+    }
+
+    .nudgeGrid{
+      display:grid;
+      grid-template-columns: 46px 46px 46px;
+      grid-template-rows: 46px 46px 46px;
+      gap:8px;
+      justify-content:flex-start;
+      align-items:center;
+    }
+    .nbtn{
+      width:46px; height:46px;
+      display:flex; align-items:center; justify-content:center;
+      border-radius: 14px;
+    }
+    .nudgeSpacer{ visibility:hidden; }
 
     /* Library list */
     .libTop{
@@ -423,17 +448,6 @@
       margin: 10px 0;
     }
 
-    /* Tools under stage */
-    .toolsGrid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-      align-items:start;
-    }
-    @media (max-width: 980px){
-      .toolsGrid{ grid-template-columns: 1fr; }
-    }
-
     /* Mobile accordion behavior */
     .accBtn{
       display:none;
@@ -476,8 +490,7 @@
       .item{ box-shadow:none !important; border-color:#111 !important; background:#fff !important; }
       .item .lbl{ color:#000 !important; text-shadow:none !important; }
       a{ color:#000 !important; text-decoration:none !important; }
-      /* keep tools visible in print? hide them so one-page is clean */
-      .toolsUnderStage{ display:none !important; }
+      .toolsCard{ display:none !important; }
     }
   </style>
 </head>
@@ -490,7 +503,7 @@
         <div class="logo" aria-hidden="true">SP</div>
         <div>
           <h1>StagePlot v2</h1>
-          <div class="sub">v1.5.7 (lucky) - metric + import-safe + accordions + item scaling + tools under stage</div>
+          <div class="sub">v1.5.8 (pinch) - pinch-to-scale + item size sliders + under-stage tools</div>
         </div>
       </div>
 
@@ -541,7 +554,7 @@
         </div>
 
         <div style="margin-top:10px" class="miniHelp">
-          Tips: click to select - shift/cmd/ctrl click for multi select - drag to move.
+          Tips: click to select - shift/cmd/ctrl click for multi select - drag to move - pinch to scale on touch screens.
         </div>
       </div>
     </div>
@@ -594,7 +607,28 @@
           </div>
         </div>
 
-        <!-- Stage square -->
+        <!-- View tools (below layout) -->
+        <div class="card" style="box-shadow:none;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.02);">
+          <div class="bd" style="padding:12px;">
+            <div class="row" style="justify-content:space-between;">
+              <div style="flex:1; min-width: 240px;">
+                <div class="field" style="margin:0;">
+                  <label>View Zoom (inside square)</label>
+                  <input type="range" min="50" max="200" value="100" id="viewZoom" />
+                  <div class="row tight" style="justify-content:space-between;">
+                    <span class="miniHelp">50%</span>
+                    <span class="pill" id="viewZoomPill">100%</span>
+                    <span class="miniHelp">200%</span>
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex; gap:8px; align-items:flex-end;">
+                <button class="btn" id="btnResetView">Reset View (100%)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="stageSquare" id="stageSquare">
           <div class="stageSquareInner" id="stageSquareInner">
             <div class="stageCanvas" id="stageCanvas">
@@ -606,62 +640,70 @@
           </div>
         </div>
 
-        <!-- Tools UNDER the stage (requested) -->
-        <div class="card toolsUnderStage" style="box-shadow:none;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.02);">
-          <div class="bd" style="padding:12px;">
-            <div class="toolsGrid">
-              <div>
-                <div class="field" style="margin:0;">
-                  <label>View Zoom (inside square)</label>
-                  <input type="range" min="50" max="200" value="100" id="viewZoom" />
-                  <div class="row tight" style="justify-content:space-between;">
-                    <span class="miniHelp">50%</span>
-                    <span class="pill" id="viewZoomPill">100%</span>
-                    <span class="miniHelp">200%</span>
-                  </div>
+        <div class="miniHelp" id="stageMeta">
+          Stage: <span class="mono" id="stageMetaText">24 x 16 ft</span>
+        </div>
+
+        <!-- Selected tools: under-stage -->
+        <div class="toolsCard" id="underStageTools" style="display:none;">
+          <div class="toolsTitle">
+            <div class="t">Selected item tools</div>
+            <span class="pill mono" id="underSelName">none</span>
+          </div>
+
+          <div class="row" style="gap:14px; align-items:flex-start;">
+            <div>
+              <div class="miniHelp" style="margin-bottom:8px;">Nudge (tap or use Shift + Arrows)</div>
+              <div class="nudgeGrid">
+                <div class="nudgeSpacer nbtn btn"> </div>
+                <button class="btn nbtn" id="nUp" title="Nudge up">↑</button>
+                <div class="nudgeSpacer nbtn btn"> </div>
+
+                <button class="btn nbtn" id="nLeft" title="Nudge left">←</button>
+                <button class="btn nbtn" id="nCenter" title="Center on stage">◎</button>
+                <button class="btn nbtn" id="nRight" title="Nudge right">→</button>
+
+                <div class="nudgeSpacer nbtn btn"> </div>
+                <button class="btn nbtn" id="nDown" title="Nudge down">↓</button>
+                <div class="nudgeSpacer nbtn btn"> </div>
+              </div>
+            </div>
+
+            <div style="flex:1; min-width: 240px;">
+              <div class="miniHelp" style="margin-bottom:8px;">Size + Scale (pinch on touch screens)</div>
+
+              <div class="row tight" style="align-items:flex-end;">
+                <div class="field" style="width: 120px; margin:0;">
+                  <label>Width (<span class="unitInline">ft</span>)</label>
+                  <input type="number" id="uItemW" min="0.1" step="0.1" />
                 </div>
-                <div class="row tight" style="margin-top:8px;">
-                  <button class="btn" id="btnResetView">Reset View (100%)</button>
+                <div class="field" style="width: 120px; margin:0;">
+                  <label>Depth (<span class="unitInline">ft</span>)</label>
+                  <input type="number" id="uItemH" min="0.1" step="0.1" />
                 </div>
               </div>
 
-              <div>
-                <div class="pill" style="display:flex; justify-content:space-between; width:100%; margin-bottom:10px;">
-                  <span>Selected item tools</span>
-                  <span class="mono" id="stageSelLabel">none</span>
-                </div>
-
-                <div class="field" style="margin:0 0 10px 0;">
-                  <label>Item Scale (footprint)</label>
-                  <input type="range" min="50" max="200" value="100" id="itemScaleStage" />
-                  <div class="row tight" style="justify-content:space-between;">
-                    <span class="miniHelp">50%</span>
-                    <span class="pill" id="itemScaleStagePill">100%</span>
-                    <span class="miniHelp">200%</span>
+              <div class="row tight" style="margin-top:10px;">
+                <div style="flex:1;">
+                  <div class="field" style="margin:0;">
+                    <label>Scale (footprint)</label>
+                    <input type="range" min="50" max="200" value="100" id="uItemScale" />
+                    <div class="row tight" style="justify-content:space-between;">
+                      <span class="miniHelp">50%</span>
+                      <span class="pill" id="uItemScalePill">100%</span>
+                      <span class="miniHelp">200%</span>
+                    </div>
                   </div>
                 </div>
+              </div>
 
-                <div class="field" style="margin:0;">
-                  <label>Rotation</label>
-                  <input type="range" min="0" max="359" value="0" id="itemRotStage" />
-                  <div class="row tight" style="justify-content:space-between;">
-                    <span class="miniHelp">0°</span>
-                    <span class="pill" id="itemRotStagePill">0°</span>
-                    <button class="btn" id="btnRot0Stage" type="button">Reset</button>
-                  </div>
-                </div>
-
-                <div class="miniHelp" style="margin-top:8px;">
-                  Tip: these mirror the Info panel controls.
-                </div>
+              <div class="miniHelp" style="margin-top:6px;">
+                Touch tip: put two fingers on the selected item and pinch to scale.
               </div>
             </div>
           </div>
         </div>
 
-        <div class="miniHelp" id="stageMeta">
-          Stage: <span class="mono" id="stageMetaText">24 x 16 ft</span>
-        </div>
       </div>
     </div>
   </section>
@@ -718,6 +760,17 @@
 
         <div class="row">
           <div class="field" style="width: 48%; min-width:140px;">
+            <label>Item Width (<span class="unitInline">ft</span>)</label>
+            <input type="number" min="0.1" step="0.1" id="itemW" />
+          </div>
+          <div class="field" style="width: 48%; min-width:140px;">
+            <label>Item Depth (<span class="unitInline">ft</span>)</label>
+            <input type="number" min="0.1" step="0.1" id="itemH" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field" style="width: 48%; min-width:140px;">
             <label>Item Scale (footprint)</label>
             <input type="range" min="50" max="200" value="100" id="itemScale" />
             <div class="row tight" style="justify-content:space-between;">
@@ -738,6 +791,10 @@
           </div>
         </div>
 
+        <div class="miniHelp">
+          Gesture: on touch screens, pinch the selected item to change Scale.
+        </div>
+
         <div class="hr"></div>
 
         <div class="pill" style="display:flex; justify-content:space-between;">
@@ -756,7 +813,7 @@
         </div>
 
         <div class="miniHelp">
-          Note: Scale changes item footprint. View Zoom changes your view inside the square.
+          Note: Width/Depth set the base footprint. Scale multiplies that footprint. View Zoom only changes your view.
         </div>
       </div>
     </div>
@@ -767,7 +824,9 @@
 
 <script>
 (() => {
-  const APP_VERSION = "1.5.7 (lucky)";
+  const APP_VERSION = "1.5.8 (pinch)";
+
+  // Internal units are FEET for compatibility.
   const FT_PER_M = 3.280839895;
 
   const els = {
@@ -776,12 +835,8 @@
     libFilter: document.getElementById("libFilter"),
     libCount: document.getElementById("libCount"),
 
-    stageSquare: document.getElementById("stageSquare"),
     stageSquareInner: document.getElementById("stageSquareInner"),
     stageCanvas: document.getElementById("stageCanvas"),
-    stageRect: document.getElementById("stageRect"),
-    upLabel: document.getElementById("upLabel"),
-    downLabel: document.getElementById("downLabel"),
     stageW: document.getElementById("stageW"),
     stageD: document.getElementById("stageD"),
     stageMetaText: document.getElementById("stageMetaText"),
@@ -790,23 +845,18 @@
     showNotes: document.getElementById("showNotes"),
 
     selLabel: document.getElementById("selLabel"),
-    stageSelLabel: document.getElementById("stageSelLabel"),
-
     itemLabel: document.getElementById("itemLabel"),
     itemInput: document.getElementById("itemInput"),
     itemMix: document.getElementById("itemMix"),
     itemNotes: document.getElementById("itemNotes"),
+
+    itemW: document.getElementById("itemW"),
+    itemH: document.getElementById("itemH"),
+
     itemScale: document.getElementById("itemScale"),
     itemScalePill: document.getElementById("itemScalePill"),
     itemRot: document.getElementById("itemRot"),
     itemRotPill: document.getElementById("itemRotPill"),
-
-    // stage-under tools (mirror)
-    itemScaleStage: document.getElementById("itemScaleStage"),
-    itemScaleStagePill: document.getElementById("itemScaleStagePill"),
-    itemRotStage: document.getElementById("itemRotStage"),
-    itemRotStagePill: document.getElementById("itemRotStagePill"),
-    btnRot0Stage: document.getElementById("btnRot0Stage"),
 
     inputsTable: document.getElementById("inputsTable"),
     mixesTable: document.getElementById("mixesTable"),
@@ -842,33 +892,49 @@
     accInfoChev: document.getElementById("accInfoChev"),
     libAccContent: document.getElementById("libAccContent"),
     infoAccContent: document.getElementById("infoAccContent"),
+
+    underStageTools: document.getElementById("underStageTools"),
+    underSelName: document.getElementById("underSelName"),
+    uItemW: document.getElementById("uItemW"),
+    uItemH: document.getElementById("uItemH"),
+    uItemScale: document.getElementById("uItemScale"),
+    uItemScalePill: document.getElementById("uItemScalePill"),
+
+    nUp: document.getElementById("nUp"),
+    nDown: document.getElementById("nDown"),
+    nLeft: document.getElementById("nLeft"),
+    nRight: document.getElementById("nRight"),
+    nCenter: document.getElementById("nCenter"),
   };
 
+  // Update unit text in multiple places
+  const unitInlineEls = Array.from(document.querySelectorAll(".unitInline"));
+
+  // ---------- Defaults / Library (sizes in FEET) ----------
   const LIB = [
     { id:"vox", name:"Vocal", sub:"Person", kind:"person", w:2.0, h:2.0, ic:"🎤", label:"Vox" },
     { id:"gtr", name:"Guitar", sub:"Instrument", kind:"instr", w:2.2, h:1.8, ic:"🎸", label:"Gtr" },
     { id:"bass", name:"Bass", sub:"Instrument", kind:"instr", w:2.2, h:1.8, ic:"🅱️", label:"Bass" },
     { id:"keys", name:"Keys", sub:"Instrument", kind:"instr", w:3.0, h:2.0, ic:"🎹", label:"Keys" },
     { id:"drums", name:"Drums", sub:"Instrument", kind:"instr", w:4.5, h:3.2, ic:"🥁", label:"Drums" },
-
     { id:"wedge", name:"Wedge", sub:"Gear", kind:"gear", w:1.6, h:1.2, ic:"🔊", label:"Wedge" },
     { id:"amp", name:"Amp", sub:"Gear", kind:"gear", w:1.8, h:1.4, ic:"🔈", label:"Amp" },
     { id:"mic", name:"Mic Stand", sub:"Gear", kind:"gear", w:1.0, h:1.0, ic:"🎙️", label:"Mic" },
     { id:"di", name:"DI Box", sub:"Gear", kind:"gear", w:1.0, h:0.8, ic:"⬛", label:"DI" },
     { id:"riser", name:"Riser", sub:"Gear", kind:"gear", w:4.0, h:2.0, ic:"⬜", label:"Riser" },
-
     { id:"power", name:"Power", sub:"Electrical", kind:"power", w:1.3, h:1.0, ic:"⚡", label:"PWR" },
   ];
 
+  // ---------- State ----------
   const LS_KEY = "stageplot_v2_state";
   const LS_UI  = "stageplot_v2_ui";
 
   let state = {
     version: APP_VERSION,
-    units: "ft",
+    units: "ft", // display units only; internal is feet
     stage: { w: 24, d: 16 }, // feet
     view: { flip:false },
-    viewZoom: 1.0,
+    viewZoom: 1.0, // 1.0 = 100%
     bandName: "",
     showNotes: "",
     items: [],
@@ -876,6 +942,7 @@
     primaryId: null
   };
 
+  // ---------- Utils ----------
   const uid = () => Math.random().toString(16).slice(2) + "-" + Date.now().toString(16);
   const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
 
@@ -913,6 +980,7 @@
     }catch(e){}
   }
 
+  // Backward compatible import (same logic as 1.5.7)
   function migrateProject(obj){
     const migrated = {
       version: APP_VERSION,
@@ -978,7 +1046,6 @@
 
           out.scale = clamp(out.scale, 0.5, 2.0);
           out.rot = ((out.rot % 360) + 360) % 360;
-
           return out;
         });
       }
@@ -988,6 +1055,8 @@
     migrated.stage.d = clamp(migrated.stage.d, 4, 200);
 
     migrated.items.forEach(it => {
+      it.w = clamp(it.w, 0.5, 200);
+      it.h = clamp(it.h, 0.5, 200);
       it.x = clamp(it.x, 0, Math.max(0, migrated.stage.w - 0.25));
       it.y = clamp(it.y, 0, Math.max(0, migrated.stage.d - 0.25));
     });
@@ -1004,6 +1073,7 @@
     return "gear";
   }
 
+  // ---------- Rendering calculations ----------
   function getSquareInnerSizePx(){
     const r = els.stageSquareInner.getBoundingClientRect();
     return { w: r.width, h: r.height };
@@ -1026,9 +1096,10 @@
     const canvasRect = els.stageCanvas.getBoundingClientRect();
     const px = e.clientX - canvasRect.left;
     const py = e.clientY - canvasRect.top;
-    const { pxPerFoot } = computeStagePixels();
 
+    const { pxPerFoot } = computeStagePixels();
     const z = state.viewZoom;
+
     const basePx = px / z;
     const basePy = py / z;
 
@@ -1055,25 +1126,7 @@
     return { x, y, rot, w, h };
   }
 
-  function updateUnitsUI(){
-    els.unitsPill.textContent = "Units: " + state.units;
-    els.unitLabelW.textContent = state.units;
-    els.unitLabelD.textContent = state.units;
-
-    els.stageW.value = (Math.round(feetToDisplay(state.stage.w)*100)/100);
-    els.stageD.value = (Math.round(feetToDisplay(state.stage.d)*100)/100);
-
-    els.stageMetaText.textContent = `${(Math.round(feetToDisplay(state.stage.w)*100)/100)} x ${(Math.round(feetToDisplay(state.stage.d)*100)/100)} ${state.units}`;
-  }
-
-  function updateViewUI(){
-    els.viewZoom.value = Math.round(state.viewZoom * 100);
-    els.viewZoomPill.textContent = Math.round(state.viewZoom*100) + "%";
-    els.btnFlip.textContent = state.view.flip ? "Audience View" : "Stage View";
-    els.upLabel.textContent = state.view.flip ? "AUDIENCE" : "UPSTAGE";
-    els.downLabel.textContent = state.view.flip ? "UPSTAGE" : "AUDIENCE";
-  }
-
+  // ---------- Selection ----------
   function getPrimary(){
     if(state.primaryId){
       return state.items.find(x => x.id === state.primaryId) || null;
@@ -1083,56 +1136,6 @@
       return state.items.find(x => x.id === id) || null;
     }
     return null;
-  }
-
-  function updateSelectionUI(){
-    const primary = getPrimary();
-    const label = primary ? primary.label : "none";
-    els.selLabel.textContent = label;
-    els.stageSelLabel.textContent = label;
-
-    const disabled = !primary;
-    [
-      els.itemLabel, els.itemInput, els.itemMix, els.itemNotes,
-      els.itemScale, els.itemRot, els.btnRot0, els.btnDup,
-      els.itemScaleStage, els.itemRotStage, els.btnRot0Stage
-    ].forEach(el => el.disabled = disabled);
-
-    if(!primary){
-      els.itemLabel.value = "";
-      els.itemInput.value = "";
-      els.itemMix.value = "";
-      els.itemNotes.value = "";
-
-      els.itemScale.value = 100;
-      els.itemScalePill.textContent = "100%";
-      els.itemRot.value = 0;
-      els.itemRotPill.textContent = "0°";
-
-      els.itemScaleStage.value = 100;
-      els.itemScaleStagePill.textContent = "100%";
-      els.itemRotStage.value = 0;
-      els.itemRotStagePill.textContent = "0°";
-      return;
-    }
-
-    els.itemLabel.value = primary.label || "";
-    els.itemInput.value = primary.input || "";
-    els.itemMix.value = primary.mix || "";
-    els.itemNotes.value = primary.notes || "";
-
-    const sPct = Math.round((primary.scale || 1)*100);
-    const rDeg = Math.round(primary.rot || 0);
-
-    els.itemScale.value = sPct;
-    els.itemScalePill.textContent = sPct + "%";
-    els.itemRot.value = rDeg;
-    els.itemRotPill.textContent = rDeg + "°";
-
-    els.itemScaleStage.value = sPct;
-    els.itemScaleStagePill.textContent = sPct + "%";
-    els.itemRotStage.value = rDeg;
-    els.itemRotStagePill.textContent = rDeg + "°";
   }
 
   function setSelection(ids, primaryId=null){
@@ -1151,6 +1154,97 @@
     save();
   }
 
+  // ---------- UI updates ----------
+  function updateUnitsUI(){
+    els.unitsPill.textContent = "Units: " + state.units;
+    els.unitLabelW.textContent = state.units;
+    els.unitLabelD.textContent = state.units;
+    unitInlineEls.forEach(x => x.textContent = state.units);
+
+    els.stageW.value = (Math.round(feetToDisplay(state.stage.w)*100)/100);
+    els.stageD.value = (Math.round(feetToDisplay(state.stage.d)*100)/100);
+
+    els.stageMetaText.textContent =
+      `${(Math.round(feetToDisplay(state.stage.w)*100)/100)} x ${(Math.round(feetToDisplay(state.stage.d)*100)/100)} ${state.units}`;
+  }
+
+  function updateViewUI(){
+    els.viewZoom.value = Math.round(state.viewZoom * 100);
+    els.viewZoomPill.textContent = Math.round(state.viewZoom*100) + "%";
+    els.btnFlip.textContent = state.view.flip ? "Audience View" : "Stage View";
+    document.getElementById("upLabel").textContent = state.view.flip ? "AUDIENCE" : "UPSTAGE";
+    document.getElementById("downLabel").textContent = state.view.flip ? "UPSTAGE" : "AUDIENCE";
+  }
+
+  function clampItemInStage(it){
+    const w = it.w * it.scale;
+    const h = it.h * it.scale;
+    it.x = clamp(it.x, 0, Math.max(0, state.stage.w - w));
+    it.y = clamp(it.y, 0, Math.max(0, state.stage.d - h));
+  }
+
+  function updateSelectionUI(){
+    const primary = getPrimary();
+    els.selLabel.textContent = primary ? primary.label : "none";
+
+    // Under-stage tools visibility
+    if(primary){
+      els.underStageTools.style.display = "block";
+      els.underSelName.textContent = primary.label || "Item";
+    }else{
+      els.underStageTools.style.display = "none";
+      els.underSelName.textContent = "none";
+    }
+
+    const disabled = !primary;
+    [
+      els.itemLabel, els.itemInput, els.itemMix, els.itemNotes,
+      els.itemW, els.itemH, els.itemScale, els.itemRot, els.btnRot0,
+      els.btnDup, els.uItemW, els.uItemH, els.uItemScale
+    ].forEach(el => el.disabled = disabled);
+
+    if(!primary){
+      els.itemLabel.value = "";
+      els.itemInput.value = "";
+      els.itemMix.value = "";
+      els.itemNotes.value = "";
+      els.itemW.value = "";
+      els.itemH.value = "";
+      els.itemScale.value = 100;
+      els.itemScalePill.textContent = "100%";
+      els.itemRot.value = 0;
+      els.itemRotPill.textContent = "0°";
+
+      els.uItemW.value = "";
+      els.uItemH.value = "";
+      els.uItemScale.value = 100;
+      els.uItemScalePill.textContent = "100%";
+      return;
+    }
+
+    els.itemLabel.value = primary.label || "";
+    els.itemInput.value = primary.input || "";
+    els.itemMix.value = primary.mix || "";
+    els.itemNotes.value = primary.notes || "";
+
+    const dispW = Math.round(feetToDisplay(primary.w) * 100) / 100;
+    const dispH = Math.round(feetToDisplay(primary.h) * 100) / 100;
+    els.itemW.value = dispW;
+    els.itemH.value = dispH;
+    els.uItemW.value = dispW;
+    els.uItemH.value = dispH;
+
+    const scPct = Math.round((primary.scale || 1)*100);
+    els.itemScale.value = scPct;
+    els.itemScalePill.textContent = scPct + "%";
+    els.uItemScale.value = scPct;
+    els.uItemScalePill.textContent = scPct + "%";
+
+    els.itemRot.value = Math.round(primary.rot || 0);
+    els.itemRotPill.textContent = Math.round(primary.rot || 0) + "°";
+  }
+
+  // ---------- Render library ----------
   function renderLibrary(){
     const q = (els.libSearch.value || "").trim().toLowerCase();
     const f = els.libFilter.value || "all";
@@ -1180,6 +1274,7 @@
     els.libCount.textContent = `${state.items.length} items`;
   }
 
+  // ---------- Render stage/items ----------
   function render(){
     const { pxPerFoot, stagePxW, stagePxH } = computeStagePixels();
 
@@ -1217,7 +1312,6 @@
       el.appendChild(lbl);
 
       el.addEventListener("pointerdown", onItemPointerDown);
-
       el.addEventListener("click", (ev) => {
         ev.stopPropagation();
         const mod = ev.shiftKey || ev.metaKey || ev.ctrlKey;
@@ -1237,7 +1331,8 @@
     }
 
     renderTables();
-    els.stageMetaText.textContent = `${(Math.round(feetToDisplay(state.stage.w)*100)/100)} x ${(Math.round(feetToDisplay(state.stage.d)*100)/100)} ${state.units}`;
+    els.stageMetaText.textContent =
+      `${(Math.round(feetToDisplay(state.stage.w)*100)/100)} x ${(Math.round(feetToDisplay(state.stage.d)*100)/100)} ${state.units}`;
   }
 
   function renderTables(){
@@ -1246,10 +1341,11 @@
       .map(it => ({ input: (it.input||"").trim(), label: (it.label||"").trim(), notes:(it.notes||"").trim() }))
       .sort((a,b) => (a.input||"").localeCompare(b.input||"", undefined, { numeric:true, sensitivity:"base" }));
 
-    els.inputsTable.innerHTML = `
+    els.inputsTable.innerHTML = "";
+    els.inputsTable.insertAdjacentHTML("beforeend", `
       <thead><tr><th style="width:28%;">Input</th><th>Source</th></tr></thead>
       <tbody></tbody>
-    `;
+    `);
     const tb = els.inputsTable.querySelector("tbody");
     if(!rows.length){
       tb.innerHTML = `<tr><td colspan="2" style="color: rgba(169,180,204,.95);">No inputs yet - add items and fill in Input.</td></tr>`;
@@ -1273,10 +1369,11 @@
     });
     const mixes = Array.from(mixMap.entries()).sort((a,b) => a[0].localeCompare(b[0], undefined, { numeric:true, sensitivity:"base" }));
 
-    els.mixesTable.innerHTML = `
+    els.mixesTable.innerHTML = "";
+    els.mixesTable.insertAdjacentHTML("beforeend", `
       <thead><tr><th style="width:20%;">Mix</th><th>Members</th></tr></thead>
       <tbody></tbody>
-    `;
+    `);
     const mb = els.mixesTable.querySelector("tbody");
     if(!mixes.length){
       mb.innerHTML = `<tr><td colspan="2" style="color: rgba(169,180,204,.95);">No mixes yet - fill in Mix on items (M1, IEM, Wedge...).</td></tr>`;
@@ -1297,6 +1394,7 @@
     return String(s).replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]));
   }
 
+  // ---------- Add / Edit ----------
   function addFromLib(def){
     const it = {
       id: uid(),
@@ -1314,6 +1412,7 @@
       mix: "",
       notes: ""
     };
+
     it.x = clamp(it.x, 0, Math.max(0, state.stage.w - it.w));
     it.y = clamp(it.y, 0, Math.max(0, state.stage.d - it.h));
 
@@ -1359,7 +1458,23 @@
     openInfoAccordionIfMobile();
   }
 
+  // ---------- Drag + Pinch handling ----------
+  // One pointer = drag. Two pointers on the selected item = pinch to scale (primary).
   let drag = null;
+
+  let pinch = {
+    active: false,
+    itemId: null,
+    pointers: new Map(), // id -> {x,y}
+    startDist: 0,
+    startScale: 1.0
+  };
+
+  function dist(a,b){
+    const dx = a.x - b.x;
+    const dy = a.y - b.y;
+    return Math.hypot(dx,dy);
+  }
 
   function onItemPointerDown(e){
     e.preventDefault();
@@ -1379,6 +1494,33 @@
       openInfoAccordionIfMobile();
     }
 
+    // Track pointers for pinch (only if interacting with primary item)
+    const primary = getPrimary();
+    if(primary && primary.id === id){
+      pinch.pointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
+
+      // If we now have two pointers, start pinch
+      if(pinch.pointers.size === 2){
+        // Cancel drag if it was starting
+        drag = null;
+
+        const pts = Array.from(pinch.pointers.values());
+        pinch.active = true;
+        pinch.itemId = id;
+        pinch.startDist = dist(pts[0], pts[1]);
+        pinch.startScale = primary.scale || 1.0;
+
+        window.addEventListener("pointermove", onPinchMove, { passive:false });
+        window.addEventListener("pointerup", onPinchUp, { once:false });
+        window.addEventListener("pointercancel", onPinchUp, { once:false });
+
+        // Capture pointer so moves keep coming
+        try{ e.currentTarget.setPointerCapture(e.pointerId); }catch(_){}
+        return;
+      }
+    }
+
+    // Otherwise, start drag with this pointer
     const start = stagePointFromPointer(e);
     const selectedSet = new Set(state.selectedIds);
 
@@ -1388,19 +1530,29 @@
       offsets[it.id] = { dx: it.x - start.x, dy: it.y - start.y };
     });
 
-    drag = { pointerId: e.pointerId, start, offsets, selectedSet };
-    e.currentTarget.setPointerCapture(e.pointerId);
-    window.addEventListener("pointermove", onDragMove);
+    drag = {
+      pointerId: e.pointerId,
+      offsets,
+      selectedSet
+    };
+
+    try{ e.currentTarget.setPointerCapture(e.pointerId); }catch(_){}
+    window.addEventListener("pointermove", onDragMove, { passive:false });
     window.addEventListener("pointerup", onDragUp, { once:true });
+    window.addEventListener("pointercancel", onDragUp, { once:true });
   }
 
   function onDragMove(e){
     if(!drag) return;
+    if(pinch.active) return;
+
+    e.preventDefault();
     const p = stagePointFromPointer(e);
 
     state.items.forEach(it => {
       if(!drag.selectedSet.has(it.id)) return;
       const off = drag.offsets[it.id] || { dx:0, dy:0 };
+
       const w = it.w * it.scale;
       const h = it.h * it.scale;
 
@@ -1417,6 +1569,55 @@
     window.removeEventListener("pointermove", onDragMove);
   }
 
+  function onPinchMove(e){
+    if(!pinch.active) return;
+    if(!pinch.pointers.has(e.pointerId)) return;
+    e.preventDefault();
+
+    pinch.pointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
+    if(pinch.pointers.size !== 2) return;
+
+    const primary = getPrimary();
+    if(!primary || primary.id !== pinch.itemId) return;
+
+    const pts = Array.from(pinch.pointers.values());
+    const dNow = dist(pts[0], pts[1]);
+    if(pinch.startDist <= 0) return;
+
+    const ratio = dNow / pinch.startDist;
+    const nextScale = clamp(pinch.startScale * ratio, 0.5, 2.0);
+
+    primary.scale = nextScale;
+    clampItemInStage(primary);
+
+    // sync sliders (both places)
+    const pct = Math.round(nextScale * 100);
+    els.itemScale.value = pct;
+    els.itemScalePill.textContent = pct + "%";
+    els.uItemScale.value = pct;
+    els.uItemScalePill.textContent = pct + "%";
+
+    render();
+    save();
+  }
+
+  function onPinchUp(e){
+    if(pinch.pointers.has(e.pointerId)) pinch.pointers.delete(e.pointerId);
+
+    if(pinch.pointers.size < 2){
+      pinch.active = false;
+      pinch.itemId = null;
+      pinch.startDist = 0;
+      pinch.startScale = 1.0;
+      pinch.pointers.clear();
+
+      window.removeEventListener("pointermove", onPinchMove);
+      window.removeEventListener("pointerup", onPinchUp);
+      window.removeEventListener("pointercancel", onPinchUp);
+    }
+  }
+
+  // ---------- Accordions (mobile) ----------
   function loadUIState(){
     try{
       const raw = localStorage.getItem(LS_UI);
@@ -1482,6 +1683,7 @@
     }
   }
 
+  // ---------- Events ----------
   els.stageSquareInner.addEventListener("click", (e) => {
     if(e.target.closest(".item")) return;
     clearSelection();
@@ -1492,6 +1694,7 @@
       const p = btn.getAttribute("data-preset");
       document.querySelectorAll('[data-preset]').forEach(b => b.classList.remove("on"));
       btn.classList.add("on");
+
       if(p === "small"){ setStageFeet(20, 14); }
       if(p === "med"){ setStageFeet(24, 16); }
       if(p === "large"){ setStageFeet(30, 20); }
@@ -1519,6 +1722,7 @@
   els.btnUnits.addEventListener("click", () => {
     state.units = (state.units === "ft") ? "m" : "ft";
     updateUnitsUI();
+    updateSelectionUI(); // refresh item W/H display
     save();
   });
 
@@ -1545,25 +1749,28 @@
   els.bandName.addEventListener("input", () => { state.bandName = els.bandName.value; save(); });
   els.showNotes.addEventListener("input", () => { state.showNotes = els.showNotes.value; save(); });
 
-  function setPrimaryScaleFromPct(pct){
-    const it = getPrimary(); if(!it) return;
-    it.scale = clamp(Number(pct)/100, 0.5, 2.0);
-    updateSelectionUI();
-    render();
-    save();
+  // Item edits (shared helpers)
+  function applyItemWHFromDisplay(it, wDisp, hDisp){
+    const wFeet = clamp(displayToFeet(wDisp), 0.5, 200);
+    const hFeet = clamp(displayToFeet(hDisp), 0.5, 200);
+    it.w = wFeet;
+    it.h = hFeet;
+    clampItemInStage(it);
   }
-  function setPrimaryRotFromDeg(deg){
-    const it = getPrimary(); if(!it) return;
-    it.rot = ((Number(deg)||0) % 360 + 360) % 360;
-    updateSelectionUI();
-    render();
-    save();
+  function syncItemWHUI(it){
+    const wDisp = Math.round(feetToDisplay(it.w)*100)/100;
+    const hDisp = Math.round(feetToDisplay(it.h)*100)/100;
+    els.itemW.value = wDisp;
+    els.itemH.value = hDisp;
+    els.uItemW.value = wDisp;
+    els.uItemH.value = hDisp;
   }
 
   els.itemLabel.addEventListener("input", () => {
     const it = getPrimary(); if(!it) return;
     it.label = els.itemLabel.value;
-    updateSelectionUI();
+    els.selLabel.textContent = it.label || "item";
+    els.underSelName.textContent = it.label || "Item";
     render();
     save();
   });
@@ -1586,28 +1793,111 @@
     save();
   });
 
-  // Info sliders
-  els.itemScale.addEventListener("input", () => setPrimaryScaleFromPct(els.itemScale.value));
-  els.itemRot.addEventListener("input", () => setPrimaryRotFromDeg(els.itemRot.value));
+  // Width/Depth (info)
+  els.itemW.addEventListener("change", () => {
+    const it = getPrimary(); if(!it) return;
+    applyItemWHFromDisplay(it, els.itemW.value, els.itemH.value);
+    syncItemWHUI(it);
+    render();
+    save();
+  });
+  els.itemH.addEventListener("change", () => {
+    const it = getPrimary(); if(!it) return;
+    applyItemWHFromDisplay(it, els.itemW.value, els.itemH.value);
+    syncItemWHUI(it);
+    render();
+    save();
+  });
 
-  // Stage-under sliders (mirror)
-  els.itemScaleStage.addEventListener("input", () => setPrimaryScaleFromPct(els.itemScaleStage.value));
-  els.itemRotStage.addEventListener("input", () => setPrimaryRotFromDeg(els.itemRotStage.value));
+  // Width/Depth (under-stage)
+  els.uItemW.addEventListener("change", () => {
+    const it = getPrimary(); if(!it) return;
+    applyItemWHFromDisplay(it, els.uItemW.value, els.uItemH.value);
+    syncItemWHUI(it);
+    render();
+    save();
+  });
+  els.uItemH.addEventListener("change", () => {
+    const it = getPrimary(); if(!it) return;
+    applyItemWHFromDisplay(it, els.uItemW.value, els.uItemH.value);
+    syncItemWHUI(it);
+    render();
+    save();
+  });
 
-  els.btnRot0.addEventListener("click", () => setPrimaryRotFromDeg(0));
-  els.btnRot0Stage.addEventListener("click", () => setPrimaryRotFromDeg(0));
+  // Scale (both places)
+  function setPrimaryScalePct(pct){
+    const it = getPrimary(); if(!it) return;
+    it.scale = clamp(Number(pct)/100, 0.5, 2.0);
+    clampItemInStage(it);
 
+    const p = Math.round(it.scale*100);
+    els.itemScale.value = p;
+    els.itemScalePill.textContent = p + "%";
+    els.uItemScale.value = p;
+    els.uItemScalePill.textContent = p + "%";
+
+    render();
+    save();
+  }
+  els.itemScale.addEventListener("input", () => setPrimaryScalePct(els.itemScale.value));
+  els.uItemScale.addEventListener("input", () => setPrimaryScalePct(els.uItemScale.value));
+
+  els.itemRot.addEventListener("input", () => {
+    const it = getPrimary(); if(!it) return;
+    it.rot = ((Number(els.itemRot.value)||0) % 360 + 360) % 360;
+    els.itemRotPill.textContent = Math.round(it.rot) + "°";
+    render();
+    save();
+  });
+  els.btnRot0.addEventListener("click", () => {
+    const it = getPrimary(); if(!it) return;
+    it.rot = 0;
+    updateSelectionUI();
+    render();
+    save();
+  });
+
+  // Under-stage nudge buttons
+  function nudgeBtn(dx, dy){
+    if(!state.selectedIds.length) return;
+    const step = 0.25; // feet
+    const set = new Set(state.selectedIds);
+    state.items.forEach(it => {
+      if(!set.has(it.id)) return;
+      const w = it.w * it.scale;
+      const h = it.h * it.scale;
+      it.x = clamp(it.x + dx*step, 0, Math.max(0, state.stage.w - w));
+      it.y = clamp(it.y + dy*step, 0, Math.max(0, state.stage.d - h));
+    });
+    render();
+    save();
+  }
+  els.nUp.addEventListener("click", () => nudgeBtn(0, -1));
+  els.nDown.addEventListener("click", () => nudgeBtn(0, 1));
+  els.nLeft.addEventListener("click", () => nudgeBtn(-1, 0));
+  els.nRight.addEventListener("click", () => nudgeBtn(1, 0));
+  els.nCenter.addEventListener("click", () => {
+    const it = getPrimary(); if(!it) return;
+    // center primary on stage (respect scaled size)
+    const w = it.w * it.scale;
+    const h = it.h * it.scale;
+    it.x = clamp((state.stage.w - w)/2, 0, Math.max(0, state.stage.w - w));
+    it.y = clamp((state.stage.d - h)/2, 0, Math.max(0, state.stage.d - h));
+    render(); save();
+  });
+
+  // Library controls
   els.libSearch.addEventListener("input", renderLibrary);
   els.libFilter.addEventListener("change", renderLibrary);
-
   els.btnMisc1.addEventListener("click", () => addMisc(1));
   els.btnMisc2.addEventListener("click", () => addMisc(2));
   els.btnMisc3.addEventListener("click", () => addMisc(3));
-
   els.btnDeleteSel.addEventListener("click", deleteSelected);
   els.btnClearSel.addEventListener("click", clearSelection);
   els.btnDup.addEventListener("click", duplicateSelected);
 
+  // Export / Import
   els.btnExport.addEventListener("click", () => {
     const project = {
       version: APP_VERSION,
@@ -1675,6 +1965,7 @@
     }
   });
 
+  // Print (in-app)
   els.btnPrint.addEventListener("click", () => {
     const prev = state.viewZoom;
     state.viewZoom = 1.0;
@@ -1690,6 +1981,7 @@
     }, 50);
   });
 
+  // Keyboard shortcuts
   window.addEventListener("keydown", (e) => {
     const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : "";
     const typing = (tag === "input" || tag === "textarea" || tag === "select");
@@ -1729,6 +2021,7 @@
     save();
   }
 
+  // Accordions
   els.accLibBtn.addEventListener("click", toggleLibAccordion);
   els.accInfoBtn.addEventListener("click", toggleInfoAccordion);
 
@@ -1737,7 +2030,9 @@
     render();
   });
 
+  // ---------- Init ----------
   load();
+
   els.bandName.value = state.bandName || "";
   els.showNotes.value = state.showNotes || "";
   updateUnitsUI();
@@ -1746,6 +2041,7 @@
   renderLibrary();
   applyAccordions();
   render();
+
 })();
 </script>
 </body>
