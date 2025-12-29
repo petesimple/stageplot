@@ -2,12 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-
-  <!-- UPDATED: disable double-tap / pinch zoom -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0b0d12" />
-  <title>StagePlot v2 - v1.5.9 (reset)</title>
+  <title>StagePlot v2 - v1.6 (rainbow)</title>
 
   <style>
     :root{
@@ -29,28 +26,17 @@
       --stageBorder: rgba(255,255,255,.14);
       --stageGrid: rgba(255,255,255,.06);
 
-      --sqPad: 10px;
+      --sqPad: 10px; /* inner padding for the stage square so 100% never clips */
     }
 
     *{ box-sizing:border-box; }
     html,body{ height:100%; }
-
     body{
       margin:0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
       background: radial-gradient(1200px 700px at 50% -10%, #1a2540, var(--bg));
       color: var(--text);
       line-height:1.4;
-    }
-
-    /* NEW: stop double-tap zoom on controls */
-    button,
-    .btn,
-    a.button,
-    .nbtn,
-    .libBtn,
-    .accBtn {
-      touch-action: manipulation;
     }
 
     header{
@@ -61,7 +47,6 @@
       background: rgba(10,12,18,.78);
       backdrop-filter: blur(10px);
     }
-
     .wrap{
       max-width: 1200px;
       margin: 0 auto;
@@ -149,6 +134,10 @@
       background: rgba(255,90,106,.10);
       border-color: rgba(255,90,106,.35);
     }
+    .warn{
+      background: rgba(255,204,102,.10);
+      border-color: rgba(255,204,102,.35);
+    }
 
     main{
       max-width: 1200px;
@@ -215,6 +204,23 @@
       font: inherit;
     }
     textarea{ min-height: 70px; resize: vertical; }
+
+    input[type="range"]{
+      width:100%;
+    }
+
+    input[type="color"]{
+      width: 54px;
+      height: 38px;
+      padding: 0;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 12px;
+      background: rgba(255,255,255,.04);
+      overflow: hidden;
+      cursor: pointer;
+    }
+    input[type="color"]::-webkit-color-swatch-wrapper{ padding: 0; }
+    input[type="color"]::-webkit-color-swatch{ border: none; }
 
     .seg{
       display:flex;
@@ -518,7 +524,7 @@
         <div class="logo" aria-hidden="true">SP</div>
         <div>
           <h1>StagePlot v2</h1>
-          <div class="sub">v1.5.9 (reset) - reset stage button + pinch-to-scale + item size sliders + under-stage tools</div>
+          <div class="sub">v1.6 (rainbow) - pinch-to-scale + size sliders + multi-select color tools + reset stage</div>
         </div>
       </div>
 
@@ -583,8 +589,8 @@
         <span class="pill" id="unitsPill">Units: ft</span>
         <button class="btn" id="btnUnits">Toggle ft/m</button>
         <button class="btn" id="btnFlip">Stage View</button>
-        <button class="btn danger" id="btnResetStage" title="Reset stage and clear all items">Reset Stage</button>
-        <button class="btn" id="btnClearSel" title="Clear selection only">Clear Selection</button>
+        <button class="btn" id="btnClearSel" title="Clears selection only">Clear</button>
+        <button class="btn warn" id="btnResetStage" title="Resets stage, view, notes, and removes items">Reset Stage</button>
       </div>
     </div>
     <div class="bd">
@@ -682,6 +688,18 @@
                 <div class="nudgeSpacer nbtn btn"> </div>
                 <button class="btn nbtn" id="nDown" title="Nudge down">↓</button>
                 <div class="nudgeSpacer nbtn btn"> </div>
+              </div>
+
+              <div class="hr"></div>
+
+              <div class="miniHelp" style="margin-bottom:8px;">Box color (applies to all selected)</div>
+              <div class="row tight" style="align-items:center;">
+                <input type="color" id="uItemColor" value="#4aa3ff" />
+                <span class="pill mono" id="uColorPill">none</span>
+                <button class="btn" id="uClearColor" type="button">Clear</button>
+              </div>
+              <div class="miniHelp" style="margin-top:6px;">
+                Pro tip: if selection is mixed, pick a color anyway and it will unify the squad.
               </div>
             </div>
 
@@ -807,8 +825,27 @@
           </div>
         </div>
 
-        <div class="miniHelp">
-          Gesture: on touch screens, pinch the selected item to change Scale.
+        <div class="row" style="align-items:center;">
+          <div class="field" style="width: 48%; min-width:140px; margin-bottom:0;">
+            <label>Item Box Color</label>
+            <div class="row tight" style="align-items:center;">
+              <input type="color" id="itemColor" value="#4aa3ff" />
+              <span class="pill mono" id="colorPill">none</span>
+              <button class="btn" id="clearColor" type="button">Clear</button>
+            </div>
+          </div>
+
+          <div class="field" style="width: 48%; min-width:140px; margin-bottom:0;">
+            <label>Applies to</label>
+            <div class="pill" id="colorScopePill" style="width:100%; justify-content:space-between;">
+              <span>Selected</span>
+              <span class="mono" id="colorScopeCount">0</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="miniHelp" style="margin-top:10px;">
+          Gesture: on touch screens, pinch the selected item to change Scale. Color changes apply to all selected items.
         </div>
 
         <div class="hr"></div>
@@ -840,7 +877,7 @@
 
 <script>
 (() => {
-  const APP_VERSION = "1.5.9 (reset)";
+  const APP_VERSION = "1.6 (rainbow)";
 
   // Internal units are FEET for compatibility.
   const FT_PER_M = 3.280839895;
@@ -874,6 +911,12 @@
     itemRot: document.getElementById("itemRot"),
     itemRotPill: document.getElementById("itemRotPill"),
 
+    itemColor: document.getElementById("itemColor"),
+    clearColor: document.getElementById("clearColor"),
+    colorPill: document.getElementById("colorPill"),
+    colorScopePill: document.getElementById("colorScopePill"),
+    colorScopeCount: document.getElementById("colorScopeCount"),
+
     inputsTable: document.getElementById("inputsTable"),
     mixesTable: document.getElementById("mixesTable"),
 
@@ -887,6 +930,7 @@
     btnMisc3: document.getElementById("btnMisc3"),
     btnDeleteSel: document.getElementById("btnDeleteSel"),
     btnClearSel: document.getElementById("btnClearSel"),
+    btnResetStage: document.getElementById("btnResetStage"),
     btnDup: document.getElementById("btnDup"),
 
     btnFlip: document.getElementById("btnFlip"),
@@ -902,8 +946,6 @@
 
     btnRot0: document.getElementById("btnRot0"),
 
-    btnResetStage: document.getElementById("btnResetStage"),
-
     accLibBtn: document.getElementById("accLibBtn"),
     accInfoBtn: document.getElementById("accInfoBtn"),
     accLibChev: document.getElementById("accLibChev"),
@@ -917,6 +959,10 @@
     uItemH: document.getElementById("uItemH"),
     uItemScale: document.getElementById("uItemScale"),
     uItemScalePill: document.getElementById("uItemScalePill"),
+
+    uItemColor: document.getElementById("uItemColor"),
+    uClearColor: document.getElementById("uClearColor"),
+    uColorPill: document.getElementById("uColorPill"),
 
     nUp: document.getElementById("nUp"),
     nDown: document.getElementById("nDown"),
@@ -1172,6 +1218,54 @@
     save();
   }
 
+  // ---------- Color helpers ----------
+  function normalizeHex(c){
+    if(!c) return "";
+    const s = String(c).trim();
+    if(!s) return "";
+    if(/^#([0-9a-f]{3})$/i.test(s)){
+      const m = s.slice(1);
+      return "#" + m.split("").map(ch => ch + ch).join("").toLowerCase();
+    }
+    if(/^#([0-9a-f]{6})$/i.test(s)) return s.toLowerCase();
+    return s;
+  }
+
+  function getSelectedItems(){
+    const set = new Set(state.selectedIds);
+    return state.items.filter(it => set.has(it.id));
+  }
+
+  function selectionColorStatus(){
+    const sel = getSelectedItems();
+    if(!sel.length) return { count:0, mode:"none", color:"" };
+
+    const colors = sel.map(it => normalizeHex(it.color || ""));
+    const nonEmpty = colors.filter(Boolean);
+    if(!nonEmpty.length) return { count:sel.length, mode:"none", color:"" };
+
+    const first = nonEmpty[0];
+    const allSame = nonEmpty.every(c => c === first) && nonEmpty.length === colors.length;
+    if(allSame) return { count:sel.length, mode:"same", color:first };
+
+    const anySame = nonEmpty.every(c => c === first);
+    if(anySame) return { count:sel.length, mode:"same", color:first };
+
+    return { count:sel.length, mode:"mixed", color:first };
+  }
+
+  function applyColorToSelection(hexOrEmpty){
+    if(!state.selectedIds.length) return;
+    const set = new Set(state.selectedIds);
+    state.items.forEach(it => {
+      if(!set.has(it.id)) return;
+      it.color = hexOrEmpty ? normalizeHex(hexOrEmpty) : "";
+    });
+    updateSelectionUI();
+    render();
+    save();
+  }
+
   // ---------- UI updates ----------
   function updateUnitsUI(){
     els.unitsPill.textContent = "Units: " + state.units;
@@ -1205,6 +1299,7 @@
     const primary = getPrimary();
     els.selLabel.textContent = primary ? primary.label : "none";
 
+    // Under-stage tools visibility
     if(primary){
       els.underStageTools.style.display = "block";
       els.underSelName.textContent = primary.label || "Item";
@@ -1213,12 +1308,41 @@
       els.underSelName.textContent = "none";
     }
 
+    // count pill for color scope
+    els.colorScopeCount.textContent = String(state.selectedIds.length);
+
     const disabled = !primary;
     [
       els.itemLabel, els.itemInput, els.itemMix, els.itemNotes,
       els.itemW, els.itemH, els.itemScale, els.itemRot, els.btnRot0,
-      els.btnDup, els.uItemW, els.uItemH, els.uItemScale
+      els.btnDup, els.uItemW, els.uItemH, els.uItemScale,
+      els.itemColor, els.clearColor, els.uItemColor, els.uClearColor
     ].forEach(el => el.disabled = disabled);
+
+    // Color pills
+    const cs = selectionColorStatus();
+    if(!cs.count){
+      els.colorPill.textContent = "none";
+      els.uColorPill.textContent = "none";
+      els.itemColor.value = "#4aa3ff";
+      els.uItemColor.value = "#4aa3ff";
+    }else if(cs.mode === "none"){
+      els.colorPill.textContent = cs.count === 1 ? "none" : `none (${cs.count})`;
+      els.uColorPill.textContent = cs.count === 1 ? "none" : `none (${cs.count})`;
+      els.itemColor.value = "#4aa3ff";
+      els.uItemColor.value = "#4aa3ff";
+    }else if(cs.mode === "mixed"){
+      els.colorPill.textContent = `mixed (${cs.count})`;
+      els.uColorPill.textContent = `mixed (${cs.count})`;
+      // set picker to a real value so the control stays happy
+      els.itemColor.value = cs.color || "#4aa3ff";
+      els.uItemColor.value = cs.color || "#4aa3ff";
+    }else{
+      els.colorPill.textContent = cs.color;
+      els.uColorPill.textContent = cs.color;
+      els.itemColor.value = cs.color || "#4aa3ff";
+      els.uItemColor.value = cs.color || "#4aa3ff";
+    }
 
     if(!primary){
       els.itemLabel.value = "";
@@ -1475,35 +1599,8 @@
     openInfoAccordionIfMobile();
   }
 
-  // ---------- Reset Stage ----------
-  function resetStage(){
-    const ok = confirm("Reset stage?\n\nThis clears all items, clears selection, resets stage to Medium (24 x 16), resets view zoom to 100%, and turns off flip.\n\nBand name and show notes stay.");
-    if(!ok) return;
-
-    state.items = [];
-    state.selectedIds = [];
-    state.primaryId = null;
-
-    // Stage + view defaults
-    state.stage.w = 24;
-    state.stage.d = 16;
-    state.view.flip = false;
-    state.viewZoom = 1.0;
-
-    // Update preset highlight to Medium
-    document.querySelectorAll('[data-preset]').forEach(b => b.classList.remove("on"));
-    const medBtn = document.querySelector('[data-preset="med"]');
-    if(medBtn) medBtn.classList.add("on");
-
-    updateUnitsUI();
-    updateViewUI();
-    updateSelectionUI();
-    renderLibrary();
-    render();
-    save();
-  }
-
   // ---------- Drag + Pinch handling ----------
+  // One pointer = drag. Two pointers on the selected item = pinch to scale (primary).
   let drag = null;
 
   let pinch = {
@@ -1538,11 +1635,14 @@
       openInfoAccordionIfMobile();
     }
 
+    // Track pointers for pinch (only if interacting with primary item)
     const primary = getPrimary();
     if(primary && primary.id === id){
       pinch.pointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
 
+      // If we now have two pointers, start pinch
       if(pinch.pointers.size === 2){
+        // Cancel drag if it was starting
         drag = null;
 
         const pts = Array.from(pinch.pointers.values());
@@ -1560,6 +1660,7 @@
       }
     }
 
+    // Otherwise, start drag with this pointer
     const start = stagePointFromPointer(e);
     const selectedSet = new Set(state.selectedIds);
 
@@ -1629,6 +1730,7 @@
     primary.scale = nextScale;
     clampItemInStage(primary);
 
+    // sync sliders (both places)
     const pct = Math.round(nextScale * 100);
     els.itemScale.value = pct;
     els.itemScalePill.textContent = pct + "%";
@@ -1736,7 +1838,7 @@
       if(p === "small"){ setStageFeet(20, 14); }
       if(p === "med"){ setStageFeet(24, 16); }
       if(p === "large"){ setStageFeet(30, 20); }
-      // custom just means you type numbers
+      if(p === "custom"){ /* user edits inputs */ }
     });
   });
   document.querySelector('[data-preset="med"]').classList.add("on");
@@ -1751,17 +1853,21 @@
 
   els.stageW.addEventListener("change", () => {
     const wFeet = displayToFeet(els.stageW.value);
+    document.querySelectorAll('[data-preset]').forEach(b => b.classList.remove("on"));
+    document.querySelector('[data-preset="custom"]').classList.add("on");
     setStageFeet(wFeet, state.stage.d);
   });
   els.stageD.addEventListener("change", () => {
     const dFeet = displayToFeet(els.stageD.value);
+    document.querySelectorAll('[data-preset]').forEach(b => b.classList.remove("on"));
+    document.querySelector('[data-preset="custom"]').classList.add("on");
     setStageFeet(state.stage.w, dFeet);
   });
 
   els.btnUnits.addEventListener("click", () => {
     state.units = (state.units === "ft") ? "m" : "ft";
     updateUnitsUI();
-    updateSelectionUI();
+    updateSelectionUI(); // refresh item W/H display
     save();
   });
 
@@ -1785,11 +1891,37 @@
     save();
   });
 
-  els.btnResetStage.addEventListener("click", resetStage);
-  els.btnClearSel.addEventListener("click", clearSelection);
-
   els.bandName.addEventListener("input", () => { state.bandName = els.bandName.value; save(); });
   els.showNotes.addEventListener("input", () => { state.showNotes = els.showNotes.value; save(); });
+
+  // Reset stage (the missing hero)
+  els.btnResetStage.addEventListener("click", () => {
+    const ok = confirm("Reset Stage?\nThis clears items, selection, band name, notes, and resets view and stage size.");
+    if(!ok) return;
+
+    state.units = "ft";
+    state.stage = { w: 24, d: 16 };
+    state.view = { flip:false };
+    state.viewZoom = 1.0;
+    state.bandName = "";
+    state.showNotes = "";
+    state.items = [];
+    state.selectedIds = [];
+    state.primaryId = null;
+
+    els.bandName.value = "";
+    els.showNotes.value = "";
+
+    document.querySelectorAll('[data-preset]').forEach(b => b.classList.remove("on"));
+    document.querySelector('[data-preset="med"]').classList.add("on");
+
+    updateUnitsUI();
+    updateViewUI();
+    updateSelectionUI();
+    renderLibrary();
+    render();
+    save();
+  });
 
   // Item edits (shared helpers)
   function applyItemWHFromDisplay(it, wDisp, hDisp){
@@ -1900,6 +2032,13 @@
     save();
   });
 
+  // Color (applies to selection)
+  els.itemColor.addEventListener("input", () => applyColorToSelection(els.itemColor.value));
+  els.uItemColor.addEventListener("input", () => applyColorToSelection(els.uItemColor.value));
+
+  els.clearColor.addEventListener("click", () => applyColorToSelection(""));
+  els.uClearColor.addEventListener("click", () => applyColorToSelection(""));
+
   // Under-stage nudge buttons
   function nudgeBtn(dx, dy){
     if(!state.selectedIds.length) return;
@@ -1918,7 +2057,7 @@
   els.nUp.addEventListener("click", () => nudgeBtn(0, -1));
   els.nDown.addEventListener("click", () => nudgeBtn(0, 1));
   els.nLeft.addEventListener("click", () => nudgeBtn(-1, 0));
-  els.nRight.addEventListener("click", () => nudgeBtn(1, 0));
+  els.nRight.addEventListener("click", () => nnudgeBtn(1, 0));
   els.nCenter.addEventListener("click", () => {
     const it = getPrimary(); if(!it) return;
     const w = it.w * it.scale;
@@ -1935,6 +2074,7 @@
   els.btnMisc2.addEventListener("click", () => addMisc(2));
   els.btnMisc3.addEventListener("click", () => addMisc(3));
   els.btnDeleteSel.addEventListener("click", deleteSelected);
+  els.btnClearSel.addEventListener("click", clearSelection);
   els.btnDup.addEventListener("click", duplicateSelected);
 
   // Export / Import
