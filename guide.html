@@ -2,10 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0b0d12" />
-  <title>StagePlot Guide</title>
-
+  <title>StagePlot v2 Guide - v1.6 (rainbow)</title>
   <style>
     :root{
       --bg:#0b0d12;
@@ -18,28 +17,31 @@
       --ok:#40d98a;
       --warn:#ffcc66;
       --danger:#ff5a6a;
-      --grid:rgba(255,255,255,.06);
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
+      --chip: rgba(255,255,255,.06);
+      --chipBorder: rgba(255,255,255,.12);
     }
     *{ box-sizing:border-box; }
+    html,body{ height:100%; }
     body{
       margin:0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
       background: radial-gradient(1200px 700px at 50% -10%, #1a2540, var(--bg));
       color: var(--text);
-      line-height: 1.45;
+      line-height:1.55;
     }
     header{
       position: sticky;
       top: 0;
-      z-index: 10;
+      z-index: 50;
       border-bottom: 1px solid var(--line);
-      background: rgba(10,12,18,.75);
+      background: rgba(10,12,18,.78);
       backdrop-filter: blur(10px);
     }
     .wrap{
-      max-width: 1100px;
+      max-width: 980px;
       margin: 0 auto;
-      padding: 14px 16px;
+      padding: 14px 14px;
     }
     .top{
       display:flex;
@@ -52,13 +54,13 @@
       display:flex;
       align-items:center;
       gap:10px;
-      min-width: 240px;
+      min-width: 260px;
     }
     .logo{
-      width:28px; height:28px;
-      border-radius:10px;
+      width:34px; height:34px;
+      border-radius:12px;
       background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.12);
       display:flex; align-items:center; justify-content:center;
       color: var(--accent);
       font-weight: 900;
@@ -66,25 +68,20 @@
     }
     h1{
       font-size: 16px;
-      margin: 0;
-      letter-spacing: .2px;
+      margin:0;
+      letter-spacing:.2px;
+      line-height:1.2;
     }
     .sub{
       color: var(--muted);
       font-size: 12px;
       margin-top: 2px;
     }
-    .actions{
-      display:flex;
-      gap:8px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
     a.button, button{
       font: inherit;
       color: var(--text);
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.12);
+      background: var(--chip);
+      border: 1px solid var(--chipBorder);
       border-radius: 12px;
       padding: 8px 10px;
       text-decoration:none;
@@ -94,10 +91,11 @@
       align-items:center;
       gap:8px;
       user-select:none;
+      white-space:nowrap;
     }
     a.button:hover, button:hover{ border-color: rgba(74,163,255,.8); }
     a.button:active, button:active{ transform: translateY(1px); }
-    a.button.primary{
+    .primary{
       background: rgba(74,163,255,.14);
       border-color: rgba(74,163,255,.55);
     }
@@ -117,23 +115,23 @@
     .dot{ width:8px; height:8px; border-radius:50%; background: var(--ok); display:inline-block; }
 
     main{
-      max-width: 1100px;
+      max-width: 980px;
       margin: 0 auto;
-      padding: 18px 16px 40px 16px;
+      padding: 14px 14px 30px 14px;
       display:grid;
-      grid-template-columns: 290px 1fr;
-      gap: 14px;
-      align-items:start;
+      grid-template-columns: 1fr;
+      gap: 12px;
     }
     .card{
-      background: linear-gradient(180deg, rgba(18,24,38,.9), rgba(12,16,26,.9));
+      background: linear-gradient(180deg, rgba(18,24,38,.92), rgba(12,16,26,.92));
       border: 1px solid var(--line);
       border-radius: 18px;
-      box-shadow: 0 12px 30px rgba(0,0,0,.35);
+      box-shadow: var(--shadow);
       overflow:hidden;
+      min-width: 0;
     }
     .card .hd{
-      padding: 12px 14px;
+      padding: 12px 12px;
       border-bottom: 1px solid rgba(255,255,255,.08);
       display:flex;
       align-items:center;
@@ -143,622 +141,314 @@
     }
     .card .hd h2{
       margin:0;
-      font-size: 13px;
+      font-size: 12px;
       color: var(--muted);
       text-transform: uppercase;
-      letter-spacing: .3px;
-      font-weight: 750;
+      letter-spacing: .35px;
+      font-weight: 900;
     }
     .card .bd{
-      padding: 12px 14px 14px 14px;
-    }
-
-    .nav a{
-      display:block;
-      padding: 9px 10px;
-      border-radius: 12px;
-      color: var(--text);
-      text-decoration:none;
-      border: 1px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,.03);
-      margin-bottom: 8px;
-      transition: border-color .15s ease, background .15s ease;
-    }
-    .nav a:hover{
-      border-color: rgba(74,163,255,.55);
-      background: rgba(74,163,255,.08);
-    }
-    .nav .hint{
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 6px;
-    }
-
-    h3{
-      margin: 0 0 6px 0;
-      font-size: 15px;
-      letter-spacing:.1px;
-    }
-    p{ margin: 0 0 10px 0; color: rgba(233,238,251,.92); }
-    ul{ margin: 8px 0 14px 20px; padding:0; color: rgba(233,238,251,.92); }
-    li{ margin: 6px 0; }
-
-    .callout{
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-      border-radius: 14px;
-      padding: 12px 12px;
-      margin: 10px 0 14px 0;
-    }
-    .callout strong{ color: var(--text); }
-    .callout.ok{ border-color: rgba(64,217,138,.25); background: rgba(64,217,138,.08); }
-    .callout.warn{ border-color: rgba(255,204,102,.25); background: rgba(255,204,102,.08); }
-    .callout.danger{ border-color: rgba(255,90,106,.25); background: rgba(255,90,106,.08); }
-
-    .kbd{
-      display:inline-flex;
-      align-items:center;
-      padding: 2px 8px;
-      border-radius: 10px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.10);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 12px;
-      color: rgba(233,238,251,.92);
-      white-space:nowrap;
-      margin: 0 2px;
+      padding: 12px 12px 14px 12px;
     }
 
     .grid{
       display:grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      gap: 12px;
     }
-    .mini{
-      border: 1px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,.03);
-      border-radius: 14px;
-      padding: 10px;
-    }
-    .mini .t{
-      font-weight: 800;
-      font-size: 13px;
-      margin-bottom: 4px;
-    }
-    .mini .d{
-      color: var(--muted);
-      font-size: 12px;
+    @media (max-width: 860px){
+      .grid{ grid-template-columns: 1fr; }
     }
 
-    .footer{
-      margin-top: 8px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .mono{
+    .k{
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    }
-
-    /* Share QR block */
-    .shareRow{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-      margin-top: 6px;
-    }
-    .qrWrap{
-      display:none;
-      margin-top: 12px;
-    }
-    .qrCard{
-      display:flex;
-      gap:12px;
-      align-items:flex-start;
-      flex-wrap:wrap;
-    }
-    .qrImg{
-      background:#fff;
-      padding:10px;
-      border-radius:12px;
-      width: 240px;
-      height: 240px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
-    .qrImg img{
-      width: 220px;
-      height: 220px;
-      image-rendering: crisp-edges;
-      border-radius: 6px;
-    }
-    .shareMeta{
-      flex:1;
-      min-width: 240px;
-    }
-    .tinyLink{
-      display:inline-flex;
-      gap:8px;
-      align-items:center;
-      padding: 8px 10px;
-      border-radius: 12px;
+      font-size: 12px;
+      background: rgba(255,255,255,.05);
       border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
-      text-decoration:none;
-      color: var(--text);
+      padding: 2px 8px;
+      border-radius: 999px;
+      display:inline-block;
+      margin: 2px 2px 0 0;
     }
-    .tinyLink:hover{
-      border-color: rgba(74,163,255,.55);
-      background: rgba(74,163,255,.06);
+    ul{ margin: 8px 0 0 18px; padding:0; }
+    li{ margin: 6px 0; color: rgba(233,238,251,.95); }
+    .muted{ color: var(--muted); }
+    .callout{
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      border-radius: 16px;
+      padding: 10px 12px;
     }
-
-    /* Donation block */
-    .donateRow{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-      margin-top: 10px;
+    .hr{
+      height:1px;
+      background: rgba(255,255,255,.08);
+      margin: 10px 0;
     }
-    .donateCard{
-      border: 1px dashed rgba(74,163,255,.45);
-      background: rgba(74,163,255,.08);
-      border-radius: 14px;
-      padding: 12px;
-      margin-top: 12px;
+    .note{
+      font-size: 12px;
+      color: var(--muted);
     }
-    .donateTitle{
-      font-weight: 900;
-      letter-spacing: .2px;
-      margin-bottom: 6px;
+    .big{
+      font-size: 14px;
     }
-
-    @media (max-width: 980px){
-      main{ grid-template-columns: 1fr; }
-      .nav a{ display:inline-block; margin-right: 8px; }
-      .qrImg{ width: 220px; height: 220px; }
-      .qrImg img{ width: 200px; height: 200px; }
-    }
-
-    @media print{
-      header{ display:none !important; }
-      body{ background:#fff !important; color:#000 !important; }
-      .card{ box-shadow:none !important; background:#fff !important; border:1px solid #ddd !important; }
-      .nav{ display:none !important; }
-      main{ display:block !important; max-width: 7.8in !important; }
-      a{ color:#000 !important; text-decoration:none !important; }
-      .callout, .mini, .donateCard{ border:1px solid #ddd !important; background:#fff !important; }
-
-      /* Print-friendly share section */
-      .qrWrap{ display:block !important; }
-      button{ display:none !important; }
-      .qrImg{ border: 1px solid #ddd !important; }
+    .emoji{
+      font-size: 18px;
+      margin-right: 6px;
     }
   </style>
 </head>
-
 <body>
-  <header>
-    <div class="wrap">
-      <div class="top">
-        <div class="title">
-          <div class="logo" aria-hidden="true">SP</div>
-          <div>
-            <h1>StagePlot Guide</h1>
-            <div class="sub">How to use StagePlot - updated for version 1.5.7 (lucky)</div>
+<header>
+  <div class="wrap">
+    <div class="top">
+      <div class="title">
+        <div class="logo" aria-hidden="true">SP</div>
+        <div>
+          <h1>StagePlot v2 Guide</h1>
+          <div class="sub">v1.6 (rainbow) - pinch scale, under stage tools, multi select color, stage reset</div>
+        </div>
+      </div>
+
+      <div class="top" style="padding:0; gap:8px;">
+        <span class="pill"><span class="dot"></span>Works offline</span>
+        <a class="button primary" href="./index.html">Back to StagePlot</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="card">
+    <div class="hd">
+      <h2>Quick start</h2>
+      <span class="pill">Less thinking, more plotting</span>
+    </div>
+    <div class="bd">
+      <div class="callout big">
+        <div><span class="emoji">1</span>Pick a <b>Stage preset</b> or type a custom <b>Width</b> and <b>Depth</b>.</div>
+        <div style="margin-top:6px;"><span class="emoji">2</span>Add items from the <b>Item Library</b> (guitar, vox, wedges, power).</div>
+        <div style="margin-top:6px;"><span class="emoji">3</span><b>Tap an item</b> to select it, then edit label, input, mix, notes, size, rotation.</div>
+        <div style="margin-top:6px;"><span class="emoji">4</span>Use <b>Print</b> for a clean one page handoff, or <b>Export Project JSON</b> to share.</div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="note">
+        Autosave is on. Your plot sticks around between sessions unless you reset or clear it.
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="hd">
+      <h2>Stage controls</h2>
+      <span class="pill">Layout vs view, they are different on purpose</span>
+    </div>
+    <div class="bd">
+      <div class="grid">
+        <div>
+          <div class="callout">
+            <b>Stage preset and dimensions</b>
+            <ul>
+              <li><b>Width</b> is left to right.</li>
+              <li><b>Depth</b> is upstage to audience.</li>
+              <li>The stage always fits inside the square at 100%.</li>
+            </ul>
+            <div class="note" style="margin-top:8px;">
+              Tip: If you are not sure, start with Medium and adjust later.
+            </div>
           </div>
         </div>
 
-        <div class="actions">
-          <span class="pill"><span class="dot"></span>Autosave friendly</span>
-          <a class="button primary" href="./index.html">Back to StagePlot</a>
-          <button onclick="window.print()">Print this guide</button>
+        <div>
+          <div class="callout">
+            <b>View tools</b>
+            <ul>
+              <li><b>View Zoom</b> zooms your view inside the square (detail mode).</li>
+              <li><b>Reset View</b> snaps back to 100%.</li>
+              <li><b>Flip</b> switches Stage View and Audience View (for sanity checks).</li>
+              <li><b>Units</b> toggles ft and m for display (internally stored as feet).</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="callout">
+        <b>Reset vs Clear</b>
+        <ul>
+          <li><b>Clear</b> clears selection only (it does not delete items).</li>
+          <li><b>Reset Stage</b> is the big red button behavior: it wipes the plot back to a clean stage.</li>
+        </ul>
+        <div class="note">If you hit Reset Stage by accident, you are allowed one dramatic sigh. After that, add more wedges.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="hd">
+      <h2>Selection and editing</h2>
+      <span class="pill">Single select, multi select, and mild wizardry</span>
+    </div>
+    <div class="bd">
+      <div class="grid">
+        <div>
+          <div class="callout">
+            <b>Select items</b>
+            <ul>
+              <li><b>Tap</b> an item to select it.</li>
+              <li><b>Shift click</b> (or Cmd or Ctrl click) to multi select.</li>
+              <li><b>Escape</b> clears selection.</li>
+              <li><b>Delete</b> removes selected items.</li>
+            </ul>
+            <div class="note" style="margin-top:8px;">
+              Multi select is perfect for dragging a whole drum world, or making all wedges the same color, or both.
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="callout">
+            <b>Edit selected item in the Info panel</b>
+            <ul>
+              <li>Label, Input, Mix, Notes</li>
+              <li>Item Width, Item Depth</li>
+              <li>Scale slider (footprint)</li>
+              <li>Rotation slider, plus Rotation reset</li>
+              <li>Color picker (applies to the selected item, or the whole multi selection in v1.6)</li>
+            </ul>
+            <div class="note" style="margin-top:8px;">
+              Color is purely for readability. It does not summon more power drops, sadly.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="callout">
+        <b>Under stage tools (Selected item tools)</b>
+        <ul>
+          <li><b>Nudge</b> buttons move items in small steps.</li>
+          <li><b>Shift + Arrow keys</b> nudges selected items too.</li>
+          <li><b>Width and Depth</b> fields let you type exact footprints quickly.</li>
+          <li><b>Scale</b> slider changes footprint scale.</li>
+          <li><b>Pinch to scale</b> on touch screens: two fingers on the selected item and pinch.</li>
+        </ul>
+        <div class="note">
+          Remember: Width and Depth set the base footprint. Scale multiplies it. View Zoom only changes your view.
         </div>
       </div>
     </div>
-  </header>
+  </section>
 
-  <main>
-    <aside class="card nav">
-      <div class="hd"><h2>Jump to</h2></div>
-      <div class="bd">
-        <a href="#quickstart">Quick start</a>
-        <a href="#new">What’s new in 1.5.7</a>
-        <a href="#share">Share and send</a>
-        <a href="#donate">Keep it afloat (donations)</a>
-        <a href="#stage">Stage basics</a>
-        <a href="#units">Units (Feet and Meters)</a>
-        <a href="#view">View controls (Layout, Scale, View Zoom)</a>
-        <a href="#mobile">Mobile layout and accordions</a>
-        <a href="#add">Add items</a>
-        <a href="#select">Select and multi select</a>
-        <a href="#move">Move, nudge, center</a>
-        <a href="#resize-rotate">Resize and rotate</a>
-        <a href="#edit">Edit details</a>
-        <a href="#lists">Inputs and monitor mixes</a>
-        <a href="#print">Printing</a>
-        <a href="#pdf">Exporting a PDF</a>
-        <a href="#export">Export and import</a>
-        <a href="#compat">Importing older projects</a>
-        <a href="#shortcuts">Keyboard shortcuts</a>
-        <a href="#tips">Pro tips</a>
-        <a href="#trouble">Troubleshooting</a>
-        <div class="hint">Tip: On mobile, scroll is life. On desktop, click these to teleport.</div>
+  <section class="card">
+    <div class="hd">
+      <h2>Keyboard shortcuts</h2>
+      <span class="pill">For the keyboard heroes</span>
+    </div>
+    <div class="bd">
+      <div class="callout">
+        <div class="muted" style="margin-bottom:6px;">These work when you are not typing in a text field.</div>
+        <div>
+          <span class="k">Shift</span> + <span class="k">Arrow keys</span> nudge selected items
+        </div>
+        <div style="margin-top:6px;">
+          <span class="k">Delete</span> or <span class="k">Backspace</span> delete selected items
+        </div>
+        <div style="margin-top:6px;">
+          <span class="k">Cmd</span> or <span class="k">Ctrl</span> + <span class="k">D</span> duplicate selected items
+        </div>
+        <div style="margin-top:6px;">
+          <span class="k">Esc</span> clear selection
+        </div>
       </div>
-    </aside>
+    </div>
+  </section>
 
-    <section class="card">
-      <div class="hd">
-        <h2>Welcome</h2>
-        <span class="pill">Guide for v1.5.7</span>
-      </div>
-
-      <div class="bd">
-        <p>
-          StagePlot is a drag-and-drop stage plot builder. Place players and gear on a stage, label inputs and monitor mixes,
-          add notes, then print a clean one-page handoff. Fast, readable, and not spreadsheet punishment.
-        </p>
-
-        <div class="callout ok">
-          <strong>Autosave:</strong> Everything saves automatically in your browser. No login. No cloud. Close the tab, come back later - your stuff should still be there.
-        </div>
-
-        <div class="grid">
-          <div class="mini">
-            <div class="t">What you build</div>
-            <div class="d">A stage diagram plus a one-page info sheet: inputs, mixes, and notes.</div>
-          </div>
-          <div class="mini">
-            <div class="t">What you can share</div>
-            <div class="d">Export a Project JSON and send it to bandmates, venues, or FOH.</div>
-          </div>
-        </div>
-
-        <hr style="border:0;border-top:1px solid rgba(255,255,255,.08); margin:14px 0;" />
-
-        <h3 id="quickstart">Quick start</h3>
-        <ul>
-          <li>Pick your stage size (preset or custom).</li>
-          <li>Add items from the library (or drop Misc blocks for mystery gear).</li>
-          <li>Click an item to edit label, input, mix, notes, color, scale, rotation.</li>
-          <li>When it looks right, hit Print for the clean one-page output.</li>
-        </ul>
-
-        <h3 id="new">What’s new in 1.5.7 (lucky)</h3>
-        <div class="callout ok">
-          <ul>
-            <li><strong>Metric support:</strong> stage size can be displayed/entered in <strong>meters</strong> (while still supporting feet workflows too).</li>
-            <li><strong>Older JSON import still works:</strong> projects exported from earlier versions should import cleanly.</li>
-            <li><strong>Mobile accordions are back:</strong> library and info panels collapse/expand on narrow screens to keep the stage usable.</li>
-            <li><strong>Item scaling restored:</strong> instrument/gear footprint sizing behavior is back on the stage (scale is scale again).</li>
-          </ul>
-          <div class="footer">
-            “Lucky” means you get the goodies <em>and</em> the basics stay solid.
-          </div>
-        </div>
-
-        <h3 id="share">Share and send</h3>
-        <div class="callout ok">
-          <strong>Please share the love.</strong>
-          <p style="margin-top:8px;">
-            If StagePlot saves you time (or prevents the “wait, where do you want the keys?” debate), pass it along.
-            The easiest share is the app link, and the most powerful share is an exported Project JSON.
-          </p>
-
-          <div class="shareRow">
-            <a class="tinyLink" href="https://petesimple.github.io/stageplot/" target="_blank" rel="noopener">
-              Open StagePlot link
-            </a>
-            <button type="button" class="button" onclick="toggleQR()">Show QR code</button>
-            <button type="button" class="button" onclick="copyAppLink()">Copy link</button>
-          </div>
-
-          <div class="qrWrap" id="qrWrap">
-            <div class="qrCard">
-              <div class="qrImg">
-                <img
-                  id="qrImg"
-                  src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https%3A%2F%2Fpetesimple.github.io%2Fstageplot%2F"
-                  alt="QR code linking to StagePlot"
-                />
-              </div>
-              <div class="shareMeta">
-                <p>
-                  <strong>Scan to open StagePlot:</strong> aim your phone camera at the QR code and tap the link.
-                </p>
-                <div class="callout" style="margin:10px 0 0 0;">
-                  <strong>Link:</strong>
-                  <div class="mono" id="appLinkText">https://petesimple.github.io/stageplot/</div>
-                </div>
-                <div class="footer">
-                  Tip: Printing this guide includes the QR code automatically, so the paper becomes a “scan to open” flyer.
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="callout warn">
-            <strong>Best way to share a Project JSON:</strong>
+  <section class="card">
+    <div class="hd">
+      <h2>Export, import, print</h2>
+      <span class="pill">Handoff mode</span>
+    </div>
+    <div class="bd">
+      <div class="grid">
+        <div>
+          <div class="callout">
+            <b>Export Project JSON</b>
             <ul>
-              <li>Send the JSON as an attachment in text/email/Slack.</li>
-              <li>Recipient opens StagePlot, clicks <strong>Import Project</strong>, selects the file.</li>
-              <li>Done - their StagePlot loads your plot exactly.</li>
+              <li>Creates a shareable file containing your stage, items, and notes.</li>
+              <li>Use it to send to bandmates or keep versions for different venues.</li>
             </ul>
-            <div class="footer">
-              Bonus: tell them “don’t paste it into chat” - just attach the file like a normal grown-up sound person.
-            </div>
           </div>
         </div>
-
-        <h3 id="donate">Keep it afloat (donations)</h3>
-        <div class="donateCard">
-          <div class="donateTitle">Help keep StagePlot afloat</div>
-          <p style="margin:0 0 10px 0;">
-            If this little app saved you even <em>one</em> load-in argument, consider tossing a few bucks in the tip jar.
-            I promise it goes directly to the “keep the lights on” fund and not to a fog machine shaped like my ego.
-          </p>
-          <div class="donateRow">
-            <a class="button primary" href="https://www.paypal.com/ncp/payment/LTXDLQ6W4JZV8" target="_blank" rel="noopener">
-              Donate via PayPal
-            </a>
-            <button class="button" type="button" onclick="copyDonateLink()">Copy donation link</button>
+        <div>
+          <div class="callout">
+            <b>Import Project JSON</b>
+            <ul>
+              <li>Loads a saved project back into the app.</li>
+              <li>Older versions are migrated forward automatically when possible.</li>
+            </ul>
           </div>
-          <div class="footer">
-            Thank you for supporting small, practical tools built by musicians for musicians.
-          </div>
-        </div>
-
-        <h3 id="stage">Stage basics</h3>
-        <p>
-          The stage is measured in Width x Depth. Upstage is at the top of the plot and audience is downstage at the bottom.
-          Items stay positioned relative to the stage scale, so changing stage size later should keep your layout sensible.
-        </p>
-        <ul>
-          <li><strong>Stage preset:</strong> swaps stage sizes quickly.</li>
-          <li><strong>Custom stage:</strong> type width/depth yourself.</li>
-          <li><strong>Click empty stage space:</strong> clears selection.</li>
-        </ul>
-
-        <h3 id="units">Units (Feet and Meters)</h3>
-        <p>
-          StagePlot now supports metric workflows.
-        </p>
-        <ul>
-          <li><strong>Feet:</strong> classic stage plot world (especially in the US).</li>
-          <li><strong>Meters:</strong> great for international stages and “the venue gave us a spec sheet in metric.”</li>
-          <li><strong>What changes:</strong> stage dimensions and labels reflect the chosen unit. Your layout still behaves the same.</li>
-        </ul>
-        <div class="callout ok">
-          <strong>Tip:</strong> If you switch units, you’re not “changing the room,” you’re changing how the room is described.
-          Your plot should still look right.
-        </div>
-
-        <h3 id="view">View controls (Layout, Scale, View Zoom)</h3>
-        <p>
-          Layout stays at the top (especially on mobile), and view controls live below it so the flow is:
-          <strong>layout first</strong>, then <strong>fine-tuning</strong>.
-        </p>
-        <div class="callout ok">
-          <ul>
-            <li><strong>Layout:</strong> stage size + unit choice. This is your foundation.</li>
-            <li><strong>Scale (item scale):</strong> changes the selected item’s footprint on the stage.</li>
-            <li><strong>View Zoom:</strong> zooms the view inside the stage square (for detailed placement).</li>
-            <li><strong>Reset View:</strong> snaps View Zoom back to 100% instantly.</li>
-          </ul>
-          <div class="footer">
-            Remember: <strong>Scale</strong> changes item size. <strong>View Zoom</strong> changes how close your “camera” is.
-          </div>
-        </div>
-
-        <h3 id="mobile">Mobile layout and accordions</h3>
-        <p>
-          On narrow screens, StagePlot switches to a stacked layout so you can work top-to-bottom.
-          Library and One-page info become accordions to save scroll and keep the stage usable.
-        </p>
-        <ul>
-          <li><strong>Stage first:</strong> stage panel sits at the top for quick drag and place.</li>
-          <li><strong>Accordions:</strong> library and info panels collapse/expand.</li>
-          <li><strong>Auto open info on selection:</strong> when you add/select an item, the info panel opens so edits are right there.</li>
-          <li><strong>Remembers state:</strong> if you leave a panel open/closed, StagePlot tries to keep it that way.</li>
-        </ul>
-
-        <h3 id="add">Add items</h3>
-        <p>Use the Item library panel to add gear and people.</p>
-        <ul>
-          <li><strong>Search:</strong> guitar, keys, wedge, riser, DI, mic, outlet, etc.</li>
-          <li><strong>Category:</strong> filter by People, Instruments, Stage gear, Electrical, and more.</li>
-          <li><strong>Add:</strong> drops the item near center stage.</li>
-          <li><strong>Misc blocks:</strong> quick generic boxes for oddball gear.</li>
-        </ul>
-
-        <h3 id="select">Select and multi select</h3>
-        <p>Single selection is default. Multi select lets you move a bunch of stuff together.</p>
-        <div class="callout ok">
-          <strong>Multi select methods:</strong>
-          <ul>
-            <li><strong>Shift + Click</strong> toggles an item into/out of selection.</li>
-            <li><strong>Cmd + Click</strong> (Mac) or <strong>Ctrl + Click</strong> (Windows) does the same.</li>
-            <li><strong>Drag select:</strong> drag on empty stage space to draw a selection box.</li>
-            <li><strong>Click empty space:</strong> clears selection (unless using a modifier).</li>
-          </ul>
-        </div>
-
-        <h3 id="move">Move, nudge, center</h3>
-        <ul>
-          <li><strong>Drag:</strong> click and drag an item to move it.</li>
-          <li><strong>Group drag:</strong> multi select + drag any selected item to move the group.</li>
-          <li><strong>Nudge:</strong> <span class="kbd">Shift</span> + <span class="kbd">Arrow</span> moves selection by 0.25 ft (or equivalent step).</li>
-          <li><strong>Center selection:</strong> centers selected group into a sensible position.</li>
-          <li><strong>Duplicate:</strong> duplicates selected item(s). Also supports hotkey below.</li>
-        </ul>
-
-        <h3 id="resize-rotate">Resize and rotate</h3>
-        <p>Selected items show resize handles and a blue rotate dot.</p>
-        <ul>
-          <li><strong>Resize:</strong> drag corner/edge dots.</li>
-          <li><strong>Rotate:</strong> drag the blue dot above the item.</li>
-          <li><strong>Rotate snap:</strong> hold <span class="kbd">Shift</span> while rotating to snap 15 degrees.</li>
-          <li><strong>Reset rotation:</strong> use Reset rotation in the info panel.</li>
-          <li><strong>Scale:</strong> use the Scale slider/field to adjust footprint without changing the base item type.</li>
-        </ul>
-
-        <h3 id="edit">Edit details</h3>
-        <p>The One-page info panel is where the real-world info lives.</p>
-        <ul>
-          <li><strong>Band name:</strong> prints at the top of the one-page output.</li>
-          <li><strong>Label:</strong> what shows on the item (Pete Vox, Dave Guitar, etc.).</li>
-          <li><strong>Input:</strong> channel/DI/multi/etc.</li>
-          <li><strong>Mix:</strong> monitor mix label (M1, M2, IEM, etc.).</li>
-          <li><strong>Notes:</strong> boom stand, DI after pedals, phantom power, etc.</li>
-          <li><strong>Color:</strong> quick visual grouping (vocals, power, wedges, etc.).</li>
-        </ul>
-
-        <h3 id="lists">Inputs and monitor mixes</h3>
-        <p>StagePlot automatically builds two readable tables from your items:</p>
-        <ul>
-          <li><strong>Inputs table:</strong> lists channel + source, sorted by channel text.</li>
-          <li><strong>Monitor mix table:</strong> grouped by mix and lists who is on it + notes.</li>
-        </ul>
-
-        <h3 id="print">Printing</h3>
-        <p>
-          Hit Print to get the one-page view. StagePlot temporarily switches into a print-safe layout, then restores your normal layout after printing.
-        </p>
-        <ul>
-          <li><strong>Best results:</strong> Portrait, default margins.</li>
-          <li><strong>Tip:</strong> use the in-app Print button (not the browser menu) so the print layout hook runs.</li>
-        </ul>
-
-        <h3 id="pdf">Exporting a PDF</h3>
-        <p>
-          StagePlot uses your device’s built-in print system to create PDFs. This keeps text sharp and preserves the one-page layout.
-        </p>
-        <div class="callout ok">
-          <strong>Best practice:</strong> Click StagePlot <span class="kbd">Print</span> then choose “Save as PDF” in your system print dialog.
-        </div>
-
-        <h3 id="export">Export and import</h3>
-        <p>Two things can be exported and imported:</p>
-        <ul>
-          <li><strong>Project:</strong> stage size, items, band name, and show notes.</li>
-          <li><strong>Library:</strong> your custom item types (export/import your personalized gear zoo).</li>
-        </ul>
-
-        <h3 id="compat">Importing older projects</h3>
-        <div class="callout ok">
-          <strong>Good news:</strong> 1.5.7 is designed to import older JSON exports.
-          <ul>
-            <li>If an older file is missing newer fields (like units or view zoom), StagePlot fills in safe defaults.</li>
-            <li>If units weren’t in the file, it loads in the classic behavior and you can switch units after.</li>
-            <li>Core stuff (stage size, items, labels, inputs, mixes, notes) should come through intact.</li>
-          </ul>
-          <div class="footer">
-            If anything imports weird: export the project again from 1.5.7 and re-send - that “re-saves” it into the latest format.
-          </div>
-        </div>
-
-        <h3 id="shortcuts">Keyboard shortcuts</h3>
-        <ul>
-          <li><span class="kbd">Cmd</span> or <span class="kbd">Ctrl</span> + <span class="kbd">D</span> - Duplicate selected</li>
-          <li><span class="kbd">Shift</span> + <span class="kbd">Arrow</span> - Nudge selection</li>
-          <li><span class="kbd">Shift</span> + click - Multi select toggle</li>
-          <li><span class="kbd">Cmd</span> or <span class="kbd">Ctrl</span> + click - Multi select toggle</li>
-        </ul>
-
-        <h3 id="tips">Pro tips</h3>
-        <ul>
-          <li>Color code by role: vocals, instruments, power, wedges, IEMs.</li>
-          <li>Use the Mix field consistently (M1, M2, M3) for quick reading.</li>
-          <li>Use Show notes for the stuff that prevents ten questions at load-in.</li>
-          <li>Export the project before a big edit spree (email it to yourself as a backup).</li>
-          <li>Do tight placement with View Zoom, then Reset View to 100% before printing.</li>
-          <li>If you’re sending to FOH: include a PDF (for quick viewing) and the JSON (for edits/import).</li>
-        </ul>
-
-        <h3 id="trouble">Troubleshooting</h3>
-
-        <div class="callout danger">
-          <strong>Print preview is blank</strong>
-          <ul>
-            <li>Click the app Print button again (it forces a print-safe rerender).</li>
-            <li>Wait a second - some browsers lag before painting.</li>
-            <li>Try a different browser (Chrome, Edge, Safari).</li>
-            <li>If you installed the PWA, try printing from a normal browser tab once.</li>
-          </ul>
-        </div>
-
-        <div class="callout warn">
-          <strong>Stage looks cut off or “cropped” while editing</strong>
-          <ul>
-            <li>Hit <strong>Reset View</strong> to return View Zoom to 100%.</li>
-            <li>If you’re zoomed in (View Zoom &gt; 100%), some edges may be off-screen by design.</li>
-            <li>On smaller screens, layout changes and the stage square can resize. That is normal.</li>
-          </ul>
-        </div>
-
-        <div class="callout">
-          <strong>My stuff disappeared</strong>
-          <ul>
-            <li>StagePlot saves in localStorage. If you cleared browser site data, it resets.</li>
-            <li>Use Export Project as your backup habit.</li>
-            <li>Each browser/device has its own local save.</li>
-          </ul>
-        </div>
-
-        <div class="footer">
-          Built for speed and sanity. If something feels annoying, that is a bug with a personality and we can fix it.
         </div>
       </div>
-    </section>
-  </main>
 
-  <script>
-    // Smooth anchor scrolling
-    document.querySelectorAll('a[href^="#"]').forEach(a => {
-      a.addEventListener("click", (e) => {
-        const id = a.getAttribute("href");
-        const el = document.querySelector(id);
-        if(!el) return;
-        e.preventDefault();
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
-        history.replaceState(null, "", id);
-      });
-    });
+      <div class="hr"></div>
 
-    const APP_LINK = "https://petesimple.github.io/stageplot/";
-    const DONATE_LINK = "https://www.paypal.com/ncp/payment/LTXDLQ6W4JZV8";
+      <div class="callout">
+        <b>Print</b>
+        <ul>
+          <li>Print makes a clean one page sheet.</li>
+          <li>The app temporarily snaps View Zoom to 100% for printing so it fits nicely.</li>
+          <li>Tip: Fill Band / Show name and Show notes so the sheet is actually useful to humans.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
 
-    function toggleQR(){
-      const el = document.getElementById("qrWrap");
-      const show = (el.style.display === "none" || !el.style.display);
-      el.style.display = show ? "block" : "none";
-      if(show){
-        document.getElementById("appLinkText").textContent = APP_LINK;
-        const q = document.getElementById("qrImg");
-        const enc = encodeURIComponent(APP_LINK);
-        q.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${enc}`;
-      }
-    }
+  <section class="card">
+    <div class="hd">
+      <h2>Troubleshooting</h2>
+      <span class="pill">Fixes without throwing your phone</span>
+    </div>
+    <div class="bd">
+      <div class="callout">
+        <ul>
+          <li><b>My stage looks zoomed or weird</b> - hit Reset View (100%).</li>
+          <li><b>I cannot select an item</b> - you might be in a scrolled panel. Try tapping directly on the box.</li>
+          <li><b>My item is off the stage</b> - change size or scale down, then nudge it back. Items are clamped to stay inside the stage.</li>
+          <li><b>Pinch does nothing</b> - pinch works on the selected item only. Tap the item first, then pinch on it.</li>
+          <li><b>I lost my plot</b> - import your last exported JSON. If you did not export, the app only has what is in local storage.</li>
+        </ul>
+        <div class="note" style="margin-top:10px;">
+          If all else fails, export a copy, reset stage, then import. It is the digital version of turning the amp off and on.
+        </div>
+      </div>
+    </div>
+  </section>
 
-    async function copyAppLink(){
-      try{
-        await navigator.clipboard.writeText(APP_LINK);
-        alert("Copied StagePlot link to clipboard.");
-      }catch(e){
-        alert("Could not auto-copy on this browser. Long-press or select the link text and copy it.");
-      }
-    }
+  <section class="card">
+    <div class="hd">
+      <h2>Version notes</h2>
+      <span class="pill">v1.6 (rainbow)</span>
+    </div>
+    <div class="bd">
+      <div class="callout">
+        <ul>
+          <li>Selected item tools live under the stage for quick edits.</li>
+          <li>Pinch to scale on touch devices, plus a scale slider for precision.</li>
+          <li>Size controls support both typed values and slider style scale.</li>
+          <li>Color picker is back, and can apply to multi selected items.</li>
+          <li>Stage reset is back to properly wipe the plot when you want a clean slate.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
 
-    async function copyDonateLink(){
-      try{
-        await navigator.clipboard.writeText(DONATE_LINK);
-        alert("Copied donation link to clipboard. Thank you!");
-      }catch(e){
-        alert("Could not auto-copy on this browser. You can copy the PayPal link from the button.");
-      }
-    }
-  </script>
+  <div class="note" style="text-align:center; padding: 6px 0 16px 0;">
+    Built for bands, venues, and sound humans. If you are reading this at 2:00 AM before load in, I salute you.
+  </div>
+</main>
 </body>
 </html>
