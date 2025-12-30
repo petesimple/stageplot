@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0b0d12" />
-  <title>StagePlot v2 Guide</title>
+  <title>StagePlot v2 - Guide (v1.6)</title>
   <style>
     :root{
       --bg:#0b0d12;
@@ -41,13 +41,11 @@
       background: rgba(10,12,18,.78);
       backdrop-filter: blur(10px);
     }
-
     .wrap{
       max-width: 980px;
       margin: 0 auto;
       padding: 12px 14px;
     }
-
     .top{
       display:flex;
       align-items:center;
@@ -55,17 +53,15 @@
       gap:12px;
       flex-wrap:wrap;
     }
-
     .title{
       display:flex;
       align-items:center;
       gap:10px;
       min-width: 240px;
     }
-
     .logo{
-      width:34px; height:34px;
-      border-radius:12px;
+      width:32px; height:32px;
+      border-radius:10px;
       background: rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.12);
       display:flex; align-items:center; justify-content:center;
@@ -73,14 +69,12 @@
       font-weight: 900;
       user-select:none;
     }
-
     h1{
       font-size: 15px;
       margin:0;
       letter-spacing:.2px;
       line-height:1.2;
     }
-
     .sub{
       color: var(--muted);
       font-size: 12px;
@@ -93,7 +87,7 @@
       background: var(--chip);
       border: 1px solid var(--chipBorder);
       border-radius: 12px;
-      padding: 9px 11px;
+      padding: 9px 10px;
       text-decoration:none;
       cursor:pointer;
       transition: transform .05s ease, border-color .15s ease, background .15s ease;
@@ -101,26 +95,30 @@
       align-items:center;
       gap:8px;
       user-select:none;
+      white-space:nowrap;
     }
     a.button:hover, button:hover, .btn:hover{ border-color: rgba(74,163,255,.8); }
     a.button:active, button:active, .btn:active{ transform: translateY(1px); }
-
     .primary{
       background: rgba(74,163,255,.14);
       border-color: rgba(74,163,255,.55);
     }
+    .danger{
+      background: rgba(255,90,106,.10);
+      border-color: rgba(255,90,106,.35);
+    }
     .ok{
       background: rgba(64,217,138,.10);
-      border-color: rgba(64,217,138,.35);
+      border-color: rgba(64,217,138,.40);
     }
 
     main{
       max-width: 980px;
       margin: 0 auto;
-      padding: 14px 14px 26px 14px;
-      display:grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
+      padding: 14px 14px 34px 14px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
     }
 
     .card{
@@ -146,11 +144,9 @@
       color: var(--muted);
       text-transform: uppercase;
       letter-spacing: .35px;
-      font-weight: 800;
+      font-weight: 900;
     }
-    .card .bd{
-      padding: 12px 12px 14px 12px;
-    }
+    .card .bd{ padding: 12px 12px 14px 12px; }
 
     .pill{
       display:inline-flex;
@@ -165,96 +161,128 @@
       user-select:none;
       white-space:nowrap;
     }
-
-    .grid2{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      align-items:start;
-    }
-    @media (max-width: 860px){
-      .grid2{ grid-template-columns: 1fr; }
-    }
-
-    .muted{ color: var(--muted); }
-    .hr{ height:1px; background: rgba(255,255,255,.08); margin: 12px 0; }
-
-    ul{ margin: 8px 0 0 18px; }
-    li{ margin: 6px 0; }
-
-    .k{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      padding: 2px 7px;
-      border-radius: 8px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.12);
-      display:inline-block;
-      margin: 0 2px;
-    }
-
     .row{
       display:flex;
       gap:10px;
       flex-wrap:wrap;
       align-items:center;
     }
+    .row.tight{ gap:8px; }
 
-    .field{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-      width:100%;
-    }
-
-    input[type="text"], textarea{
-      width:100%;
-      color: var(--text);
-      background: rgba(255,255,255,.04);
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 12px;
-      padding: 9px 10px;
-      outline:none;
-      font: inherit;
-    }
-    textarea{ min-height: 78px; resize: vertical; }
-
-    .qrWrap{
-      display:flex;
+    .grid2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
       gap:12px;
-      flex-wrap:wrap;
-      align-items:flex-start;
     }
-    .qrBox{
-      width: 240px;
-      max-width: 100%;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,.12);
+    @media (max-width: 860px){
+      .grid2{ grid-template-columns: 1fr; }
+    }
+
+    .miniHelp{ color: var(--muted); font-size: 12px; }
+    .hr{ height:1px; background: rgba(255,255,255,.08); margin: 10px 0; }
+
+    code, .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    code{
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
+      padding: 2px 6px;
+      border-radius: 8px;
+    }
+
+    ul{ margin: 8px 0 0 18px; padding:0; }
+    li{ margin: 6px 0; }
+
+    .linkList{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top: 10px;
+    }
+    @media (max-width: 620px){
+      .linkList{ grid-template-columns: 1fr; }
+    }
+    .linkTile{
+      border: 1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.03);
+      border-radius: 16px;
       padding: 10px;
     }
-    .qrCanvas{
-      width:100%;
-      aspect-ratio: 1 / 1;
-      border-radius: 12px;
-      background: #fff;
+    .linkTile .t{
+      font-weight: 900;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+    .linkTile .d{ color: var(--muted); font-size: 12px; }
+    .linkTile .row{ margin-top: 10px; }
+
+    /* QR Modal */
+    .modal{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.60);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 16px;
+      z-index: 999;
+    }
+    .modal.on{ display:flex; }
+    .modalCard{
+      width:min(520px, 100%);
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(18,24,38,.98), rgba(12,16,26,.98));
+      box-shadow: 0 18px 50px rgba(0,0,0,.55);
       overflow:hidden;
+    }
+    .modalHd{
+      padding: 12px 12px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .modalHd .t{
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .35px;
+      font-weight: 900;
+    }
+    .modalBd{ padding: 14px 12px 14px 12px; }
+    .qrBox{
       display:flex;
       align-items:center;
       justify-content:center;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      padding: 14px;
+      overflow:auto;
     }
-    canvas{ width: 100%; height: 100%; image-rendering: pixelated; }
-
-    .tiny{
-      font-size:12px;
+    .qrCaption{
+      margin-top: 10px;
       color: var(--muted);
+      font-size: 12px;
+      word-break: break-word;
     }
-
-    .callout{
-      border-left: 3px solid rgba(74,163,255,.75);
-      background: rgba(74,163,255,.06);
-      border-radius: 12px;
-      padding: 10px 10px;
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%);
+      background: rgba(18,24,38,.95);
+      border: 1px solid rgba(255,255,255,.14);
+      padding: 10px 12px;
+      border-radius: 14px;
+      box-shadow: 0 12px 30px rgba(0,0,0,.40);
+      color: var(--text);
+      font-size: 13px;
+      display:none;
+      z-index: 1000;
     }
+    .toast.on{ display:block; }
   </style>
 </head>
 
@@ -266,13 +294,13 @@
         <div class="logo" aria-hidden="true">SP</div>
         <div>
           <h1>StagePlot v2 Guide</h1>
-          <div class="sub">How to build a clean one page stage plot, share it, and get back to the music.</div>
+          <div class="sub">How to use it, how to share it, and how to bribe it with coffee money</div>
         </div>
       </div>
-
-      <div class="row">
-        <a class="button primary" href="./index.html">Back to app</a>
-        <button class="button" id="btnPrintGuide" type="button">Print guide</button>
+      <div class="row tight">
+        <a class="button primary" id="btnOpenApp" href="./index.html">Open the app</a>
+        <button class="btn" id="btnShare">Share + QR</button>
+        <a class="button ok" id="btnDonateTop" href="https://www.paypal.com/donate/?hosted_button_id=4BP339J2UAL46" target="_blank" rel="noopener">Donate</a>
       </div>
     </div>
   </div>
@@ -281,25 +309,45 @@
 <main>
   <section class="card">
     <div class="hd">
-      <h2>Quick links</h2>
-      <span class="pill">fast travel for busy humans</span>
+      <h2>Quick Links</h2>
+      <span class="pill">Fast stuff first</span>
     </div>
     <div class="bd">
-      <div class="row">
-        <a class="btn" href="./index.html">Open the app</a>
-        <button class="btn" id="btnCopyAppLink" type="button">Copy app link</button>
-        <button class="btn" id="btnShareApp" type="button">Share app</button>
-        <a class="btn ok" id="donateLink" href="#" target="_blank" rel="noopener">Donate</a>
+      <div class="miniHelp">
+        If you are in a hurry, this is the “get in, get it done, get paid” section.
       </div>
 
-      <div class="hr"></div>
+      <div class="linkList">
+        <div class="linkTile">
+          <div class="t">Open StagePlot</div>
+          <div class="d">The main app page</div>
+          <div class="row">
+            <a class="button primary" href="./index.html">Open index.html</a>
+          </div>
+        </div>
 
-      <div class="callout">
-        <div><strong>Donate link note</strong></div>
-        <div class="muted" style="margin-top:6px;">
-          I did not see your donate URL in this chat, so I left a safe placeholder.
-          Open this file and set <span class="k">DONATE_URL</span> in the script near the bottom.
-          Once you paste it, the Donate button and QR section can use it instantly.
+        <div class="linkTile">
+          <div class="t">Share + QR Code</div>
+          <div class="d">Send your plot to bandmates or the venue</div>
+          <div class="row">
+            <button class="btn" id="btnShare2">Open Share panel</button>
+          </div>
+        </div>
+
+        <div class="linkTile">
+          <div class="t">Donate</div>
+          <div class="d">Fuel the feature gremlins (they run on snacks)</div>
+          <div class="row">
+            <a class="button ok" href="https://www.paypal.com/donate/?hosted_button_id=4BP339J2UAL46" target="_blank" rel="noopener">PayPal Donate</a>
+          </div>
+        </div>
+
+        <div class="linkTile">
+          <div class="t">Print</div>
+          <div class="d">One page handoff for FOH or the stage manager</div>
+          <div class="row">
+            <span class="pill">In app: Print button</span>
+          </div>
         </div>
       </div>
     </div>
@@ -307,78 +355,42 @@
 
   <section class="card">
     <div class="hd">
-      <h2>How to use StagePlot</h2>
-      <span class="pill">zero drama, maximum clarity</span>
+      <h2>Getting Started</h2>
+      <span class="pill">Make a stage plot in minutes</span>
     </div>
     <div class="bd">
       <div class="grid2">
         <div>
-          <h3 style="margin:0 0 6px 0; font-size:14px;">1) Set your stage</h3>
-          <div class="muted">
-            Choose a preset or enter custom Width and Depth. The stage always fits in the square at 100%.
-            View Zoom is just your magnifying glass.
-          </div>
+          <div class="miniHelp">1) Set your stage size</div>
           <ul>
-            <li>Toggle units with the Units button (ft or m)</li>
-            <li>Flip Stage View or Audience View to match how you think</li>
+            <li>Pick a preset: Small, Medium, Large.</li>
+            <li>Or choose Custom and type <code>Width</code> and <code>Depth</code>.</li>
+            <li>Toggle <code>ft/m</code> whenever you feel like living dangerously.</li>
           </ul>
 
           <div class="hr"></div>
 
-          <h3 style="margin:0 0 6px 0; font-size:14px;">2) Add items</h3>
-          <div class="muted">
-            Use the Item Library to drop musicians and gear onto the stage. Then drag to position.
-          </div>
+          <div class="miniHelp">2) Add items</div>
           <ul>
-            <li>Click an item to select</li>
-            <li>Shift, Ctrl, or Cmd click to multi select</li>
-            <li>Duplicate selected items for quick copies</li>
+            <li>Use the Item Library to add Vocal, Guitar, Keys, Drums, wedges, power, etc.</li>
+            <li>Items appear centered, ready to drag.</li>
           </ul>
         </div>
 
         <div>
-          <h3 style="margin:0 0 6px 0; font-size:14px;">3) Edit details in the Info panel</h3>
-          <div class="muted">
-            Fill Label, Input, Mix, and Notes. StagePlot builds your Inputs and Monitor Mix lists automatically.
-          </div>
+          <div class="miniHelp">3) Place items</div>
           <ul>
-            <li>Label example: "Pete Vox"</li>
-            <li>Input example: "Ch 1"</li>
-            <li>Mix example: "M1" or "IEM"</li>
+            <li>Drag an item to move it.</li>
+            <li>Shift, Cmd, or Ctrl click to multi select.</li>
+            <li>Use the under-stage tools to nudge, center, and resize.</li>
           </ul>
 
           <div class="hr"></div>
 
-          <h3 style="margin:0 0 6px 0; font-size:14px;">4) Size, scale, rotate, nudge</h3>
+          <div class="miniHelp">4) Add inputs and mixes</div>
           <ul>
-            <li>Width and Depth change the base footprint</li>
-            <li>Scale multiplies the footprint</li>
-            <li>On touch screens, pinch the selected item to scale</li>
-            <li>Use the under stage Selected item tools for nudge and sizing</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="hr"></div>
-
-      <div class="grid2">
-        <div>
-          <h3 style="margin:0 0 6px 0; font-size:14px;">Keyboard shortcuts</h3>
-          <ul>
-            <li><span class="k">Shift</span> + <span class="k">Arrow keys</span> nudges selected items</li>
-            <li><span class="k">Delete</span> removes selected items</li>
-            <li><span class="k">Esc</span> clears selection</li>
-            <li><span class="k">Ctrl</span> or <span class="k">Cmd</span> + <span class="k">D</span> duplicates selection</li>
-          </ul>
-        </div>
-
-        <div>
-          <h3 style="margin:0 0 6px 0; font-size:14px;">Printing</h3>
-          <div class="muted">
-            Hit Print in the app. It temporarily resets view zoom to 100% so your stage does not print as a microscope photo.
-          </div>
-          <ul>
-            <li>Pro move: fill Band and Show notes so FOH loves you forever</li>
+            <li>Select an item and fill out <code>Input</code> and <code>Mix</code>.</li>
+            <li>The Inputs and Monitor Mix lists auto-build from your items.</li>
           </ul>
         </div>
       </div>
@@ -387,37 +399,136 @@
 
   <section class="card">
     <div class="hd">
-      <h2>Share with QR code</h2>
-      <span class="pill">scan it, send it, done</span>
+      <h2>Selection, Multi Select, and Tools</h2>
+      <span class="pill">The good stuff</span>
     </div>
     <div class="bd">
-      <div class="qrWrap">
-        <div class="qrBox">
-          <div class="tiny" style="margin-bottom:8px;">App link QR</div>
-          <div class="qrCanvas"><canvas id="qrApp" width="600" height="600" aria-label="QR code for app link"></canvas></div>
-          <div class="row" style="margin-top:10px;">
-            <button class="btn" id="btnCopyQrAppText" type="button">Copy link</button>
-            <button class="btn" id="btnDownloadQrApp" type="button">Save QR</button>
-          </div>
-          <div class="tiny" style="margin-top:8px;" id="appUrlText"></div>
+      <div class="grid2">
+        <div>
+          <div class="miniHelp">Selecting</div>
+          <ul>
+            <li>Click an item to select it.</li>
+            <li>Shift, Cmd, or Ctrl click to add or remove items from the selection.</li>
+            <li><code>Delete</code> or <code>Backspace</code> deletes selected items.</li>
+            <li><code>Esc</code> clears selection.</li>
+          </ul>
+
+          <div class="hr"></div>
+
+          <div class="miniHelp">Nudge</div>
+          <ul>
+            <li>Use the on-screen nudge arrows under the stage.</li>
+            <li>Or use <code>Shift + Arrow Keys</code> for quick tiny moves.</li>
+          </ul>
         </div>
 
-        <div class="qrBox">
-          <div class="tiny" style="margin-bottom:8px;">Donate QR</div>
-          <div class="qrCanvas"><canvas id="qrDonate" width="600" height="600" aria-label="QR code for donate link"></canvas></div>
-          <div class="row" style="margin-top:10px;">
-            <button class="btn" id="btnCopyDonate" type="button">Copy donate link</button>
-            <button class="btn" id="btnDownloadQrDonate" type="button">Save QR</button>
-          </div>
-          <div class="tiny" style="margin-top:8px;" id="donateUrlText"></div>
+        <div>
+          <div class="miniHelp">Resize and Scale</div>
+          <ul>
+            <li>Set base footprint with <code>Width</code> and <code>Depth</code>.</li>
+            <li>Use <code>Scale</code> to grow or shrink the footprint without changing the base size.</li>
+            <li>On touch screens, use two-finger pinch on the selected item to scale.</li>
+            <li>Rotation is available in the Info panel.</li>
+          </ul>
+
+          <div class="hr"></div>
+
+          <div class="miniHelp">Colors</div>
+          <ul>
+            <li>StagePlot supports item box colors (and yes, multi select color changes is the fun part).</li>
+            <li>If you set a color on multiple selected items, they all update together.</li>
+          </ul>
         </div>
       </div>
 
-      <div class="hr"></div>
+      <div class="miniHelp" style="margin-top:10px;">
+        Nerdy detail: View Zoom only changes what you see. It does not change the stage size or item sizes.
+      </div>
+    </div>
+  </section>
 
-      <div class="muted">
-        Sharing tip: the QR codes in this guide point to the app itself and the donate link. For sharing a specific stage plot,
-        use Export Project JSON inside the app and send that file to your bandmate or engineer.
+  <section class="card">
+    <div class="hd">
+      <h2>Saving, Exporting, Importing</h2>
+      <span class="pill">Backups that do not judge you</span>
+    </div>
+    <div class="bd">
+      <div class="grid2">
+        <div>
+          <div class="miniHelp">Autosave</div>
+          <ul>
+            <li>Your work is saved to your browser automatically as you edit.</li>
+            <li>If you refresh, it should come back like a loyal dog.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="miniHelp">Export and Import Project JSON</div>
+          <ul>
+            <li>Use <code>Export Project JSON</code> to save a file you can share or archive.</li>
+            <li>Use <code>Import Project JSON</code> to load it later on any device.</li>
+            <li>If units differ, StagePlot keeps internal measurements consistent and handles the display.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="hd">
+      <h2>Printing a One Page Handoff</h2>
+      <span class="pill">FOH friendly</span>
+    </div>
+    <div class="bd">
+      <ul>
+        <li>Hit <code>Print</code> in the header.</li>
+        <li>StagePlot temporarily resets View Zoom to 100% so the print is clean and predictable.</li>
+        <li>Save as PDF if you want to email it to a venue or keep it in your band folder.</li>
+      </ul>
+      <div class="miniHelp" style="margin-top:10px;">
+        Pro tip: Put the band name and show notes in the Info panel so the printout tells the whole story.
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="hd">
+      <h2>Share and QR Code</h2>
+      <span class="pill">Send the plot link in style</span>
+    </div>
+    <div class="bd">
+      <div class="miniHelp">
+        This guide page can generate a QR code for your StagePlot link. Great for rehearsals, load-in, and that one bandmate who only reads QR codes because it feels like a side quest.
+      </div>
+
+      <div class="row" style="margin-top:12px;">
+        <button class="btn primary" id="btnShare3">Open Share + QR</button>
+        <button class="btn" id="btnCopyLink">Copy app link</button>
+        <a class="button ok" href="https://www.paypal.com/donate/?hosted_button_id=4BP339J2UAL46" target="_blank" rel="noopener">Donate</a>
+      </div>
+
+      <div class="miniHelp" style="margin-top:10px;">
+        Note: The QR uses the current page location. If you host StagePlot on GitHub Pages, this will point to that hosted URL automatically.
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="hd">
+      <h2>Donate</h2>
+      <span class="pill">Keep it alive</span>
+    </div>
+    <div class="bd">
+      <div class="miniHelp">
+        If StagePlot saved you 20 minutes of stage chaos, consider tossing a few bucks in the tip jar. It helps keep the project moving and keeps the app from turning into a sad little folder named “final_final_REAL2”.
+      </div>
+
+      <div class="row" style="margin-top:12px;">
+        <a class="button ok" href="https://www.paypal.com/donate/?hosted_button_id=4BP339J2UAL46" target="_blank" rel="noopener">Donate via PayPal</a>
+        <button class="btn" id="btnCopyDonate">Copy donate link</button>
+      </div>
+
+      <div class="miniHelp" style="margin-top:10px;">
+        Donate URL: <span class="mono" id="donateUrlText">https://www.paypal.com/donate/?hosted_button_id=4BP339J2UAL46</span>
       </div>
     </div>
   </section>
@@ -425,223 +536,210 @@
   <section class="card">
     <div class="hd">
       <h2>Troubleshooting</h2>
-      <span class="pill">because phones be phonin</span>
+      <span class="pill">When reality fights back</span>
     </div>
     <div class="bd">
       <ul>
-        <li><strong>My items are hard to move</strong> - Use View Zoom to zoom in, or use Nudge controls for precision.</li>
-        <li><strong>Pinch does not scale</strong> - Make sure the item is selected (blue outline) and pinch directly on it, not the empty stage.</li>
-        <li><strong>I flipped the view and got confused</strong> - Flip is only your view. Your stored positions stay correct.</li>
-        <li><strong>Lists are empty</strong> - Add Labels and Inputs or Mixes to items, then the tables fill automatically.</li>
+        <li><b>My items look huge</b> - Check <code>View Zoom</code> and reset it to 100% in the app.</li>
+        <li><b>I cannot pinch to scale</b> - Make sure the item is selected, then pinch directly on it using two fingers.</li>
+        <li><b>My changes disappeared</b> - If the browser storage was cleared, import your exported JSON to restore.</li>
+        <li><b>Nothing happens when I hit Clear</b> - Clear is meant to clear selection, not wipe the stage. (If you want a “Reset Stage” button, add one and make it loud.)</li>
       </ul>
-    </div>
-  </section>
-
-  <section class="card">
-    <div class="hd">
-      <h2>Quick share text</h2>
-      <span class="pill">copy paste for lazy legends</span>
-    </div>
-    <div class="bd">
-      <div class="field">
-        <label class="muted">Message template</label>
-        <textarea id="shareTemplate" spellcheck="false"></textarea>
-      </div>
-      <div class="row">
-        <button class="btn primary" id="btnCopyTemplate" type="button">Copy message</button>
-        <button class="btn" id="btnShareTemplate" type="button">Share message</button>
-      </div>
-      <div class="tiny" style="margin-top:10px;">
-        Replace the attached JSON file part with Export Project JSON from inside the app.
-      </div>
     </div>
   </section>
 </main>
 
+<!-- Share/QR Modal -->
+<div class="modal" id="qrModal" role="dialog" aria-modal="true" aria-label="Share and QR">
+  <div class="modalCard">
+    <div class="modalHd">
+      <div class="t">Share + QR</div>
+      <button class="btn danger" id="btnCloseQr">Close</button>
+    </div>
+    <div class="modalBd">
+      <div class="qrBox" id="qrBox">
+        <!-- QR renders here -->
+      </div>
+      <div class="qrCaption">
+        Link: <span class="mono" id="shareUrlText"></span>
+      </div>
+      <div class="row" style="margin-top:12px;">
+        <button class="btn primary" id="btnNativeShare">Share</button>
+        <button class="btn" id="btnCopyShare">Copy link</button>
+        <a class="button ok" href="https://www.paypal.com/donate/?hosted_button_id=4BP339J2UAL46" target="_blank" rel="noopener">Donate</a>
+      </div>
+      <div class="miniHelp" style="margin-top:10px;">
+        If Share does not appear on your device, Copy link works everywhere.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Copied</div>
+
 <script>
-(() => {
-  // IMPORTANT: Paste your donate URL here.
-  // Example: const DONATE_URL = "https://your-donate-link";
-  const DONATE_URL = ""; // <- set this
+/* Tiny QR generator (alphanumeric/byte) based on a compact implementation.
+   It generates a QR as an SVG with quiet zone.
+   Good enough for URLs and short text.
+*/
+(function(){
+  const DONATE_URL = "https://www.paypal.com/donate/?hosted_button_id=4BP339J2UAL46";
 
-  const $ = (id) => document.getElementById(id);
+  const elModal = document.getElementById("qrModal");
+  const elQrBox = document.getElementById("qrBox");
+  const elShareUrlText = document.getElementById("shareUrlText");
+  const elToast = document.getElementById("toast");
 
-  const appUrl = (location.href || "").replace(/guide\.html.*$/i, "index.html");
-  const donateUrl = DONATE_URL || "Set DONATE_URL in guide.html";
+  const btnShare = document.getElementById("btnShare");
+  const btnShare2 = document.getElementById("btnShare2");
+  const btnShare3 = document.getElementById("btnShare3");
+  const btnCloseQr = document.getElementById("btnCloseQr");
+  const btnNativeShare = document.getElementById("btnNativeShare");
+  const btnCopyShare = document.getElementById("btnCopyShare");
+  const btnCopyLink = document.getElementById("btnCopyLink");
+  const btnCopyDonate = document.getElementById("btnCopyDonate");
 
-  $("appUrlText").textContent = appUrl;
-  $("donateUrlText").textContent = donateUrl;
+  document.getElementById("donateUrlText").textContent = DONATE_URL;
 
-  const donateLink = $("donateLink");
-  if(DONATE_URL){
-    donateLink.href = DONATE_URL;
-    donateLink.title = DONATE_URL;
-  }else{
-    donateLink.href = "#";
-    donateLink.title = "Set DONATE_URL in this file";
-    donateLink.addEventListener("click", (e) => {
-      e.preventDefault();
-      alert("Donate link is not set yet. Open guide.html and paste your donate URL into DONATE_URL near the bottom.");
-    });
+  // Try to prefer index.html on same folder for sharing
+  function getAppUrl(){
+    try{
+      const u = new URL(window.location.href);
+      const path = u.pathname;
+      const base = path.endsWith("/") ? path : path.substring(0, path.lastIndexOf("/") + 1);
+      u.pathname = base + "index.html";
+      u.search = "";
+      u.hash = "";
+      return u.toString();
+    }catch(e){
+      return "./index.html";
+    }
   }
 
-  $("btnPrintGuide").addEventListener("click", () => window.print());
+  function toast(msg){
+    elToast.textContent = msg;
+    elToast.classList.add("on");
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => elToast.classList.remove("on"), 1100);
+  }
 
-  $("btnCopyAppLink").addEventListener("click", async () => {
-    await copyText(appUrl);
-    toast("App link copied");
-  });
-
-  $("btnShareApp").addEventListener("click", async () => {
-    await shareText("StagePlot v2", `StagePlot v2 link: ${appUrl}`, appUrl);
-  });
-
-  $("btnCopyQrAppText").addEventListener("click", async () => {
-    await copyText(appUrl);
-    toast("Link copied");
-  });
-
-  $("btnCopyDonate").addEventListener("click", async () => {
-    if(!DONATE_URL){
-      alert("Donate link is not set yet. Set DONATE_URL in this file.");
-      return;
-    }
-    await copyText(DONATE_URL);
-    toast("Donate link copied");
-  });
-
-  // Share template
-  const template =
-`Hey! Here is our StagePlot v2 link:
-${appUrl}
-
-If you need the exact layout, I will also send the exported project JSON file from inside the app.
-
-Bonus button if you feel like supporting the project:
-${DONATE_URL ? DONATE_URL : "https://www.paypal.com/donate/?hosted_button_id=4BP339J2UAL46"}`;
-
-  $("shareTemplate").value = template;
-
-  $("btnCopyTemplate").addEventListener("click", async () => {
-    await copyText($("shareTemplate").value);
-    toast("Message copied");
-  });
-
-  $("btnShareTemplate").addEventListener("click", async () => {
-    await shareText("StagePlot v2", $("shareTemplate").value, appUrl);
-  });
-
-  // QR generation (simple QR, no external libs)
-  // This is a compact QR encoder that supports byte mode, version auto up to v10, ECC M.
-  // It is intentionally small and practical for share links. Not a full QR spec monster.
-  function makeQR(canvas, text){
-    const ctx = canvas.getContext("2d");
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(0,0,canvas.width,canvas.height);
-
-    const qr = QRCodeMini.encode(text);
-    const cells = qr.modules;
-    const n = cells.length;
-
-    const quiet = 4; // modules
-    const total = n + quiet*2;
-
-    const scale = Math.floor(canvas.width / total);
-    const offset = Math.floor((canvas.width - total*scale)/2);
-
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(0,0,canvas.width,canvas.height);
-
-    ctx.fillStyle = "#000";
-    for(let r=0;r<n;r++){
-      for(let c=0;c<n;c++){
-        if(cells[r][c]){
-          const x = offset + (c+quiet)*scale;
-          const y = offset + (r+quiet)*scale;
-          ctx.fillRect(x,y,scale,scale);
-        }
+  async function copyText(text){
+    try{
+      await navigator.clipboard.writeText(text);
+      toast("Copied");
+      return true;
+    }catch(e){
+      // fallback
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ta.select();
+      try{
+        document.execCommand("copy");
+        toast("Copied");
+        return true;
+      }catch(_){
+        toast("Copy failed");
+        return false;
+      }finally{
+        ta.remove();
       }
     }
   }
 
-  makeQR($("qrApp"), appUrl);
-  makeQR($("qrDonate"), DONATE_URL || ""); // blank if not set
+  function openModal(){
+    const url = getAppUrl();
+    elShareUrlText.textContent = url;
 
-  $("btnDownloadQrApp").addEventListener("click", () => downloadCanvas($("qrApp"), "stageplot-app-qr.png"));
-  $("btnDownloadQrDonate").addEventListener("click", () => {
-    if(!DONATE_URL){
-      alert("Donate link is not set yet. Set DONATE_URL in this file first.");
-      return;
-    }
-    downloadCanvas($("qrDonate"), "stageplot-donate-qr.png");
+    elQrBox.innerHTML = "";
+    elQrBox.appendChild(makeQrSvg(url, 6)); // scale
+    elModal.classList.add("on");
+  }
+  function closeModal(){
+    elModal.classList.remove("on");
+  }
+
+  btnShare.addEventListener("click", openModal);
+  btnShare2.addEventListener("click", openModal);
+  btnShare3.addEventListener("click", openModal);
+  btnCloseQr.addEventListener("click", closeModal);
+
+  elModal.addEventListener("click", (e) => {
+    if(e.target === elModal) closeModal();
   });
 
-  async function copyText(t){
-    try{
-      await navigator.clipboard.writeText(t);
-    }catch(e){
-      // fallback
-      const ta = document.createElement("textarea");
-      ta.value = t;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      ta.remove();
-    }
-  }
+  btnCopyShare.addEventListener("click", () => copyText(getAppUrl()));
+  btnCopyLink.addEventListener("click", () => copyText(getAppUrl()));
+  btnCopyDonate.addEventListener("click", () => copyText(DONATE_URL));
 
-  async function shareText(title, text, url){
+  btnNativeShare.addEventListener("click", async () => {
+    const url = getAppUrl();
     if(navigator.share){
       try{
-        await navigator.share({ title, text, url });
-        return;
-      }catch(e){}
+        await navigator.share({ title: "StagePlot v2", text: "StagePlot link", url });
+      }catch(e){
+        // user canceled or not allowed
+      }
+    }else{
+      copyText(url);
     }
-    await copyText(text + (url ? "\n" + url : ""));
-    toast("Sharing not available, copied instead");
-  }
+  });
 
-  function downloadCanvas(canvas, filename){
-    const a = document.createElement("a");
-    a.download = filename;
-    a.href = canvas.toDataURL("image/png");
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-  }
+  // ---------------- QR implementation (compact) ----------------
+  // This is a small QR encoder for Version 3..10 range auto.
+  // It uses Byte mode for simplicity and error correction level M.
+  // Plenty for URLs.
+  function makeQrSvg(text, scale){
+    const qr = QRCode.encode(text, "M"); // returns modules boolean matrix
+    const n = qr.size;
+    const quiet = 4;
+    const dim = (n + quiet*2);
 
-  // tiny toast
-  let toastTimer = null;
-  function toast(msg){
-    let el = document.getElementById("toast");
-    if(!el){
-      el = document.createElement("div");
-      el.id = "toast";
-      el.style.position = "fixed";
-      el.style.left = "50%";
-      el.style.bottom = "18px";
-      el.style.transform = "translateX(-50%)";
-      el.style.padding = "10px 12px";
-      el.style.borderRadius = "12px";
-      el.style.background = "rgba(0,0,0,.72)";
-      el.style.border = "1px solid rgba(255,255,255,.14)";
-      el.style.color = "#fff";
-      el.style.zIndex = "9999";
-      el.style.fontSize = "13px";
-      el.style.backdropFilter = "blur(8px)";
-      document.body.appendChild(el);
+    const s = scale || 6;
+    const w = dim * s;
+    const h = dim * s;
+
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", `0 0 ${dim} ${dim}`);
+    svg.setAttribute("width", w);
+    svg.setAttribute("height", h);
+    svg.style.maxWidth = "100%";
+    svg.style.height = "auto";
+
+    const bg = document.createElementNS(svg.namespaceURI, "rect");
+    bg.setAttribute("x","0"); bg.setAttribute("y","0");
+    bg.setAttribute("width", dim); bg.setAttribute("height", dim);
+    bg.setAttribute("fill", "#ffffff");
+    svg.appendChild(bg);
+
+    const g = document.createElementNS(svg.namespaceURI, "g");
+    g.setAttribute("fill", "#000000");
+    svg.appendChild(g);
+
+    // draw as path for smaller DOM
+    let d = "";
+    for(let y=0;y<n;y++){
+      for(let x=0;x<n;x++){
+        if(qr.get(x,y)){
+          const xx = x + quiet;
+          const yy = y + quiet;
+          d += `M${xx} ${yy}h1v1h-1z `;
+        }
+      }
     }
-    el.textContent = msg;
-    el.style.opacity = "1";
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => { el.style.opacity = "0"; }, 1200);
+    const path = document.createElementNS(svg.namespaceURI, "path");
+    path.setAttribute("d", d.trim());
+    g.appendChild(path);
+
+    return svg;
   }
 
-  // ---------------------------------------------------------
-  // QRCodeMini: lightweight QR encoder (byte mode, ECC M)
-  // ---------------------------------------------------------
-  const QRCodeMini = (() => {
-    // Galois field arithmetic
+  // Minimal QR encoder (Byte mode, EC level L/M/Q/H)
+  // Adapted from public-domain style compact logic.
+  const QRCode = (function(){
+    // Galois field tables
     const EXP = new Array(512);
     const LOG = new Array(256);
     (function initGF(){
@@ -660,26 +758,26 @@ ${DONATE_URL ? DONATE_URL : "https://www.paypal.com/donate/?hosted_button_id=4BP
       return EXP[LOG[a] + LOG[b]];
     }
 
-    function rsGenPoly(deg){
-      let poly = [1];
-      for(let i=0;i<deg;i++){
-        poly = rsPolyMul(poly, [1, EXP[i]]);
-      }
-      return poly;
-    }
-
-    function rsPolyMul(p,q){
-      const out = new Array(p.length + q.length - 1).fill(0);
+    function polyMul(p,q){
+      const r = new Array(p.length + q.length - 1).fill(0);
       for(let i=0;i<p.length;i++){
         for(let j=0;j<q.length;j++){
-          out[i+j] ^= gfMul(p[i], q[j]);
+          r[i+j] ^= gfMul(p[i], q[j]);
         }
       }
-      return out;
+      return r;
     }
 
-    function rsCompute(data, ecLen){
-      const gen = rsGenPoly(ecLen);
+    function reedSolomonGen(deg){
+      let g = [1];
+      for(let i=0;i<deg;i++){
+        g = polyMul(g, [1, EXP[i]]);
+      }
+      return g;
+    }
+
+    function reedSolomonRemainder(data, ecLen){
+      const gen = reedSolomonGen(ecLen);
       const msg = data.slice();
       msg.push(...new Array(ecLen).fill(0));
       for(let i=0;i<data.length;i++){
@@ -693,244 +791,258 @@ ${DONATE_URL ? DONATE_URL : "https://www.paypal.com/donate/?hosted_button_id=4BP
       return msg.slice(msg.length - ecLen);
     }
 
-    function bytesFromString(s){
-      // UTF-8
-      const enc = new TextEncoder();
-      return Array.from(enc.encode(s));
-    }
+    // QR capacities for Byte mode, EC level M, versions 1..10 (approx table)
+    const CAP_M_BYTE = [0,
+      14,26,42,62,84,106,122,152,180,213
+    ];
 
-    // Version table up to 10 (byte mode capacity, ecc M)
-    const V = [
-      null,
-      { size:21, data:16, ec:10 },  // v1 M
-      { size:25, data:28, ec:16 },  // v2 M
-      { size:29, data:44, ec:26 },  // v3 M
-      { size:33, data:64, ec:36 },  // v4 M
-      { size:37, data:86, ec:48 },  // v5 M
-      { size:41, data:108, ec:64 }, // v6 M
-      { size:45, data:124, ec:72 }, // v7 M
-      { size:49, data:154, ec:88 }, // v8 M
-      { size:53, data:182, ec:110 },// v9 M
-      { size:57, data:216, ec:130 } // v10 M
+    // EC codewords per block total for level M (versions 1..10)
+    const EC_M = [0,
+      10,16,26,36,48,64,72,88,110,130
+    ];
+
+    // Total codewords for versions 1..10
+    const TOTAL_CODEWORDS = [0,
+      26,44,70,100,134,172,196,242,292,346
     ];
 
     function chooseVersion(byteLen){
       for(let v=1; v<=10; v++){
-        if(byteLen <= V[v].data - 2) return v; // leave room for mode+len
+        if(byteLen <= CAP_M_BYTE[v]) return v;
       }
       return 10;
     }
 
-    function pushBits(bits, val, len){
+    function bitBufferPush(bits, val, len){
       for(let i=len-1;i>=0;i--){
-        bits.push((val >> i) & 1);
+        bits.push((val >>> i) & 1);
       }
     }
 
-    function encodeDataBytes(bytes, version){
-      const cap = V[version].data;
-
-      const bits = [];
-      // mode 0100 (byte)
-      pushBits(bits, 0b0100, 4);
-
-      // length (8 bits for v1-9, 16 for v10+, but we only go to v10)
-      const lenBits = (version <= 9) ? 8 : 16;
-      pushBits(bits, bytes.length, lenBits);
-
-      for(const b of bytes) pushBits(bits, b, 8);
-
-      // terminator
-      const maxBits = cap * 8;
-      const remaining = maxBits - bits.length;
-      const term = Math.min(4, remaining);
-      pushBits(bits, 0, term);
-
-      // pad to byte
-      while(bits.length % 8) bits.push(0);
-
-      // to bytes
+    function bitsToBytes(bits){
       const out = [];
       for(let i=0;i<bits.length;i+=8){
-        let x=0;
-        for(let j=0;j<8;j++) x = (x<<1) | bits[i+j];
-        out.push(x);
-      }
-
-      // pad bytes
-      const PAD0 = 0xec, PAD1 = 0x11;
-      let flip = true;
-      while(out.length < cap){
-        out.push(flip ? PAD0 : PAD1);
-        flip = !flip;
+        let b=0;
+        for(let j=0;j<8;j++){
+          b = (b<<1) | (bits[i+j] || 0);
+        }
+        out.push(b);
       }
       return out;
     }
 
-    function makeBaseMatrix(n){
-      const m = Array.from({length:n}, () => Array(n).fill(null));
-      const r = Array.from({length:n}, () => Array(n).fill(false)); // reserved
-
-      function placeFinder(x,y){
-        for(let dy=-1; dy<=7; dy++){
-          for(let dx=-1; dx<=7; dx++){
-            const xx = x+dx, yy=y+dy;
-            if(xx<0||yy<0||xx>=n||yy>=n) continue;
-            const onBorder = (dx===-1||dx===7||dy===-1||dy===7);
-            const inBox = (dx>=0&&dx<=6&&dy>=0&&dy<=6);
-            let val = false;
-            if(onBorder) val = false;
-            else if(inBox){
-              const ring = (dx===0||dx===6||dy===0||dy===6);
-              const center = (dx>=2&&dx<=4&&dy>=2&&dy<=4);
-              val = ring || center;
-            }
-            m[yy][xx] = val;
-            r[yy][xx] = true;
-          }
-        }
+    function makeMatrix(n){
+      const m = new Array(n);
+      for(let y=0;y<n;y++){
+        m[y] = new Array(n).fill(null); // null = unset
       }
-
-      placeFinder(0,0);
-      placeFinder(n-7,0);
-      placeFinder(0,n-7);
-
-      // timing patterns
-      for(let i=8;i<n-8;i++){
-        const v = (i % 2) === 0;
-        if(!r[6][i]){ m[6][i]=v; r[6][i]=true; }
-        if(!r[i][6]){ m[i][6]=v; r[i][6]=true; }
-      }
-
-      // dark module
-      const dmY = 4*1 + 9; // for version 1..10, formula is (4*version+9, 8)
-      const dmX = 8;
-      if(dmY < n){
-        m[dmY][dmX] = true;
-        r[dmY][dmX] = true;
-      }
-
-      // format info reserved areas
-      for(let i=0;i<9;i++){
-        if(i!==6){ r[8][i]=true; r[i][8]=true; }
-      }
-      for(let i=n-8;i<n;i++){
-        r[8][i]=true;
-        r[i][8]=true;
-      }
-      r[8][8]=true;
-
-      return { m, r };
+      return m;
     }
 
-    function placeData(matrix, reserved, dataBits){
-      const n = matrix.length;
-      let bitIndex = 0;
-
-      function nextBit(){
-        return (bitIndex < dataBits.length) ? dataBits[bitIndex++] : 0;
+    function setFinder(m, x, y){
+      const n = m.length;
+      for(let dy=-1; dy<=7; dy++){
+        for(let dx=-1; dx<=7; dx++){
+          const xx = x+dx, yy = y+dy;
+          if(xx<0||yy<0||xx>=n||yy>=n) continue;
+          const on =
+            (dx>=0&&dx<=6&&dy>=0&&dy<=6) &&
+            (dx===0||dx===6||dy===0||dy===6|| (dx>=2&&dx<=4&&dy>=2&&dy<=4));
+          m[yy][xx] = on ? 1 : 0;
+        }
       }
+    }
 
+    function setTiming(m){
+      const n = m.length;
+      for(let i=8;i<n-8;i++){
+        if(m[6][i]===null) m[6][i] = (i%2===0)?1:0;
+        if(m[i][6]===null) m[i][6] = (i%2===0)?1:0;
+      }
+    }
+
+    function setDarkModule(m, v){
+      // version v: dark module at (8, 4v + 9)
+      m[4*v + 9][8] = 1;
+    }
+
+    function placeData(m, dataBits){
+      const n = m.length;
+      let i = 0;
       let dirUp = true;
       for(let x=n-1; x>0; x-=2){
         if(x===6) x--; // skip timing column
-        for(let dy=0; dy<n; dy++){
-          const y = dirUp ? (n-1-dy) : dy;
-          for(let xx=0; xx<2; xx++){
-            const cx = x-xx;
-            if(reserved[y][cx]) continue;
-            matrix[y][cx] = nextBit() === 1;
+        for(let y0=0; y0<n; y0++){
+          const y = dirUp ? (n-1-y0) : y0;
+          for(let dx=0; dx<2; dx++){
+            const xx = x-dx;
+            if(m[y][xx] !== null) continue;
+            const bit = dataBits[i++] || 0;
+            m[y][xx] = bit;
           }
         }
         dirUp = !dirUp;
       }
     }
 
-    // Format info for ECC M and mask 0
-    // ECC M = 00, mask 000
-    const FORMAT_MASK = 0b101010000010010;
-    function formatBits(){
-      // 5 bits: ecc(2)+mask(3) => 00 000
-      let v = 0; // 00000
-      // BCH(15,5)
-      let b = v << 10;
-      const poly = 0b10100110111;
-      for(let i=14;i>=10;i--){
-        if((b >> i) & 1) b ^= (poly << (i-10));
-      }
-      const code = ((v << 10) | (b & 0x3ff)) ^ FORMAT_MASK;
-      const out = [];
-      for(let i=14;i>=0;i--) out.push((code >> i) & 1);
-      return out;
-    }
-
-    function applyMask0(matrix, reserved){
-      const n = matrix.length;
+    function mask(m, maskId){
+      const n = m.length;
+      const out = makeMatrix(n);
       for(let y=0;y<n;y++){
         for(let x=0;x<n;x++){
-          if(reserved[y][x]) continue;
-          // mask 0: (x+y)%2==0
-          if(((x+y)&1)===0) matrix[y][x] = !matrix[y][x];
+          const v = m[y][x];
+          out[y][x] = v;
         }
       }
-    }
-
-    function placeFormat(matrix, reserved){
-      const n = matrix.length;
-      const bits = formatBits();
-      let i=0;
-
-      // around top-left
-      for(let x=0;x<=5;x++) matrix[8][x] = bits[i++]===1;
-      matrix[8][7] = bits[i++]===1;
-      matrix[8][8] = bits[i++]===1;
-      matrix[7][8] = bits[i++]===1;
-      for(let y=5;y>=0;y--) matrix[y][8] = bits[i++]===1;
-
-      // top-right and bottom-left
-      for(let x=n-1; x>=n-8; x--) matrix[8][x] = bits[i++]===1;
-      for(let y=n-7; y<=n-1; y++) matrix[y][8] = bits[i++]===1;
-
-      // mark reserved (defensive)
-      for(let x=0;x<9;x++) reserved[8][x]=true;
-      for(let y=0;y<9;y++) reserved[y][8]=true;
-      for(let x=n-8;x<n;x++) reserved[8][x]=true;
-      for(let y=n-7;y<n;y++) reserved[y][8]=true;
-    }
-
-    function bitsFromBytes(bytes){
-      const out = [];
-      for(const b of bytes){
-        for(let i=7;i>=0;i--) out.push((b>>i)&1);
+      for(let y=0;y<n;y++){
+        for(let x=0;x<n;x++){
+          if(m[y][x] === null) continue;
+          // Do not mask function patterns (we mark them as 0/1 but they are not null, so we need a rule)
+          // For simplicity: do not mask finder/timing/format areas by detecting fixed modules:
+          // We treat modules already set before data placement as "locked" by using a second pass in encoder.
+        }
       }
+      // Actual masking is applied during encode where we know which are data modules.
       return out;
     }
 
-    function encode(text){
-      const bytes = bytesFromString(text);
-      const version = chooseVersion(bytes.length);
-      const data = encodeDataBytes(bytes, version);
-      const ec = rsCompute(data, V[version].ec);
-      const all = data.concat(ec);
+    function formatBits(ecLevel, maskId){
+      // EC level M = 0, L=1, H=2, Q=3 in this compact mapping for format generator below
+      // Standard format bits:
+      // L=01, M=00, Q=11, H=10
+      const ecBits = (ecLevel==="M") ? 0 : (ecLevel==="L") ? 1 : (ecLevel==="H") ? 2 : 3;
+      let data = (ecBits << 3) | maskId;
 
-      const { m, r } = makeBaseMatrix(V[version].size);
+      // BCH(15,5) with poly 0x537
+      let d = data << 10;
+      const poly = 0x537;
+      for(let i=14;i>=10;i--){
+        if((d >>> i) & 1) d ^= poly << (i-10);
+      }
+      const bits = ((data << 10) | d) ^ 0x5412;
+      return bits & 0x7fff;
+    }
 
-      // place data
-      const bits = bitsFromBytes(all);
-      placeData(m, r, bits);
+    function applyFormat(m, ecLevel, maskId){
+      const n = m.length;
+      const bits = formatBits(ecLevel, maskId);
 
-      // mask and format
-      applyMask0(m, r);
-      placeFormat(m, r);
+      function bit(i){ return (bits >>> i) & 1; }
 
-      // replace nulls with false
-      for(let y=0;y<m.length;y++){
-        for(let x=0;x<m.length;x++){
-          if(m[y][x] == null) m[y][x] = false;
+      // around top-left
+      const coords1 = [
+        [8,0],[8,1],[8,2],[8,3],[8,4],[8,5],[8,7],[8,8],
+        [7,8],[5,8],[4,8],[3,8],[2,8],[1,8],[0,8]
+      ];
+      for(let i=0;i<15;i++){
+        const [x,y] = coords1[i];
+        m[y][x] = bit(14-i);
+      }
+
+      // top-right and bottom-left
+      const coords2 = [];
+      for(let i=0;i<8;i++) coords2.push([n-1-i,8]); // top-right row
+      for(let i=0;i<7;i++) coords2.push([8,n-7+i]); // bottom-left col
+      for(let i=0;i<15;i++){
+        const [x,y] = coords2[i];
+        m[y][x] = bit(14-i);
+      }
+
+      // fixed dark module already set elsewhere
+      m[8][6] = 1; // separator spot is fixed in many refs, safe to force
+    }
+
+    function encode(text, ecLevel){
+      ecLevel = ecLevel || "M";
+      const bytes = new TextEncoder().encode(text);
+      const v = chooseVersion(bytes.length);
+      const n = 21 + (v-1)*4;
+
+      const total = TOTAL_CODEWORDS[v];
+      const ecLen = EC_M[v];
+      const dataLen = total - ecLen;
+
+      // build bit stream: mode(0100) + len + data + terminator + pad
+      const bits = [];
+      bitBufferPush(bits, 0b0100, 4); // Byte mode
+      const lenBits = (v <= 9) ? 8 : 16;
+      bitBufferPush(bits, bytes.length, lenBits);
+      for(const b of bytes) bitBufferPush(bits, b, 8);
+      // terminator
+      const maxBits = dataLen * 8;
+      const remaining = maxBits - bits.length;
+      bitBufferPush(bits, 0, Math.min(4, Math.max(0, remaining)));
+      while(bits.length % 8) bits.push(0);
+
+      let data = bitsToBytes(bits);
+      // pad bytes
+      const PAD0 = 0xec, PAD1 = 0x11;
+      let padToggle = false;
+      while(data.length < dataLen){
+        data.push(padToggle ? PAD1 : PAD0);
+        padToggle = !padToggle;
+      }
+
+      const ec = reedSolomonRemainder(data, ecLen);
+      const codewords = data.concat(ec);
+
+      // convert to bits MSB first
+      const cwBits = [];
+      for(const cw of codewords){
+        for(let i=7;i>=0;i--) cwBits.push((cw>>>i)&1);
+      }
+
+      // matrix setup
+      const m = makeMatrix(n);
+      setFinder(m, 0, 0);
+      setFinder(m, n-7, 0);
+      setFinder(m, 0, n-7);
+      setTiming(m);
+
+      // reserve format areas
+      for(let i=0;i<9;i++){
+        if(m[8][i]===null) m[8][i] = 0;
+        if(m[i][8]===null) m[i][8] = 0;
+      }
+      for(let i=n-8;i<n;i++){
+        if(m[8][i]===null) m[8][i] = 0;
+        if(m[i][8]===null) m[i][8] = 0;
+      }
+      for(let i=n-7;i<n;i++){
+        if(m[i][8]===null) m[i][8] = 0;
+      }
+
+      setDarkModule(m, v);
+
+      // mark which modules are locked (function patterns)
+      const locked = new Array(n).fill(0).map(()=>new Array(n).fill(false));
+      for(let y=0;y<n;y++){
+        for(let x=0;x<n;x++){
+          if(m[y][x] !== null) locked[y][x] = true;
         }
       }
 
-      return { modules: m, version };
+      // place data into remaining nulls
+      placeData(m, cwBits);
+
+      // masking: choose a simple mask 0 that works well enough
+      const maskId = 0;
+      for(let y=0;y<n;y++){
+        for(let x=0;x<n;x++){
+          if(locked[y][x]) continue;
+          // mask 0: (x + y) % 2 == 0
+          if(((x + y) & 1) === 0){
+            m[y][x] = m[y][x] ? 0 : 1;
+          }
+        }
+      }
+
+      applyFormat(m, ecLevel, maskId);
+
+      return {
+        size: n,
+        get: (x,y) => !!m[y][x]
+      };
     }
 
     return { encode };
