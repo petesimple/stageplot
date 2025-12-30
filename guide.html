@@ -17,10 +17,12 @@
       --ok:#40d98a;
       --warn:#ffcc66;
       --danger:#ff5a6a;
-      --shadow: 0 12px 30px rgba(0,0,0,.35);
+
       --chip: rgba(255,255,255,.06);
       --chipBorder: rgba(255,255,255,.12);
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
     }
+
     *{ box-sizing:border-box; }
     html,body{ height:100%; }
     body{
@@ -28,12 +30,13 @@
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
       background: radial-gradient(1200px 700px at 50% -10%, #1a2540, var(--bg));
       color: var(--text);
-      line-height:1.55;
+      line-height:1.5;
     }
+
     header{
       position: sticky;
       top: 0;
-      z-index: 50;
+      z-index: 20;
       border-bottom: 1px solid var(--line);
       background: rgba(10,12,18,.78);
       backdrop-filter: blur(10px);
@@ -41,7 +44,7 @@
     .wrap{
       max-width: 980px;
       margin: 0 auto;
-      padding: 14px 14px;
+      padding: 12px 14px;
     }
     .top{
       display:flex;
@@ -54,11 +57,11 @@
       display:flex;
       align-items:center;
       gap:10px;
-      min-width: 260px;
+      min-width: 240px;
     }
     .logo{
-      width:34px; height:34px;
-      border-radius:12px;
+      width:30px; height:30px;
+      border-radius:10px;
       background: rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.12);
       display:flex; align-items:center; justify-content:center;
@@ -67,7 +70,7 @@
       user-select:none;
     }
     h1{
-      font-size: 16px;
+      font-size: 15px;
       margin:0;
       letter-spacing:.2px;
       line-height:1.2;
@@ -77,7 +80,8 @@
       font-size: 12px;
       margin-top: 2px;
     }
-    a.button, button{
+
+    a.button, button, .btn{
       font: inherit;
       color: var(--text);
       background: var(--chip);
@@ -93,35 +97,22 @@
       user-select:none;
       white-space:nowrap;
     }
-    a.button:hover, button:hover{ border-color: rgba(74,163,255,.8); }
-    a.button:active, button:active{ transform: translateY(1px); }
+    a.button:hover, button:hover, .btn:hover{ border-color: rgba(74,163,255,.8); }
+    a.button:active, button:active, .btn:active{ transform: translateY(1px); }
     .primary{
       background: rgba(74,163,255,.14);
       border-color: rgba(74,163,255,.55);
     }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.06);
-      color: var(--muted);
-      font-size: 12px;
-      user-select:none;
-      white-space:nowrap;
-    }
-    .dot{ width:8px; height:8px; border-radius:50%; background: var(--ok); display:inline-block; }
 
     main{
       max-width: 980px;
       margin: 0 auto;
-      padding: 14px 14px 30px 14px;
+      padding: 14px 14px 26px 14px;
       display:grid;
       grid-template-columns: 1fr;
       gap: 12px;
     }
+
     .card{
       background: linear-gradient(180deg, rgba(18,24,38,.92), rgba(12,16,26,.92));
       border: 1px solid var(--line);
@@ -145,58 +136,67 @@
       color: var(--muted);
       text-transform: uppercase;
       letter-spacing: .35px;
-      font-weight: 900;
+      font-weight: 800;
     }
-    .card .bd{
-      padding: 12px 12px 14px 12px;
+    .card .bd{ padding: 12px 12px 14px 12px; }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      color: var(--muted);
+      font-size: 12px;
+      user-select:none;
     }
+    .dot{ width:8px; height:8px; border-radius:50%; background: var(--ok); display:inline-block; }
 
     .grid{
       display:grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      gap:10px;
+      align-items:start;
     }
-    @media (max-width: 860px){
+    @media (max-width: 820px){
       .grid{ grid-template-columns: 1fr; }
     }
 
-    .k{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 12px;
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.10);
-      padding: 2px 8px;
-      border-radius: 999px;
-      display:inline-block;
-      margin: 2px 2px 0 0;
-    }
-    ul{ margin: 8px 0 0 18px; padding:0; }
-    li{ margin: 6px 0; color: rgba(233,238,251,.95); }
-    .muted{ color: var(--muted); }
-    .callout{
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.04);
-      border-radius: 16px;
-      padding: 10px 12px;
+    .mini{
+      font-size:12px;
+      color: var(--muted);
     }
     .hr{
       height:1px;
       background: rgba(255,255,255,.08);
       margin: 10px 0;
     }
-    .note{
+
+    ul{ margin: 8px 0 0 18px; padding:0; }
+    li{ margin: 6px 0; }
+    code{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       font-size: 12px;
-      color: var(--muted);
+      color: rgba(233,238,251,.95);
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      padding: 1px 6px;
+      border-radius: 8px;
     }
-    .big{
-      font-size: 14px;
+
+    .callout{
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      border-radius: 16px;
+      padding: 12px;
     }
-    .emoji{
-      font-size: 18px;
-      margin-right: 6px;
-    }
+
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
   </style>
 </head>
+
 <body>
 <header>
   <div class="wrap">
@@ -205,139 +205,218 @@
         <div class="logo" aria-hidden="true">SP</div>
         <div>
           <h1>StagePlot v2 Guide</h1>
-          <div class="sub">v1.6 (rainbow) - pinch scale, under stage tools, multi select color, stage reset</div>
+          <div class="sub">v1.6 (rainbow) tips, shortcuts, and how not to lose your mind in front of FOH</div>
         </div>
       </div>
 
-      <div class="top" style="padding:0; gap:8px;">
-        <span class="pill"><span class="dot"></span>Works offline</span>
-        <a class="button primary" href="./index.html">Back to StagePlot</a>
+      <div class="row">
+        <a class="button" href="./index.html">Back to app</a>
+        <a class="button primary" href="javascript:window.print()">Print this guide</a>
       </div>
     </div>
   </div>
 </header>
 
 <main>
+
   <section class="card">
     <div class="hd">
       <h2>Quick start</h2>
-      <span class="pill">Less thinking, more plotting</span>
+      <span class="pill"><span class="dot"></span>2 minute survival mode</span>
     </div>
     <div class="bd">
-      <div class="callout big">
-        <div><span class="emoji">1</span>Pick a <b>Stage preset</b> or type a custom <b>Width</b> and <b>Depth</b>.</div>
-        <div style="margin-top:6px;"><span class="emoji">2</span>Add items from the <b>Item Library</b> (guitar, vox, wedges, power).</div>
-        <div style="margin-top:6px;"><span class="emoji">3</span><b>Tap an item</b> to select it, then edit label, input, mix, notes, size, rotation.</div>
-        <div style="margin-top:6px;"><span class="emoji">4</span>Use <b>Print</b> for a clean one page handoff, or <b>Export Project JSON</b> to share.</div>
+      <div class="grid">
+        <div class="callout">
+          <b>1 Add stuff</b>
+          <ul>
+            <li>Use <b>Item Library</b> to drop musicians and gear onto the stage.</li>
+            <li>Click an item to select it. Shift, Cmd, or Ctrl click to multi select.</li>
+          </ul>
+          <div class="hr"></div>
+          <b>2 Set stage size</b>
+          <ul>
+            <li>Pick a preset or set custom Width and Depth.</li>
+            <li>Use the <b>Toggle ft/m</b> button if your venue speaks in meters and your band speaks in vibes.</li>
+          </ul>
+        </div>
+
+        <div class="callout">
+          <b>3 Fill the one page info</b>
+          <ul>
+            <li>Add <b>Band / Show name</b> and <b>Show notes</b> for the top of the printout.</li>
+            <li>Select an item and set Label, Input, Mix, Notes.</li>
+            <li>The app auto builds Inputs and Mix lists from your items.</li>
+          </ul>
+          <div class="hr"></div>
+          <b>4 Print</b>
+          <ul>
+            <li>Hit <b>Print</b> for a clean one page handoff.</li>
+            <li>Print temporarily forces View Zoom back to 100 percent so your diagram is not accidentally a microscopic jazz trio.</li>
+          </ul>
+        </div>
       </div>
 
-      <div class="hr"></div>
+      <p class="mini" style="margin-top:10px;">
+        Autosave friendly means your work is saved in your browser localStorage. Your plot lives on your device like a loyal stagehand, but only until you clear site data.
+      </p>
+    </div>
+  </section>
 
-      <div class="note">
-        Autosave is on. Your plot sticks around between sessions unless you reset or clear it.
+  <section class="card">
+    <div class="hd">
+      <h2>Selection, movement, and scaling</h2>
+      <span class="pill">draggy, nudgy, pinchy</span>
+    </div>
+    <div class="bd">
+      <div class="grid">
+        <div class="callout">
+          <b>Select</b>
+          <ul>
+            <li>Click an item to select it.</li>
+            <li>Shift, Cmd, or Ctrl click adds or removes items from the selection.</li>
+            <li>The main selected item is the one that drives the edit fields.</li>
+          </ul>
+
+          <div class="hr"></div>
+          <b>Move</b>
+          <ul>
+            <li>Drag to move selected items.</li>
+            <li>Hold <code>Shift</code> + Arrow keys to nudge by small steps.</li>
+            <li>Use the under stage <b>Nudge</b> pad for tap nudging.</li>
+          </ul>
+        </div>
+
+        <div class="callout">
+          <b>Size controls</b>
+          <ul>
+            <li>Each item has base <b>Width</b> and <b>Depth</b>.</li>
+            <li><b>Scale</b> multiplies the footprint (50 percent to 200 percent).</li>
+            <li>You can change size using number fields and sliders.</li>
+          </ul>
+
+          <div class="hr"></div>
+          <b>Touch gesture scaling</b>
+          <ul>
+            <li>On touch screens, select an item and do a two finger pinch on that item to change Scale.</li>
+            <li>If pinch feels fussy, make sure your fingers are actually on the item, not on the stage background.</li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="mini" style="margin-top:10px;">
+        View Zoom changes your view only. It does not change item sizes or stage dimensions, it just makes your eyeballs zoom like a camera.
+      </p>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="hd">
+      <h2>Color tools</h2>
+      <span class="pill">v1.6 rainbow</span>
+    </div>
+    <div class="bd">
+      <div class="callout">
+        <b>What color does</b>
+        <ul>
+          <li>Item color is a visual highlight for roles, inputs, zones, or anything your brain needs to decode quickly.</li>
+          <li>Color applies to the selected item, and when you have multiple items selected it can apply to all of them at once.</li>
+        </ul>
+        <div class="hr"></div>
+        <b>Recommended use</b>
+        <ul>
+          <li>Blue for vocals, yellow for instruments, red for power, green for wedges.</li>
+          <li>Or go full chaos and color code by who is most likely to ask for “just a little more me” in the monitors.</li>
+        </ul>
+        <p class="mini" style="margin-top:8px;">
+          If you do not see the color picker, it should live in the selected item tools area and or the One Page Info selected item section depending on your build.
+        </p>
       </div>
     </div>
   </section>
 
   <section class="card">
     <div class="hd">
-      <h2>Stage controls</h2>
-      <span class="pill">Layout vs view, they are different on purpose</span>
+      <h2>Stage and view controls</h2>
+      <span class="pill">layout vs view</span>
     </div>
     <div class="bd">
       <div class="grid">
-        <div>
-          <div class="callout">
-            <b>Stage preset and dimensions</b>
-            <ul>
-              <li><b>Width</b> is left to right.</li>
-              <li><b>Depth</b> is upstage to audience.</li>
-              <li>The stage always fits inside the square at 100%.</li>
-            </ul>
-            <div class="note" style="margin-top:8px;">
-              Tip: If you are not sure, start with Medium and adjust later.
-            </div>
-          </div>
+        <div class="callout">
+          <b>Stage size</b>
+          <ul>
+            <li>Use presets or set custom Width and Depth.</li>
+            <li>Stage always fits the square at 100 percent. That is by design so you never “lose” the stage off screen.</li>
+          </ul>
+          <div class="hr"></div>
+          <b>Flip stage</b>
+          <ul>
+            <li><b>Stage View</b> shows Upstage at the top.</li>
+            <li>Flip to <b>Audience View</b> when sharing with FOH, venues, or anyone who stands in front of the stage and judges your pedalboard choices.</li>
+          </ul>
         </div>
 
-        <div>
-          <div class="callout">
-            <b>View tools</b>
-            <ul>
-              <li><b>View Zoom</b> zooms your view inside the square (detail mode).</li>
-              <li><b>Reset View</b> snaps back to 100%.</li>
-              <li><b>Flip</b> switches Stage View and Audience View (for sanity checks).</li>
-              <li><b>Units</b> toggles ft and m for display (internally stored as feet).</li>
-            </ul>
-          </div>
+        <div class="callout">
+          <b>View Zoom</b>
+          <ul>
+            <li>Use View Zoom slider to zoom into the stage square.</li>
+            <li>Use <b>Reset View</b> to return to 100 percent.</li>
+          </ul>
+          <div class="hr"></div>
+          <b>Reset stage</b>
+          <ul>
+            <li><b>Clear</b> clears selection only, not the stage.</li>
+            <li><b>Reset Stage</b> should wipe items and return stage settings to defaults (if enabled in your build).</li>
+          </ul>
+          <p class="mini" style="margin-top:8px;">
+            If you only see Clear and it does nothing, that button is for selection, not a full reset. The reset button should be a separate action so nobody nukes a plot mid rehearsal.
+          </p>
         </div>
-      </div>
-
-      <div class="hr"></div>
-
-      <div class="callout">
-        <b>Reset vs Clear</b>
-        <ul>
-          <li><b>Clear</b> clears selection only (it does not delete items).</li>
-          <li><b>Reset Stage</b> is the big red button behavior: it wipes the plot back to a clean stage.</li>
-        </ul>
-        <div class="note">If you hit Reset Stage by accident, you are allowed one dramatic sigh. After that, add more wedges.</div>
       </div>
     </div>
   </section>
 
   <section class="card">
     <div class="hd">
-      <h2>Selection and editing</h2>
-      <span class="pill">Single select, multi select, and mild wizardry</span>
+      <h2>Export, import, and sharing</h2>
+      <span class="pill">save your masterpiece</span>
     </div>
     <div class="bd">
       <div class="grid">
-        <div>
-          <div class="callout">
-            <b>Select items</b>
-            <ul>
-              <li><b>Tap</b> an item to select it.</li>
-              <li><b>Shift click</b> (or Cmd or Ctrl click) to multi select.</li>
-              <li><b>Escape</b> clears selection.</li>
-              <li><b>Delete</b> removes selected items.</li>
-            </ul>
-            <div class="note" style="margin-top:8px;">
-              Multi select is perfect for dragging a whole drum world, or making all wedges the same color, or both.
-            </div>
-          </div>
+        <div class="callout">
+          <b>Export Project JSON</b>
+          <ul>
+            <li>Saves a portable project file you can email, text, or stash in a folder named “final FINAL actually final”.</li>
+            <li>Useful for bandmates, recurring gigs, and not trusting your browser cache.</li>
+          </ul>
+
+          <div class="hr"></div>
+          <b>Import Project JSON</b>
+          <ul>
+            <li>Loads a previously exported file back into the app.</li>
+            <li>Import is migration friendly so older projects can still load.</li>
+          </ul>
         </div>
 
-        <div>
-          <div class="callout">
-            <b>Edit selected item in the Info panel</b>
-            <ul>
-              <li>Label, Input, Mix, Notes</li>
-              <li>Item Width, Item Depth</li>
-              <li>Scale slider (footprint)</li>
-              <li>Rotation slider, plus Rotation reset</li>
-              <li>Color picker (applies to the selected item, or the whole multi selection in v1.6)</li>
-            </ul>
-            <div class="note" style="margin-top:8px;">
-              Color is purely for readability. It does not summon more power drops, sadly.
-            </div>
-          </div>
-        </div>
-      </div>
+        <div class="callout">
+          <b>Share idea with QR code</b>
+          <p class="mini" style="margin-top:0;">
+            This is the concept for a future build, and it belongs here so it does not mysteriously vanish into the great rehearsal space of the sky.
+          </p>
+          <ul>
+            <li>Create a <b>Share</b> button that generates a URL containing a compressed project payload or a project id.</li>
+            <li>Display a QR code so bandmates can scan and open the exact plot instantly.</li>
+            <li>Optional: a “view only” mode so nobody accidentally turns the drummer into a power drop.</li>
+          </ul>
 
-      <div class="hr"></div>
-
-      <div class="callout">
-        <b>Under stage tools (Selected item tools)</b>
-        <ul>
-          <li><b>Nudge</b> buttons move items in small steps.</li>
-          <li><b>Shift + Arrow keys</b> nudges selected items too.</li>
-          <li><b>Width and Depth</b> fields let you type exact footprints quickly.</li>
-          <li><b>Scale</b> slider changes footprint scale.</li>
-          <li><b>Pinch to scale</b> on touch screens: two fingers on the selected item and pinch.</li>
-        </ul>
-        <div class="note">
-          Remember: Width and Depth set the base footprint. Scale multiplies it. View Zoom only changes your view.
+          <div class="hr"></div>
+          <b>Donate idea</b>
+          <ul>
+            <li>Add a small <b>Donate</b> link in the header or guide that points to a tip jar.</li>
+            <li>Keep it gentle and optional. More “buy me a coffee” and less “paywall your snare drum”.</li>
+          </ul>
+          <p class="mini" style="margin-top:8px;">
+            If you want, you can drop your donate URL into this guide later and it will show up right here.
+          </p>
         </div>
       </div>
     </div>
@@ -346,62 +425,36 @@
   <section class="card">
     <div class="hd">
       <h2>Keyboard shortcuts</h2>
-      <span class="pill">For the keyboard heroes</span>
+      <span class="pill">desktop power</span>
     </div>
     <div class="bd">
       <div class="callout">
-        <div class="muted" style="margin-bottom:6px;">These work when you are not typing in a text field.</div>
-        <div>
-          <span class="k">Shift</span> + <span class="k">Arrow keys</span> nudge selected items
-        </div>
-        <div style="margin-top:6px;">
-          <span class="k">Delete</span> or <span class="k">Backspace</span> delete selected items
-        </div>
-        <div style="margin-top:6px;">
-          <span class="k">Cmd</span> or <span class="k">Ctrl</span> + <span class="k">D</span> duplicate selected items
-        </div>
-        <div style="margin-top:6px;">
-          <span class="k">Esc</span> clear selection
-        </div>
+        <ul>
+          <li><code>Shift</code> + Arrow keys nudges selected items.</li>
+          <li><code>Delete</code> or <code>Backspace</code> deletes selected items.</li>
+          <li><code>Esc</code> clears selection.</li>
+          <li><code>Cmd</code> or <code>Ctrl</code> + <code>D</code> duplicates selected items.</li>
+        </ul>
+        <p class="mini" style="margin-top:8px;">
+          If your keyboard shortcuts do nothing, click outside of input fields first. Typing into notes while trying to nudge is a classic.
+        </p>
       </div>
     </div>
   </section>
 
   <section class="card">
     <div class="hd">
-      <h2>Export, import, print</h2>
-      <span class="pill">Handoff mode</span>
+      <h2>FAQ and gotchas</h2>
+      <span class="pill">things that feel like bugs</span>
     </div>
     <div class="bd">
-      <div class="grid">
-        <div>
-          <div class="callout">
-            <b>Export Project JSON</b>
-            <ul>
-              <li>Creates a shareable file containing your stage, items, and notes.</li>
-              <li>Use it to send to bandmates or keep versions for different venues.</li>
-            </ul>
-          </div>
-        </div>
-        <div>
-          <div class="callout">
-            <b>Import Project JSON</b>
-            <ul>
-              <li>Loads a saved project back into the app.</li>
-              <li>Older versions are migrated forward automatically when possible.</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div class="hr"></div>
-
       <div class="callout">
-        <b>Print</b>
         <ul>
-          <li>Print makes a clean one page sheet.</li>
-          <li>The app temporarily snaps View Zoom to 100% for printing so it fits nicely.</li>
-          <li>Tip: Fill Band / Show name and Show notes so the sheet is actually useful to humans.</li>
+          <li><b>Why does Clear not erase the stage</b> Because Clear is meant to clear selection only. Stage reset should be separate so nobody rage clicks and deletes a whole show.</li>
+          <li><b>Why do my items clamp at the edges</b> Items are kept inside the stage boundaries including their scaled footprint.</li>
+          <li><b>Why do my printed items look different</b> Print forces View Zoom to 100 percent temporarily so your page is consistent.</li>
+          <li><b>Why are there two size control areas</b> One is in Info, one is under the stage for fast adjustments while placing items.</li>
+          <li><b>Can I color multiple items</b> Yes, select multiple items and apply a color once. It is the adult version of a highlighter.</li>
         </ul>
       </div>
     </div>
@@ -409,46 +462,19 @@
 
   <section class="card">
     <div class="hd">
-      <h2>Troubleshooting</h2>
-      <span class="pill">Fixes without throwing your phone</span>
+      <h2>Credits and future ideas</h2>
+      <span class="pill">good vibes</span>
     </div>
     <div class="bd">
       <div class="callout">
-        <ul>
-          <li><b>My stage looks zoomed or weird</b> - hit Reset View (100%).</li>
-          <li><b>I cannot select an item</b> - you might be in a scrolled panel. Try tapping directly on the box.</li>
-          <li><b>My item is off the stage</b> - change size or scale down, then nudge it back. Items are clamped to stay inside the stage.</li>
-          <li><b>Pinch does nothing</b> - pinch works on the selected item only. Tap the item first, then pinch on it.</li>
-          <li><b>I lost my plot</b> - import your last exported JSON. If you did not export, the app only has what is in local storage.</li>
-        </ul>
-        <div class="note" style="margin-top:10px;">
-          If all else fails, export a copy, reset stage, then import. It is the digital version of turning the amp off and on.
-        </div>
+        <p style="margin:0;">
+          StagePlot v2 is built to be fast, offline capable, and easy to hand to a venue without a fifteen email thread.
+          Future dreams include QR share, optional donate link, and more library items so we can finally represent the true hero of live music: the extra extension cord.
+        </p>
       </div>
     </div>
   </section>
 
-  <section class="card">
-    <div class="hd">
-      <h2>Version notes</h2>
-      <span class="pill">v1.6 (rainbow)</span>
-    </div>
-    <div class="bd">
-      <div class="callout">
-        <ul>
-          <li>Selected item tools live under the stage for quick edits.</li>
-          <li>Pinch to scale on touch devices, plus a scale slider for precision.</li>
-          <li>Size controls support both typed values and slider style scale.</li>
-          <li>Color picker is back, and can apply to multi selected items.</li>
-          <li>Stage reset is back to properly wipe the plot when you want a clean slate.</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <div class="note" style="text-align:center; padding: 6px 0 16px 0;">
-    Built for bands, venues, and sound humans. If you are reading this at 2:00 AM before load in, I salute you.
-  </div>
 </main>
 </body>
 </html>
