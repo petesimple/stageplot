@@ -2,7 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+  <script>
+  // iOS/Safari: prevent double-tap to zoom (which can feel like "needs two taps")
+  (() => {
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', (e) => {
+      const now = Date.now();
+      if (now - lastTouchEnd <= 300) e.preventDefault();
+      lastTouchEnd = now;
+    }, { passive: false });
+  })();
+</script>
   <meta name="theme-color" content="#0b0d12" />
   <title>StagePlot v2 - v1.6 (rainbow)</title>
 
