@@ -16,7 +16,7 @@
   })();
 </script>
   <meta name="theme-color" content="#0b0d12" />
-  <title>StagePlot v2 - v1.6 (rainbow)</title>
+  <title>StagePlot v2 - v1.6.1 (textscale)</title>
 
   <style>
     :root{
@@ -536,7 +536,7 @@
         <div class="logo" aria-hidden="true">SP</div>
         <div>
           <h1>StagePlot v2</h1>
-          <div class="sub">v1.6 (rainbow) - pinch-to-scale + size sliders + multi-select color tools + reset stage</div>
+          <div class="sub">v1.6.1 (textscale) - label size slider + pinch-to-scale + multi-select color tools + reset stage</div>
         </div>
       </div>
 
@@ -713,6 +713,19 @@
               <div class="miniHelp" style="margin-top:6px;">
                 Pro tip: if selection is mixed, pick a color anyway and it will unify the squad.
               </div>
+
+              <div class="hr"></div>
+
+              <div class="miniHelp" style="margin-bottom:8px;">Label size (applies to all selected)</div>
+              <div class="field" style="margin:0;">
+                <label>Label Size</label>
+                <input type="range" min="60" max="160" value="100" id="uLabelSize" />
+                <div class="row tight" style="justify-content:space-between;">
+                  <span class="miniHelp">60%</span>
+                  <span class="pill" id="uLabelSizePill">100%</span>
+                  <span class="miniHelp">160%</span>
+                </div>
+              </div>
             </div>
 
             <div style="flex:1; min-width: 240px;">
@@ -788,6 +801,16 @@
           <input type="text" id="itemLabel" placeholder="Example: Pete Vox" />
         </div>
 
+        <div class="field">
+          <label>Label Size (applies to all selected)</label>
+          <input type="range" min="60" max="160" value="100" id="labelSize" />
+          <div class="row tight" style="justify-content:space-between;">
+            <span class="miniHelp">60%</span>
+            <span class="pill" id="labelSizePill">100%</span>
+            <span class="miniHelp">160%</span>
+          </div>
+        </div>
+
         <div class="row">
           <div class="field" style="width: 48%; min-width:140px;">
             <label>Input</label>
@@ -857,7 +880,7 @@
         </div>
 
         <div class="miniHelp" style="margin-top:10px;">
-          Gesture: on touch screens, pinch the selected item to change Scale. Color changes apply to all selected items.
+          Gesture: on touch screens, pinch the selected item to change Scale. Color and Label Size apply to all selected items.
         </div>
 
         <div class="hr"></div>
@@ -889,7 +912,7 @@
 
 <script>
 (() => {
-  const APP_VERSION = "1.6 (rainbow)";
+  const APP_VERSION = "1.6.1 (textscale)";
 
   // Internal units are FEET for compatibility.
   const FT_PER_M = 3.280839895;
@@ -914,6 +937,11 @@
     itemInput: document.getElementById("itemInput"),
     itemMix: document.getElementById("itemMix"),
     itemNotes: document.getElementById("itemNotes"),
+
+    labelSize: document.getElementById("labelSize"),
+    labelSizePill: document.getElementById("labelSizePill"),
+    uLabelSize: document.getElementById("uLabelSize"),
+    uLabelSizePill: document.getElementById("uLabelSizePill"),
 
     itemW: document.getElementById("itemW"),
     itemH: document.getElementById("itemH"),
@@ -1109,6 +1137,7 @@
             h: Number(it.h)||2,
             rot: Number(it.rot)||0,
             scale: (it.scale==null ? 1.0 : Number(it.scale)) || 1.0,
+            labelScale: (it.labelScale == null ? 1.0 : Number(it.labelScale)) || 1.0,
             color: it.color || "",
             input: it.input || "",
             mix: it.mix || "",
@@ -1121,6 +1150,7 @@
           }
 
           out.scale = clamp(out.scale, 0.5, 2.0);
+          out.labelScale = clamp(out.labelScale, 0.6, 1.6);
           out.rot = ((out.rot % 360) + 360) % 360;
           return out;
         });
@@ -1135,6 +1165,7 @@
       it.h = clamp(it.h, 0.5, 200);
       it.x = clamp(it.x, 0, Math.max(0, migrated.stage.w - 0.25));
       it.y = clamp(it.y, 0, Math.max(0, migrated.stage.d - 0.25));
+      it.labelScale = clamp(Number(it.labelScale || 1.0), 0.6, 1.6);
     });
 
     return migrated;
@@ -1278,6 +1309,41 @@
     save();
   }
 
+  // ---------- Label size helpers ----------
+  function selectionLabelSizeStatus(){
+    const sel = getSelectedItems();
+    if(!sel.length) return { count:0, mode:"none", scale:1.0 };
+
+    const scales = sel.map(it => clamp(Number(it.labelScale || 1.0), 0.6, 1.6));
+    const first = scales[0];
+
+    const allSame = scales.every(s => Math.abs(s - first) < 0.0001);
+    if(allSame) return { count:sel.length, mode:"same", scale:first };
+
+    // mixed - we still return a usable value for the slider position
+    return { count:sel.length, mode:"mixed", scale:first };
+  }
+
+  function applyLabelSizeToSelectionPct(pct){
+    if(!state.selectedIds.length) return;
+    const next = clamp(Number(pct)/100, 0.6, 1.6);
+
+    const set = new Set(state.selectedIds);
+    state.items.forEach(it => {
+      if(!set.has(it.id)) return;
+      it.labelScale = next;
+    });
+
+    const p = Math.round(next*100);
+    els.labelSize.value = p;
+    els.labelSizePill.textContent = p + "%";
+    els.uLabelSize.value = p;
+    els.uLabelSizePill.textContent = p + "%";
+
+    render();
+    save();
+  }
+
   // ---------- UI updates ----------
   function updateUnitsUI(){
     els.unitsPill.textContent = "Units: " + state.units;
@@ -1326,6 +1392,7 @@
     const disabled = !primary;
     [
       els.itemLabel, els.itemInput, els.itemMix, els.itemNotes,
+      els.labelSize, els.uLabelSize,
       els.itemW, els.itemH, els.itemScale, els.itemRot, els.btnRot0,
       els.btnDup, els.uItemW, els.uItemH, els.uItemScale,
       els.itemColor, els.clearColor, els.uItemColor, els.uClearColor
@@ -1346,7 +1413,6 @@
     }else if(cs.mode === "mixed"){
       els.colorPill.textContent = `mixed (${cs.count})`;
       els.uColorPill.textContent = `mixed (${cs.count})`;
-      // set picker to a real value so the control stays happy
       els.itemColor.value = cs.color || "#4aa3ff";
       els.uItemColor.value = cs.color || "#4aa3ff";
     }else{
@@ -1354,6 +1420,21 @@
       els.uColorPill.textContent = cs.color;
       els.itemColor.value = cs.color || "#4aa3ff";
       els.uItemColor.value = cs.color || "#4aa3ff";
+    }
+
+    // Label size pills
+    const ls = selectionLabelSizeStatus();
+    if(!ls.count){
+      els.labelSize.value = 100;
+      els.labelSizePill.textContent = "100%";
+      els.uLabelSize.value = 100;
+      els.uLabelSizePill.textContent = "100%";
+    }else{
+      const p = Math.round(ls.scale * 100);
+      els.labelSize.value = p;
+      els.labelSizePill.textContent = (ls.mode === "mixed") ? `mixed (${ls.count})` : (p + "%");
+      els.uLabelSize.value = p;
+      els.uLabelSizePill.textContent = (ls.mode === "mixed") ? `mixed (${ls.count})` : (p + "%");
     }
 
     if(!primary){
@@ -1462,6 +1543,8 @@
       const lbl = document.createElement("div");
       lbl.className = "lbl";
       lbl.textContent = it.label || "Item";
+      const ls = clamp(Number(it.labelScale || 1.0), 0.6, 1.6);
+      lbl.style.fontSize = (12 * ls) + "px";
       el.appendChild(lbl);
 
       el.addEventListener("pointerdown", onItemPointerDown);
@@ -1560,6 +1643,7 @@
       h: def.h,
       rot: 0,
       scale: 1.0,
+      labelScale: 1.0,
       color: "",
       input: "",
       mix: "",
@@ -1906,7 +1990,7 @@
   els.bandName.addEventListener("input", () => { state.bandName = els.bandName.value; save(); });
   els.showNotes.addEventListener("input", () => { state.showNotes = els.showNotes.value; save(); });
 
-  // Reset stage (the missing hero)
+  // Reset stage
   els.btnResetStage.addEventListener("click", () => {
     const ok = confirm("Reset Stage?\nThis clears items, selection, band name, notes, and resets view and stage size.");
     if(!ok) return;
@@ -1978,6 +2062,10 @@
     render();
     save();
   });
+
+  // Label size (applies to selection)
+  els.labelSize.addEventListener("input", () => applyLabelSizeToSelectionPct(els.labelSize.value));
+  els.uLabelSize.addEventListener("input", () => applyLabelSizeToSelectionPct(els.uLabelSize.value));
 
   // Width/Depth (info)
   els.itemW.addEventListener("change", () => {
@@ -2069,7 +2157,7 @@
   els.nUp.addEventListener("click", () => nudgeBtn(0, -1));
   els.nDown.addEventListener("click", () => nudgeBtn(0, 1));
   els.nLeft.addEventListener("click", () => nudgeBtn(-1, 0));
-  els.nRight.addEventListener("click", () => nnudgeBtn(1, 0));
+  els.nRight.addEventListener("click", () => nudgeBtn(1, 0)); // fixed typo
   els.nCenter.addEventListener("click", () => {
     const it = getPrimary(); if(!it) return;
     const w = it.w * it.scale;
