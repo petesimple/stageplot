@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0b0d12" />
-  <title>StagePlot v2 - Guide (v1.6)</title>
+  <title>StagePlot v2 - Guide (v1.6.1)</title>
   <style>
     :root{
       --bg:#0b0d12;
@@ -298,6 +298,7 @@
         </div>
       </div>
       <div class="row tight">
+        <span class="pill">Guide v1.6.1</span>
         <a class="button primary" id="btnOpenApp" href="./index.html">Open the app</a>
         <button class="btn" id="btnShare">Share + QR</button>
         <a class="button ok" id="btnDonateTop" href="https://www.paypal.com/donate/?hosted_button_id=4BP339J2UAL46" target="_blank" rel="noopener">Donate</a>
@@ -885,30 +886,7 @@
       }
     }
 
-    function mask(m, maskId){
-      const n = m.length;
-      const out = makeMatrix(n);
-      for(let y=0;y<n;y++){
-        for(let x=0;x<n;x++){
-          const v = m[y][x];
-          out[y][x] = v;
-        }
-      }
-      for(let y=0;y<n;y++){
-        for(let x=0;x<n;x++){
-          if(m[y][x] === null) continue;
-          // Do not mask function patterns (we mark them as 0/1 but they are not null, so we need a rule)
-          // For simplicity: do not mask finder/timing/format areas by detecting fixed modules:
-          // We treat modules already set before data placement as "locked" by using a second pass in encoder.
-        }
-      }
-      // Actual masking is applied during encode where we know which are data modules.
-      return out;
-    }
-
     function formatBits(ecLevel, maskId){
-      // EC level M = 0, L=1, H=2, Q=3 in this compact mapping for format generator below
-      // Standard format bits:
       // L=01, M=00, Q=11, H=10
       const ecBits = (ecLevel==="M") ? 0 : (ecLevel==="L") ? 1 : (ecLevel==="H") ? 2 : 3;
       let data = (ecBits << 3) | maskId;
@@ -948,8 +926,8 @@
         m[y][x] = bit(14-i);
       }
 
-      // fixed dark module already set elsewhere
-      m[8][6] = 1; // separator spot is fixed in many refs, safe to force
+      // fixed module
+      m[8][6] = 1;
     }
 
     function encode(text, ecLevel){
@@ -968,13 +946,14 @@
       const lenBits = (v <= 9) ? 8 : 16;
       bitBufferPush(bits, bytes.length, lenBits);
       for(const b of bytes) bitBufferPush(bits, b, 8);
-      // terminator
+
       const maxBits = dataLen * 8;
       const remaining = maxBits - bits.length;
       bitBufferPush(bits, 0, Math.min(4, Math.max(0, remaining)));
       while(bits.length % 8) bits.push(0);
 
       let data = bitsToBytes(bits);
+
       // pad bytes
       const PAD0 = 0xec, PAD1 = 0x11;
       let padToggle = false;
@@ -1014,7 +993,7 @@
 
       setDarkModule(m, v);
 
-      // mark which modules are locked (function patterns)
+      // mark locked modules (function patterns)
       const locked = new Array(n).fill(0).map(()=>new Array(n).fill(false));
       for(let y=0;y<n;y++){
         for(let x=0;x<n;x++){
@@ -1025,12 +1004,11 @@
       // place data into remaining nulls
       placeData(m, cwBits);
 
-      // masking: choose a simple mask 0 that works well enough
+      // masking: mask 0
       const maskId = 0;
       for(let y=0;y<n;y++){
         for(let x=0;x<n;x++){
           if(locked[y][x]) continue;
-          // mask 0: (x + y) % 2 == 0
           if(((x + y) & 1) === 0){
             m[y][x] = m[y][x] ? 0 : 1;
           }
