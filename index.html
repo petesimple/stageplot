@@ -488,7 +488,7 @@
       margin: 10px 0;
     }
 
-    /* Mobile accordion behavior */
+    /* Mobile accordion behavior (Library + Info) */
     .accBtn{
       display:none;
       width:100%;
@@ -507,9 +507,28 @@
     .chev{ opacity:.85; }
     .accHidden{ display:none !important; }
 
+    /* Tooling accordion buttons (mobile only) */
+    .tAccBtn{
+      display:none;
+      width:100%;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      cursor:pointer;
+      user-select:none;
+      font-weight: 850;
+    }
+    .tAccBtn .chev{ opacity:.85; }
+    .tAccHidden{ display:none !important; }
+
     @media (max-width: 980px){
       main{ grid-template-columns: 1fr; }
       .accBtn{ display:flex; }
+      .tAccBtn{ display:flex; }
       #midCol{ order: 1; }
       #libCard{ order: 2; }
       #infoCard{ order: 3; }
@@ -522,7 +541,7 @@
       main{ display:block !important; max-width: 7.8in !important; padding: 0 !important; }
       .card{ box-shadow:none !important; background:#fff !important; border: 1px solid #ddd !important; margin-bottom: 10px !important; }
       .card .hd{ border-bottom:1px solid #ddd !important; }
-      .pill, .actions, .accBtn, #libCard, #toolsCard { display:none !important; }
+      .pill, .actions, .accBtn, .tAccBtn, #libCard, #toolsCard { display:none !important; }
       #stageCard .bd{ padding: 10px !important; }
       .stageSquare{ border: 1px solid #ddd !important; }
       .stageSquareInner{ inset: 8px !important; border: 1px solid #ddd !important; }
@@ -565,7 +584,7 @@
       <span class="pill" id="libCount">0 items</span>
     </div>
     <div class="bd" id="libBody">
-      <button class="accBtn" id="accLibBtn">
+      <button class="accBtn" id="accLibBtn" type="button">
         <span>Library</span><span class="chev" id="accLibChev">▾</span>
       </button>
 
@@ -586,10 +605,10 @@
         <div class="hr"></div>
 
         <div class="row">
-          <button class="btn" id="btnMisc1">+ Misc 1</button>
-          <button class="btn" id="btnMisc2">+ Misc 2</button>
-          <button class="btn" id="btnMisc3">+ Misc 3</button>
-          <button class="btn danger" id="btnDeleteSel">Delete Selected</button>
+          <button class="btn" id="btnMisc1" type="button">+ Misc 1</button>
+          <button class="btn" id="btnMisc2" type="button">+ Misc 2</button>
+          <button class="btn" id="btnMisc3" type="button">+ Misc 3</button>
+          <button class="btn danger" id="btnDeleteSel" type="button">Delete Selected</button>
         </div>
 
         <div style="margin-top:10px" class="miniHelp">
@@ -608,10 +627,10 @@
         <h2>Stage</h2>
         <div class="row tight">
           <span class="pill" id="unitsPill">Units: ft</span>
-          <button class="btn" id="btnUnits">Toggle ft/m</button>
-          <button class="btn" id="btnFlip">Stage View</button>
-          <button class="btn" id="btnClearSel" title="Clears selection only">Clear</button>
-          <button class="btn warn" id="btnResetStage" title="Resets stage, view, notes, and removes items">Reset Stage</button>
+          <button class="btn" id="btnUnits" type="button">Toggle ft/m</button>
+          <button class="btn" id="btnFlip" type="button">Stage View</button>
+          <button class="btn" id="btnClearSel" title="Clears selection only" type="button">Clear</button>
+          <button class="btn warn" id="btnResetStage" title="Resets stage, view, notes, and removes items" type="button">Reset Stage</button>
         </div>
       </div>
 
@@ -644,152 +663,173 @@
 
       <div class="bd" style="display:flex; flex-direction:column; gap:12px;">
 
-        <!-- Layout -->
-        <div class="card" style="box-shadow:none;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.02);">
-          <div class="hd" style="border-bottom: 1px solid rgba(255,255,255,.08);">
-            <h2 style="margin:0;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.35px;font-weight:800;">Layout</h2>
-            <span class="pill">Stage sizing</span>
-          </div>
+        <!-- Tooling: Layout accordion header (mobile only) -->
+        <button class="tAccBtn" id="accToolsLayoutBtn" type="button">
+          <span>Layout</span><span class="chev" id="accToolsLayoutChev">▾</span>
+        </button>
 
-          <div class="bd" style="padding:12px;">
-            <div class="row tight" style="justify-content:space-between;">
-              <div style="flex:1; min-width: 210px;">
-                <div class="field" style="margin:0;">
-                  <label>Stage preset</label>
-                  <div class="seg">
-                    <button class="btn" data-preset="small">Small</button>
-                    <button class="btn" data-preset="med">Medium</button>
-                    <button class="btn" data-preset="large">Large</button>
-                    <button class="btn" data-preset="custom">Custom</button>
-                  </div>
-                </div>
-              </div>
-
-              <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
-                <div class="field" style="width: 140px; margin:0;">
-                  <label>Width (<span id="unitLabelW">ft</span>)</label>
-                  <input type="number" min="1" step="0.1" id="stageW" />
-                </div>
-                <div class="field" style="width: 140px; margin:0;">
-                  <label>Depth (<span id="unitLabelD">ft</span>)</label>
-                  <input type="number" min="1" step="0.1" id="stageD" />
-                </div>
-              </div>
+        <!-- Tooling: Layout content -->
+        <div id="toolsLayoutAccContent">
+          <div class="card" style="box-shadow:none;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.02);">
+            <div class="hd" style="border-bottom: 1px solid rgba(255,255,255,.08);">
+              <h2 style="margin:0;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.35px;font-weight:800;">Layout</h2>
+              <span class="pill">Stage sizing</span>
             </div>
 
-            <div class="miniHelp" style="margin-top:10px;">
-              The stage always fits in the square at 100%. View Zoom can intentionally zoom in for detail.
-            </div>
-          </div>
-        </div>
-
-        <!-- View tools -->
-        <div class="card" style="box-shadow:none;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.02);">
-          <div class="hd" style="border-bottom: 1px solid rgba(255,255,255,.08);">
-            <h2 style="margin:0;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.35px;font-weight:800;">View</h2>
-            <span class="pill" id="viewZoomPill">100%</span>
-          </div>
-
-          <div class="bd" style="padding:12px;">
-            <div class="row" style="justify-content:space-between;">
-              <div style="flex:1; min-width: 240px;">
-                <div class="field" style="margin:0;">
-                  <label>View Zoom (inside square)</label>
-                  <input type="range" min="50" max="200" value="100" id="viewZoom" />
-                  <div class="row tight" style="justify-content:space-between;">
-                    <span class="miniHelp">50%</span>
-                    <span class="pill" id="viewZoomPillInner">100%</span>
-                    <span class="miniHelp">200%</span>
-                  </div>
-                </div>
-              </div>
-              <div style="display:flex; gap:8px; align-items:flex-end;">
-                <button class="btn" id="btnResetView">Reset View (100%)</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Selected tools -->
-        <div class="toolsCard" id="underStageTools" style="display:none;">
-          <div class="toolsTitle">
-            <div class="t">Selected item tools</div>
-            <span class="pill mono" id="underSelName">none</span>
-          </div>
-
-          <div class="row" style="gap:14px; align-items:flex-start;">
-            <div>
-              <div class="miniHelp" style="margin-bottom:8px;">Nudge (tap or use Shift + Arrows)</div>
-              <div class="nudgeGrid">
-                <div class="nudgeSpacer nbtn btn"> </div>
-                <button class="btn nbtn" id="nUp" title="Nudge up">↑</button>
-                <div class="nudgeSpacer nbtn btn"> </div>
-
-                <button class="btn nbtn" id="nLeft" title="Nudge left">←</button>
-                <button class="btn nbtn" id="nCenter" title="Center on stage">◎</button>
-                <button class="btn nbtn" id="nRight" title="Nudge right">→</button>
-
-                <div class="nudgeSpacer nbtn btn"> </div>
-                <button class="btn nbtn" id="nDown" title="Nudge down">↓</button>
-                <div class="nudgeSpacer nbtn btn"> </div>
-              </div>
-
-              <div class="hr"></div>
-
-              <div class="miniHelp" style="margin-bottom:8px;">Box color (applies to all selected)</div>
-              <div class="row tight" style="align-items:center;">
-                <input type="color" id="uItemColor" value="#4aa3ff" />
-                <span class="pill mono" id="uColorPill">none</span>
-                <button class="btn" id="uClearColor" type="button">Clear</button>
-              </div>
-              <div class="miniHelp" style="margin-top:6px;">
-                Pro tip: if selection is mixed, pick a color anyway and it will unify the squad.
-              </div>
-
-              <div class="hr"></div>
-
-              <div class="miniHelp" style="margin-bottom:8px;">Label size (applies to all selected)</div>
-              <div class="field" style="margin:0;">
-                <label>Label Size</label>
-                <input type="range" min="60" max="160" value="100" id="uLabelSize" />
-                <div class="row tight" style="justify-content:space-between;">
-                  <span class="miniHelp">60%</span>
-                  <span class="pill" id="uLabelSizePill">100%</span>
-                  <span class="miniHelp">160%</span>
-                </div>
-              </div>
-            </div>
-
-            <div style="flex:1; min-width: 240px;">
-              <div class="miniHelp" style="margin-bottom:8px;">Size + Scale (pinch on touch screens)</div>
-
-              <div class="row tight" style="align-items:flex-end;">
-                <div class="field" style="width: 120px; margin:0;">
-                  <label>Width (<span class="unitInline">ft</span>)</label>
-                  <input type="number" id="uItemW" min="0.1" step="0.1" />
-                </div>
-                <div class="field" style="width: 120px; margin:0;">
-                  <label>Depth (<span class="unitInline">ft</span>)</label>
-                  <input type="number" id="uItemH" min="0.1" step="0.1" />
-                </div>
-              </div>
-
-              <div class="row tight" style="margin-top:10px;">
-                <div style="flex:1;">
+            <div class="bd" style="padding:12px;">
+              <div class="row tight" style="justify-content:space-between;">
+                <div style="flex:1; min-width: 210px;">
                   <div class="field" style="margin:0;">
-                    <label>Scale (footprint)</label>
-                    <input type="range" min="50" max="200" value="100" id="uItemScale" />
+                    <label>Stage preset</label>
+                    <div class="seg">
+                      <button class="btn" data-preset="small" type="button">Small</button>
+                      <button class="btn" data-preset="med" type="button">Medium</button>
+                      <button class="btn" data-preset="large" type="button">Large</button>
+                      <button class="btn" data-preset="custom" type="button">Custom</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+                  <div class="field" style="width: 140px; margin:0;">
+                    <label>Width (<span id="unitLabelW">ft</span>)</label>
+                    <input type="number" min="1" step="0.1" id="stageW" />
+                  </div>
+                  <div class="field" style="width: 140px; margin:0;">
+                    <label>Depth (<span id="unitLabelD">ft</span>)</label>
+                    <input type="number" min="1" step="0.1" id="stageD" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="miniHelp" style="margin-top:10px;">
+                The stage always fits in the square at 100%. View Zoom can intentionally zoom in for detail.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tooling: View accordion header (mobile only) -->
+        <button class="tAccBtn" id="accToolsViewBtn" type="button">
+          <span>View</span><span class="chev" id="accToolsViewChev">▾</span>
+        </button>
+
+        <!-- Tooling: View content -->
+        <div id="toolsViewAccContent">
+          <div class="card" style="box-shadow:none;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.02);">
+            <div class="hd" style="border-bottom: 1px solid rgba(255,255,255,.08);">
+              <h2 style="margin:0;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.35px;font-weight:800;">View</h2>
+              <span class="pill" id="viewZoomPill">100%</span>
+            </div>
+
+            <div class="bd" style="padding:12px;">
+              <div class="row" style="justify-content:space-between;">
+                <div style="flex:1; min-width: 240px;">
+                  <div class="field" style="margin:0;">
+                    <label>View Zoom (inside square)</label>
+                    <input type="range" min="50" max="200" value="100" id="viewZoom" />
                     <div class="row tight" style="justify-content:space-between;">
                       <span class="miniHelp">50%</span>
-                      <span class="pill" id="uItemScalePill">100%</span>
+                      <span class="pill" id="viewZoomPillInner">100%</span>
                       <span class="miniHelp">200%</span>
                     </div>
                   </div>
                 </div>
+                <div style="display:flex; gap:8px; align-items:flex-end;">
+                  <button class="btn" id="btnResetView" type="button">Reset View (100%)</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tooling: Selected tools accordion header (mobile only) -->
+        <button class="tAccBtn" id="accToolsSelBtn" type="button">
+          <span>Selected item tools</span><span class="chev" id="accToolsSelChev">▾</span>
+        </button>
+
+        <!-- Tooling: Selected tools content -->
+        <div id="toolsSelAccContent">
+          <div class="toolsCard" id="underStageTools" style="display:none;">
+            <div class="toolsTitle">
+              <div class="t">Selected item tools</div>
+              <span class="pill mono" id="underSelName">none</span>
+            </div>
+
+            <div class="row" style="gap:14px; align-items:flex-start;">
+              <div>
+                <div class="miniHelp" style="margin-bottom:8px;">Nudge (tap or use Shift + Arrows)</div>
+                <div class="nudgeGrid">
+                  <div class="nudgeSpacer nbtn btn"> </div>
+                  <button class="btn nbtn" id="nUp" title="Nudge up" type="button">↑</button>
+                  <div class="nudgeSpacer nbtn btn"> </div>
+
+                  <button class="btn nbtn" id="nLeft" title="Nudge left" type="button">←</button>
+                  <button class="btn nbtn" id="nCenter" title="Center on stage" type="button">◎</button>
+                  <button class="btn nbtn" id="nRight" title="Nudge right" type="button">→</button>
+
+                  <div class="nudgeSpacer nbtn btn"> </div>
+                  <button class="btn nbtn" id="nDown" title="Nudge down" type="button">↓</button>
+                  <div class="nudgeSpacer nbtn btn"> </div>
+                </div>
+
+                <div class="hr"></div>
+
+                <div class="miniHelp" style="margin-bottom:8px;">Box color (applies to all selected)</div>
+                <div class="row tight" style="align-items:center;">
+                  <input type="color" id="uItemColor" value="#4aa3ff" />
+                  <span class="pill mono" id="uColorPill">none</span>
+                  <button class="btn" id="uClearColor" type="button">Clear</button>
+                </div>
+                <div class="miniHelp" style="margin-top:6px;">
+                  Pro tip: if selection is mixed, pick a color anyway and it will unify the squad.
+                </div>
+
+                <div class="hr"></div>
+
+                <div class="miniHelp" style="margin-bottom:8px;">Label size (applies to all selected)</div>
+                <div class="field" style="margin:0;">
+                  <label>Label Size</label>
+                  <input type="range" min="60" max="160" value="100" id="uLabelSize" />
+                  <div class="row tight" style="justify-content:space-between;">
+                    <span class="miniHelp">60%</span>
+                    <span class="pill" id="uLabelSizePill">100%</span>
+                    <span class="miniHelp">160%</span>
+                  </div>
+                </div>
               </div>
 
-              <div class="miniHelp" style="margin-top:6px;">
-                Touch tip: put two fingers on the selected item and pinch to scale.
+              <div style="flex:1; min-width: 240px;">
+                <div class="miniHelp" style="margin-bottom:8px;">Size + Scale (pinch on touch screens)</div>
+
+                <div class="row tight" style="align-items:flex-end;">
+                  <div class="field" style="width: 120px; margin:0;">
+                    <label>Width (<span class="unitInline">ft</span>)</label>
+                    <input type="number" id="uItemW" min="0.1" step="0.1" />
+                  </div>
+                  <div class="field" style="width: 120px; margin:0;">
+                    <label>Depth (<span class="unitInline">ft</span>)</label>
+                    <input type="number" id="uItemH" min="0.1" step="0.1" />
+                  </div>
+                </div>
+
+                <div class="row tight" style="margin-top:10px;">
+                  <div style="flex:1;">
+                    <div class="field" style="margin:0;">
+                      <label>Scale (footprint)</label>
+                      <input type="range" min="50" max="200" value="100" id="uItemScale" />
+                      <div class="row tight" style="justify-content:space-between;">
+                        <span class="miniHelp">50%</span>
+                        <span class="pill" id="uItemScalePill">100%</span>
+                        <span class="miniHelp">200%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="miniHelp" style="margin-top:6px;">
+                  Touch tip: put two fingers on the selected item and pinch to scale.
+                </div>
               </div>
             </div>
           </div>
@@ -808,10 +848,10 @@
   <section class="card" id="infoCard">
     <div class="hd">
       <h2>One-Page Info</h2>
-      <button class="btn" id="btnDup">Duplicate</button>
+      <button class="btn" id="btnDup" type="button">Duplicate</button>
     </div>
     <div class="bd" id="infoBody">
-      <button class="accBtn" id="accInfoBtn">
+      <button class="accBtn" id="accInfoBtn" type="button">
         <span>Info + Lists</span><span class="chev" id="accInfoChev">▾</span>
       </button>
 
@@ -1030,6 +1070,17 @@
     accInfoChev: document.getElementById("accInfoChev"),
     libAccContent: document.getElementById("libAccContent"),
     infoAccContent: document.getElementById("infoAccContent"),
+
+    // Tooling accordion
+    accToolsLayoutBtn: document.getElementById("accToolsLayoutBtn"),
+    accToolsViewBtn: document.getElementById("accToolsViewBtn"),
+    accToolsSelBtn: document.getElementById("accToolsSelBtn"),
+    accToolsLayoutChev: document.getElementById("accToolsLayoutChev"),
+    accToolsViewChev: document.getElementById("accToolsViewChev"),
+    accToolsSelChev: document.getElementById("accToolsSelChev"),
+    toolsLayoutAccContent: document.getElementById("toolsLayoutAccContent"),
+    toolsViewAccContent: document.getElementById("toolsViewAccContent"),
+    toolsSelAccContent: document.getElementById("toolsSelAccContent"),
 
     underStageTools: document.getElementById("underStageTools"),
     underSelName: document.getElementById("underSelName"),
@@ -1588,6 +1639,7 @@
         if(!mod){
           setSelection([it.id], it.id);
           openInfoAccordionIfMobile();
+          openToolsSelectedIfMobile();
           return;
         }
         const set = new Set(state.selectedIds);
@@ -1595,6 +1647,7 @@
         const arr = Array.from(set);
         setSelection(arr, state.primaryId && set.has(state.primaryId) ? state.primaryId : (arr[0] || null));
         openInfoAccordionIfMobile();
+        openToolsSelectedIfMobile();
       });
 
       els.stageCanvas.appendChild(el);
@@ -1693,6 +1746,7 @@
     render();
     save();
     openInfoAccordionIfMobile();
+    openToolsSelectedIfMobile();
   }
 
   function addMisc(size){
@@ -1727,6 +1781,7 @@
     render();
     save();
     openInfoAccordionIfMobile();
+    openToolsSelectedIfMobile();
   }
 
   // ---------- Drag + Pinch handling ----------
@@ -1757,12 +1812,15 @@
     if(!state.selectedIds.includes(id) && !mod){
       setSelection([id], id);
       openInfoAccordionIfMobile();
+      openToolsSelectedIfMobile();
     }else if(!state.selectedIds.includes(id) && mod){
       const arr = Array.from(new Set([...state.selectedIds, id]));
       setSelection(arr, state.primaryId || id);
       openInfoAccordionIfMobile();
+      openToolsSelectedIfMobile();
     }else{
       openInfoAccordionIfMobile();
+      openToolsSelectedIfMobile();
     }
 
     const primary = getPrimary();
@@ -1886,16 +1944,35 @@
   function loadUIState(){
     try{
       const raw = localStorage.getItem(LS_UI);
-      if(!raw) return { libOpen:true, infoOpen:true };
+      if(!raw) return {
+        libOpen:true,
+        infoOpen:true,
+        toolsLayoutOpen:true,
+        toolsViewOpen:true,
+        toolsSelOpen:true
+      };
       const obj = JSON.parse(raw);
-      return { libOpen: !!obj.libOpen, infoOpen: !!obj.infoOpen };
+      return {
+        libOpen: !!obj.libOpen,
+        infoOpen: !!obj.infoOpen,
+        toolsLayoutOpen: (obj.toolsLayoutOpen !== false),
+        toolsViewOpen: (obj.toolsViewOpen !== false),
+        toolsSelOpen: (obj.toolsSelOpen !== false),
+      };
     }catch(e){
-      return { libOpen:true, infoOpen:true };
+      return {
+        libOpen:true,
+        infoOpen:true,
+        toolsLayoutOpen:true,
+        toolsViewOpen:true,
+        toolsSelOpen:true
+      };
     }
   }
   function saveUIState(ui){
     localStorage.setItem(LS_UI, JSON.stringify(ui));
   }
+
   function applyAccordions(){
     const isMobile = window.matchMedia("(max-width: 980px)").matches;
     const ui = loadUIState();
@@ -1903,8 +1980,15 @@
     if(!isMobile){
       els.libAccContent.classList.remove("accHidden");
       els.infoAccContent.classList.remove("accHidden");
+      els.toolsLayoutAccContent.classList.remove("tAccHidden");
+      els.toolsViewAccContent.classList.remove("tAccHidden");
+      els.toolsSelAccContent.classList.remove("tAccHidden");
+
       els.accLibChev.textContent = "▾";
       els.accInfoChev.textContent = "▾";
+      els.accToolsLayoutChev.textContent = "▾";
+      els.accToolsViewChev.textContent = "▾";
+      els.accToolsSelChev.textContent = "▾";
       return;
     }
 
@@ -1923,6 +2007,30 @@
       els.infoAccContent.classList.add("accHidden");
       els.accInfoChev.textContent = "▸";
     }
+
+    if(ui.toolsLayoutOpen){
+      els.toolsLayoutAccContent.classList.remove("tAccHidden");
+      els.accToolsLayoutChev.textContent = "▾";
+    }else{
+      els.toolsLayoutAccContent.classList.add("tAccHidden");
+      els.accToolsLayoutChev.textContent = "▸";
+    }
+
+    if(ui.toolsViewOpen){
+      els.toolsViewAccContent.classList.remove("tAccHidden");
+      els.accToolsViewChev.textContent = "▾";
+    }else{
+      els.toolsViewAccContent.classList.add("tAccHidden");
+      els.accToolsViewChev.textContent = "▸";
+    }
+
+    if(ui.toolsSelOpen){
+      els.toolsSelAccContent.classList.remove("tAccHidden");
+      els.accToolsSelChev.textContent = "▾";
+    }else{
+      els.toolsSelAccContent.classList.add("tAccHidden");
+      els.accToolsSelChev.textContent = "▸";
+    }
   }
 
   function toggleLibAccordion(){
@@ -1937,12 +2045,42 @@
     saveUIState(ui);
     applyAccordions();
   }
+  function toggleToolsLayoutAccordion(){
+    const ui = loadUIState();
+    ui.toolsLayoutOpen = !ui.toolsLayoutOpen;
+    saveUIState(ui);
+    applyAccordions();
+  }
+  function toggleToolsViewAccordion(){
+    const ui = loadUIState();
+    ui.toolsViewOpen = !ui.toolsViewOpen;
+    saveUIState(ui);
+    applyAccordions();
+  }
+  function toggleToolsSelAccordion(){
+    const ui = loadUIState();
+    ui.toolsSelOpen = !ui.toolsSelOpen;
+    saveUIState(ui);
+    applyAccordions();
+  }
+
   function openInfoAccordionIfMobile(){
     const isMobile = window.matchMedia("(max-width: 980px)").matches;
     if(!isMobile) return;
     const ui = loadUIState();
     if(!ui.infoOpen){
       ui.infoOpen = true;
+      saveUIState(ui);
+      applyAccordions();
+    }
+  }
+
+  function openToolsSelectedIfMobile(){
+    const isMobile = window.matchMedia("(max-width: 980px)").matches;
+    if(!isMobile) return;
+    const ui = loadUIState();
+    if(!ui.toolsSelOpen){
+      ui.toolsSelOpen = true;
       saveUIState(ui);
       applyAccordions();
     }
@@ -2333,6 +2471,10 @@
   // Accordions
   els.accLibBtn.addEventListener("click", toggleLibAccordion);
   els.accInfoBtn.addEventListener("click", toggleInfoAccordion);
+
+  els.accToolsLayoutBtn.addEventListener("click", toggleToolsLayoutAccordion);
+  els.accToolsViewBtn.addEventListener("click", toggleToolsViewAccordion);
+  els.accToolsSelBtn.addEventListener("click", toggleToolsSelAccordion);
 
   window.addEventListener("resize", () => {
     applyAccordions();
