@@ -1,11 +1,3 @@
-Yep - on desktop your current HTML order means anything you add between the left and right cards will try to fill the 3-column grid left-to-right, so the “Layout” block can’t reliably become “top of the middle column” unless we give the middle column its own stacked container.
-
-Below is v1.6.2 (UI Layout) with this fix:
-	•	Desktop: Left = Library, Middle = Layout (top) + Stage (below), Right = Info
-	•	Mobile: Middle column stack stays first, so Layout shows first, then Stage, then Library, then Info (same behavior you said was already correct)
-
-Drop-in full file:
-
 <!doctype html>
 <html lang="en">
 <head>
