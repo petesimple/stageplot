@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0b0d12" />
-  <title>StagePlot v2 - Guide (v1.6.1)</title>
+  <title>StagePlot v2 - Guide (v1.6.3)</title>
   <style>
     :root{
       --bg:#0b0d12;
@@ -298,7 +298,7 @@
         </div>
       </div>
       <div class="row tight">
-        <span class="pill">Guide v1.6.1</span>
+        <span class="pill">Guide v1.6.3</span>
         <a class="button primary" id="btnOpenApp" href="./index.html">Open the app</a>
         <button class="btn" id="btnShare">Share + QR</button>
         <a class="button ok" id="btnDonateTop" href="https://www.paypal.com/donate/?hosted_button_id=4BP339J2UAL46" target="_blank" rel="noopener">Donate</a>
@@ -310,12 +310,47 @@
 <main>
   <section class="card">
     <div class="hd">
+      <h2>Whats New in v1.6.3</h2>
+      <span class="pill">UI layout update</span>
+    </div>
+    <div class="bd">
+      <div class="grid2">
+        <div>
+          <div class="miniHelp"><b>Layout section moved</b></div>
+          <ul>
+            <li><b>Mobile:</b> the <b>Layout</b> section is shown first (top of the panel).</li>
+            <li><b>Desktop (PC/Mac):</b> <b>Layout</b> is at the top of the middle section for quicker access.</li>
+          </ul>
+          <div class="hr"></div>
+          <div class="miniHelp"><b>Tooling lives under the stage</b></div>
+          <ul>
+            <li>All the on-canvas tools (nudge, center, resize, zoom tools, etc.) sit <b>below the stage</b>.</li>
+            <li>If you are looking for the buttons, scroll under the stage area first.</li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="miniHelp"><b>Why it matters</b></div>
+          <ul>
+            <li>You set the stage layout faster, then place gear without hunting for controls.</li>
+            <li>The stage stays visually clean, and the controls stay predictable.</li>
+          </ul>
+          <div class="miniHelp" style="margin-top:10px;">
+            If you share a screenshot with someone, tell them: "Layout is first on mobile, tools are under the stage."
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="hd">
       <h2>Quick Links</h2>
       <span class="pill">Fast stuff first</span>
     </div>
     <div class="bd">
       <div class="miniHelp">
-        If you are in a hurry, this is the “get in, get it done, get paid” section.
+        If you are in a hurry, this is the "get in, get it done, get paid" section.
       </div>
 
       <div class="linkList">
@@ -364,6 +399,7 @@
         <div>
           <div class="miniHelp">1) Set your stage size</div>
           <ul>
+            <li>Open the <b>Layout</b> section.</li>
             <li>Pick a preset: Small, Medium, Large.</li>
             <li>Or choose Custom and type <code>Width</code> and <code>Depth</code>.</li>
             <li>Toggle <code>ft/m</code> whenever you feel like living dangerously.</li>
@@ -383,7 +419,7 @@
           <ul>
             <li>Drag an item to move it.</li>
             <li>Shift, Cmd, or Ctrl click to multi select.</li>
-            <li>Use the under-stage tools to nudge, center, and resize.</li>
+            <li>All the on-canvas tools are <b>below the stage</b> (nudge, center, resize, and friends).</li>
           </ul>
 
           <div class="hr"></div>
@@ -520,7 +556,7 @@
     </div>
     <div class="bd">
       <div class="miniHelp">
-        If StagePlot saved you 20 minutes of stage chaos, consider tossing a few bucks in the tip jar. It helps keep the project moving and keeps the app from turning into a sad little folder named “final_final_REAL2”.
+        If StagePlot saved you 20 minutes of stage chaos, consider tossing a few bucks in the tip jar. It helps keep the project moving and keeps the app from turning into a sad little folder named "final_final_REAL2".
       </div>
 
       <div class="row" style="margin-top:12px;">
@@ -541,10 +577,12 @@
     </div>
     <div class="bd">
       <ul>
+        <li><b>I cannot find Layout</b> - On mobile it is first. On desktop it is at the top of the middle panel section.</li>
+        <li><b>I cannot find the tools</b> - Scroll under the stage. All tooling sits below the stage area in v1.6.3.</li>
         <li><b>My items look huge</b> - Check <code>View Zoom</code> and reset it to 100% in the app.</li>
         <li><b>I cannot pinch to scale</b> - Make sure the item is selected, then pinch directly on it using two fingers.</li>
         <li><b>My changes disappeared</b> - If the browser storage was cleared, import your exported JSON to restore.</li>
-        <li><b>Nothing happens when I hit Clear</b> - Clear is meant to clear selection, not wipe the stage. (If you want a “Reset Stage” button, add one and make it loud.)</li>
+        <li><b>Nothing happens when I hit Clear</b> - Clear is meant to clear selection, not wipe the stage. (If you want a "Reset Stage" button, add one and make it loud.)</li>
       </ul>
     </div>
   </section>
