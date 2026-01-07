@@ -1,3 +1,11 @@
+Yep - on desktop your current HTML order means anything you add between the left and right cards will try to fill the 3-column grid left-to-right, so the “Layout” block can’t reliably become “top of the middle column” unless we give the middle column its own stacked container.
+
+Below is v1.6.2 (UI Layout) with this fix:
+	•	Desktop: Left = Library, Middle = Layout (top) + Stage (below), Right = Info
+	•	Mobile: Middle column stack stays first, so Layout shows first, then Stage, then Library, then Info (same behavior you said was already correct)
+
+Drop-in full file:
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -161,14 +169,12 @@
       align-items:start;
     }
 
-    /* NEW: middle column wrapper so Layout can sit above Stage in desktop,
-       and also be first on mobile */
+    /* Middle column stack: Layout (top) + Stage (below) */
     #midCol{
-      grid-column: 2;
       display:flex;
       flex-direction:column;
-      gap: 12px;
-      min-width: 0;
+      gap:12px;
+      min-width:0;
     }
 
     .card{
@@ -513,8 +519,7 @@
     @media (max-width: 980px){
       main{ grid-template-columns: 1fr; }
       .accBtn{ display:flex; }
-      /* Order: middle column first (Layout then Stage), then Library, then Info */
-      #midCol{ order: 1; grid-column:auto; }
+      #midCol{ order: 1; }
       #libCard{ order: 2; }
       #infoCard{ order: 3; }
     }
@@ -526,7 +531,7 @@
       main{ display:block !important; max-width: 7.8in !important; padding: 0 !important; }
       .card{ box-shadow:none !important; background:#fff !important; border: 1px solid #ddd !important; margin-bottom: 10px !important; }
       .card .hd{ border-bottom:1px solid #ddd !important; }
-      .pill, .actions, .accBtn, #libCard { display:none !important; }
+      .pill, .actions, .accBtn, #libCard, #layoutCard { display:none !important; }
       #stageCard .bd{ padding: 10px !important; }
       .stageSquare{ border: 1px solid #ddd !important; }
       .stageSquareInner{ inset: 8px !important; border: 1px solid #ddd !important; }
@@ -547,7 +552,7 @@
         <div class="logo" aria-hidden="true">SP</div>
         <div>
           <h1>StagePlot v2</h1>
-          <div class="sub">v1.6.2 (UI Layout) - layout section pinned to top of middle column on desktop and first on mobile</div>
+          <div class="sub">v1.6.2 (UI Layout) - layout moved to top of middle column on desktop + first on mobile</div>
         </div>
       </div>
 
@@ -604,33 +609,30 @@
     </div>
   </section>
 
-  <!-- MIDDLE COLUMN: Layout first, then Stage -->
+  <!-- MIDDLE COLUMN STACK -->
   <div id="midCol">
-    <!-- LAYOUT (now its own card at top of the middle column) -->
+
+    <!-- LAYOUT (TOP OF MIDDLE COLUMN) -->
     <section class="card" id="layoutCard">
       <div class="hd">
         <h2>Layout</h2>
-        <div class="row tight">
-          <span class="pill" id="unitsPill">Units: ft</span>
-          <button class="btn" id="btnUnits">Toggle ft/m</button>
-          <button class="btn" id="btnFlip">Stage View</button>
-          <button class="btn" id="btnClearSel" title="Clears selection only">Clear</button>
-          <button class="btn warn" id="btnResetStage" title="Resets stage, view, notes, and removes items">Reset Stage</button>
-        </div>
+        <span class="pill">Stage sizing</span>
       </div>
       <div class="bd">
-        <div class="field" style="margin-bottom:12px;">
-          <label>Stage preset</label>
-          <div class="seg">
-            <button class="btn" data-preset="small">Small</button>
-            <button class="btn" data-preset="med">Medium</button>
-            <button class="btn" data-preset="large">Large</button>
-            <button class="btn" data-preset="custom">Custom</button>
-          </div>
-        </div>
-
         <div class="row tight" style="justify-content:space-between;">
-          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <div style="flex:1; min-width: 210px;">
+            <div class="field" style="margin:0;">
+              <label>Stage preset</label>
+              <div class="seg">
+                <button class="btn" data-preset="small">Small</button>
+                <button class="btn" data-preset="med">Medium</button>
+                <button class="btn" data-preset="large">Large</button>
+                <button class="btn" data-preset="custom">Custom</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
             <div class="field" style="width: 140px; margin:0;">
               <label>Width (<span id="unitLabelW">ft</span>)</label>
               <input type="number" min="1" step="0.1" id="stageW" />
@@ -640,38 +642,52 @@
               <input type="number" min="1" step="0.1" id="stageD" />
             </div>
           </div>
-
-          <div style="flex:1; min-width: 240px;">
-            <div class="field" style="margin:0;">
-              <label>View Zoom (inside square)</label>
-              <input type="range" min="50" max="200" value="100" id="viewZoom" />
-              <div class="row tight" style="justify-content:space-between;">
-                <span class="miniHelp">50%</span>
-                <span class="pill" id="viewZoomPill">100%</span>
-                <span class="miniHelp">200%</span>
-              </div>
-            </div>
-          </div>
-
-          <div style="display:flex; gap:8px; align-items:flex-end;">
-            <button class="btn" id="btnResetView">Reset View (100%)</button>
-          </div>
         </div>
 
         <div class="miniHelp" style="margin-top:10px;">
-          The stage always fits in the square at 100%. View Zoom can intentionally zoom in for detail.
+          The stage always fits in the square at 100% - View Zoom can intentionally zoom in for detail.
         </div>
       </div>
     </section>
 
-    <!-- STAGE -->
+    <!-- STAGE (BELOW LAYOUT) -->
     <section class="card" id="stageCard">
       <div class="hd">
         <h2>Stage</h2>
-        <span class="pill mono" id="stageMetaText">24 x 16 ft</span>
+        <div class="row tight">
+          <span class="pill" id="unitsPill">Units: ft</span>
+          <button class="btn" id="btnUnits">Toggle ft/m</button>
+          <button class="btn" id="btnFlip">Stage View</button>
+          <button class="btn" id="btnClearSel" title="Clears selection only">Clear</button>
+          <button class="btn warn" id="btnResetStage" title="Resets stage, view, notes, and removes items">Reset Stage</button>
+        </div>
       </div>
+
       <div class="bd">
         <div class="stageWrap">
+
+          <!-- View tools -->
+          <div class="card" style="box-shadow:none;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.02);">
+            <div class="bd" style="padding:12px;">
+              <div class="row" style="justify-content:space-between;">
+                <div style="flex:1; min-width: 240px;">
+                  <div class="field" style="margin:0;">
+                    <label>View Zoom (inside square)</label>
+                    <input type="range" min="50" max="200" value="100" id="viewZoom" />
+                    <div class="row tight" style="justify-content:space-between;">
+                      <span class="miniHelp">50%</span>
+                      <span class="pill" id="viewZoomPill">100%</span>
+                      <span class="miniHelp">200%</span>
+                    </div>
+                  </div>
+                </div>
+                <div style="display:flex; gap:8px; align-items:flex-end;">
+                  <button class="btn" id="btnResetView">Reset View (100%)</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="stageSquare" id="stageSquare">
             <div class="stageSquareInner" id="stageSquareInner">
               <div class="stageCanvas" id="stageCanvas">
@@ -684,7 +700,7 @@
           </div>
 
           <div class="miniHelp" id="stageMeta">
-            Stage: <span class="mono" id="stageMetaTextDup" style="display:none;">24 x 16 ft</span>
+            Stage: <span class="mono" id="stageMetaText">24 x 16 ft</span>
           </div>
 
           <!-- Selected tools: under-stage -->
@@ -775,6 +791,7 @@
         </div>
       </div>
     </section>
+
   </div>
 
   <!-- INFO -->
@@ -1330,7 +1347,6 @@
     const allSame = scales.every(s => Math.abs(s - first) < 0.0001);
     if(allSame) return { count:sel.length, mode:"same", scale:first };
 
-    // mixed - we still return a usable value for the slider position
     return { count:sel.length, mode:"mixed", scale:first };
   }
 
@@ -1387,7 +1403,6 @@
     const primary = getPrimary();
     els.selLabel.textContent = primary ? primary.label : "none";
 
-    // Under-stage tools visibility
     if(primary){
       els.underStageTools.style.display = "block";
       els.underSelName.textContent = primary.label || "Item";
@@ -1396,7 +1411,6 @@
       els.underSelName.textContent = "none";
     }
 
-    // count pill for color scope
     els.colorScopeCount.textContent = String(state.selectedIds.length);
 
     const disabled = !primary;
@@ -1408,7 +1422,6 @@
       els.itemColor, els.clearColor, els.uItemColor, els.uClearColor
     ].forEach(el => el.disabled = disabled);
 
-    // Color pills
     const cs = selectionColorStatus();
     if(!cs.count){
       els.colorPill.textContent = "none";
@@ -1432,7 +1445,6 @@
       els.uItemColor.value = cs.color || "#4aa3ff";
     }
 
-    // Label size pills
     const ls = selectionLabelSizeStatus();
     if(!ls.count){
       els.labelSize.value = 100;
@@ -1706,7 +1718,6 @@
   }
 
   // ---------- Drag + Pinch handling ----------
-  // One pointer = drag. Two pointers on the selected item = pinch to scale (primary).
   let drag = null;
 
   let pinch = {
@@ -1741,14 +1752,11 @@
       openInfoAccordionIfMobile();
     }
 
-    // Track pointers for pinch (only if interacting with primary item)
     const primary = getPrimary();
     if(primary && primary.id === id){
       pinch.pointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
 
-      // If we now have two pointers, start pinch
       if(pinch.pointers.size === 2){
-        // Cancel drag if it was starting
         drag = null;
 
         const pts = Array.from(pinch.pointers.values());
@@ -1766,7 +1774,6 @@
       }
     }
 
-    // Otherwise, start drag with this pointer
     const start = stagePointFromPointer(e);
     const selectedSet = new Set(state.selectedIds);
 
@@ -1836,7 +1843,6 @@
     primary.scale = nextScale;
     clampItemInStage(primary);
 
-    // sync sliders (both places)
     const pct = Math.round(nextScale * 100);
     els.itemScale.value = pct;
     els.itemScalePill.textContent = pct + "%";
@@ -1973,7 +1979,7 @@
   els.btnUnits.addEventListener("click", () => {
     state.units = (state.units === "ft") ? "m" : "ft";
     updateUnitsUI();
-    updateSelectionUI(); // refresh item W/H display
+    updateSelectionUI();
     save();
   });
 
@@ -2000,7 +2006,6 @@
   els.bandName.addEventListener("input", () => { state.bandName = els.bandName.value; save(); });
   els.showNotes.addEventListener("input", () => { state.showNotes = els.showNotes.value; save(); });
 
-  // Reset stage
   els.btnResetStage.addEventListener("click", () => {
     const ok = confirm("Reset Stage?\nThis clears items, selection, band name, notes, and resets view and stage size.");
     if(!ok) return;
@@ -2029,7 +2034,6 @@
     save();
   });
 
-  // Item edits (shared helpers)
   function applyItemWHFromDisplay(it, wDisp, hDisp){
     const wFeet = clamp(displayToFeet(wDisp), 0.5, 200);
     const hFeet = clamp(displayToFeet(hDisp), 0.5, 200);
@@ -2073,11 +2077,9 @@
     save();
   });
 
-  // Label size (applies to selection)
   els.labelSize.addEventListener("input", () => applyLabelSizeToSelectionPct(els.labelSize.value));
   els.uLabelSize.addEventListener("input", () => applyLabelSizeToSelectionPct(els.uLabelSize.value));
 
-  // Width/Depth (info)
   els.itemW.addEventListener("change", () => {
     const it = getPrimary(); if(!it) return;
     applyItemWHFromDisplay(it, els.itemW.value, els.itemH.value);
@@ -2093,7 +2095,6 @@
     save();
   });
 
-  // Width/Depth (under-stage)
   els.uItemW.addEventListener("change", () => {
     const it = getPrimary(); if(!it) return;
     applyItemWHFromDisplay(it, els.uItemW.value, els.uItemH.value);
@@ -2109,7 +2110,6 @@
     save();
   });
 
-  // Scale (both places)
   function setPrimaryScalePct(pct){
     const it = getPrimary(); if(!it) return;
     it.scale = clamp(Number(pct)/100, 0.5, 2.0);
@@ -2142,14 +2142,12 @@
     save();
   });
 
-  // Color (applies to selection)
   els.itemColor.addEventListener("input", () => applyColorToSelection(els.itemColor.value));
   els.uItemColor.addEventListener("input", () => applyColorToSelection(els.uItemColor.value));
 
   els.clearColor.addEventListener("click", () => applyColorToSelection(""));
   els.uClearColor.addEventListener("click", () => applyColorToSelection(""));
 
-  // Under-stage nudge buttons
   function nudgeBtn(dx, dy){
     if(!state.selectedIds.length) return;
     const step = 0.25; // feet
@@ -2167,7 +2165,7 @@
   els.nUp.addEventListener("click", () => nudgeBtn(0, -1));
   els.nDown.addEventListener("click", () => nudgeBtn(0, 1));
   els.nLeft.addEventListener("click", () => nudgeBtn(-1, 0));
-  els.nRight.addEventListener("click", () => nudgeBtn(1, 0)); // fixed typo
+  els.nRight.addEventListener("click", () => nudgeBtn(1, 0));
   els.nCenter.addEventListener("click", () => {
     const it = getPrimary(); if(!it) return;
     const w = it.w * it.scale;
@@ -2177,7 +2175,6 @@
     render(); save();
   });
 
-  // Library controls
   els.libSearch.addEventListener("input", renderLibrary);
   els.libFilter.addEventListener("change", renderLibrary);
   els.btnMisc1.addEventListener("click", () => addMisc(1));
@@ -2187,7 +2184,6 @@
   els.btnClearSel.addEventListener("click", clearSelection);
   els.btnDup.addEventListener("click", duplicateSelected);
 
-  // Export / Import
   els.btnExport.addEventListener("click", () => {
     const project = {
       version: APP_VERSION,
@@ -2255,7 +2251,6 @@
     }
   });
 
-  // Print (in-app)
   els.btnPrint.addEventListener("click", () => {
     const prev = state.viewZoom;
     state.viewZoom = 1.0;
@@ -2271,7 +2266,6 @@
     }, 50);
   });
 
-  // Keyboard shortcuts
   window.addEventListener("keydown", (e) => {
     const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : "";
     const typing = (tag === "input" || tag === "textarea" || tag === "select");
@@ -2311,7 +2305,6 @@
     save();
   }
 
-  // Accordions
   els.accLibBtn.addEventListener("click", toggleLibAccordion);
   els.accInfoBtn.addEventListener("click", toggleInfoAccordion);
 
