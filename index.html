@@ -16,7 +16,7 @@
   })();
 </script>
   <meta name="theme-color" content="#0b0d12" />
-  <title>StagePlot v2 - v1.6.2 (UI Layout)</title>
+  <title>StagePlot v2 - v1.6.3 (UI/UX)</title>
 
   <style>
     :root{
@@ -161,12 +161,11 @@
       align-items:start;
     }
 
-    /* Middle column stack: Layout (top) + Stage (below) */
-    #midCol{
+    .midCol{
       display:flex;
       flex-direction:column;
       gap:12px;
-      min-width:0;
+      min-width: 0;
     }
 
     .card{
@@ -523,7 +522,7 @@
       main{ display:block !important; max-width: 7.8in !important; padding: 0 !important; }
       .card{ box-shadow:none !important; background:#fff !important; border: 1px solid #ddd !important; margin-bottom: 10px !important; }
       .card .hd{ border-bottom:1px solid #ddd !important; }
-      .pill, .actions, .accBtn, #libCard, #layoutCard { display:none !important; }
+      .pill, .actions, .accBtn, #libCard, #toolsCard { display:none !important; }
       #stageCard .bd{ padding: 10px !important; }
       .stageSquare{ border: 1px solid #ddd !important; }
       .stageSquareInner{ inset: 8px !important; border: 1px solid #ddd !important; }
@@ -531,7 +530,6 @@
       .item{ box-shadow:none !important; border-color:#111 !important; background:#fff !important; }
       .item .lbl{ color:#000 !important; text-shadow:none !important; }
       a{ color:#000 !important; text-decoration:none !important; }
-      .toolsCard{ display:none !important; }
     }
   </style>
 </head>
@@ -544,7 +542,7 @@
         <div class="logo" aria-hidden="true">SP</div>
         <div>
           <h1>StagePlot v2</h1>
-          <div class="sub">v1.6.2 (UI Layout) - layout moved to top of middle column on desktop + first on mobile</div>
+          <div class="sub">v1.6.3 (UI/UX) - stage first, all tooling below the map, cleaner desktop flow</div>
         </div>
       </div>
 
@@ -601,48 +599,10 @@
     </div>
   </section>
 
-  <!-- MIDDLE COLUMN STACK -->
-  <div id="midCol">
+  <!-- MIDDLE COLUMN: STAGE THEN TOOLING -->
+  <div class="midCol" id="midCol">
 
-    <!-- LAYOUT (TOP OF MIDDLE COLUMN) -->
-    <section class="card" id="layoutCard">
-      <div class="hd">
-        <h2>Layout</h2>
-        <span class="pill">Stage sizing</span>
-      </div>
-      <div class="bd">
-        <div class="row tight" style="justify-content:space-between;">
-          <div style="flex:1; min-width: 210px;">
-            <div class="field" style="margin:0;">
-              <label>Stage preset</label>
-              <div class="seg">
-                <button class="btn" data-preset="small">Small</button>
-                <button class="btn" data-preset="med">Medium</button>
-                <button class="btn" data-preset="large">Large</button>
-                <button class="btn" data-preset="custom">Custom</button>
-              </div>
-            </div>
-          </div>
-
-          <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
-            <div class="field" style="width: 140px; margin:0;">
-              <label>Width (<span id="unitLabelW">ft</span>)</label>
-              <input type="number" min="1" step="0.1" id="stageW" />
-            </div>
-            <div class="field" style="width: 140px; margin:0;">
-              <label>Depth (<span id="unitLabelD">ft</span>)</label>
-              <input type="number" min="1" step="0.1" id="stageD" />
-            </div>
-          </div>
-        </div>
-
-        <div class="miniHelp" style="margin-top:10px;">
-          The stage always fits in the square at 100% - View Zoom can intentionally zoom in for detail.
-        </div>
-      </div>
-    </section>
-
-    <!-- STAGE (BELOW LAYOUT) -->
+    <!-- STAGE -->
     <section class="card" id="stageCard">
       <div class="hd">
         <h2>Stage</h2>
@@ -657,29 +617,6 @@
 
       <div class="bd">
         <div class="stageWrap">
-
-          <!-- View tools -->
-          <div class="card" style="box-shadow:none;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.02);">
-            <div class="bd" style="padding:12px;">
-              <div class="row" style="justify-content:space-between;">
-                <div style="flex:1; min-width: 240px;">
-                  <div class="field" style="margin:0;">
-                    <label>View Zoom (inside square)</label>
-                    <input type="range" min="50" max="200" value="100" id="viewZoom" />
-                    <div class="row tight" style="justify-content:space-between;">
-                      <span class="miniHelp">50%</span>
-                      <span class="pill" id="viewZoomPill">100%</span>
-                      <span class="miniHelp">200%</span>
-                    </div>
-                  </div>
-                </div>
-                <div style="display:flex; gap:8px; align-items:flex-end;">
-                  <button class="btn" id="btnResetView">Reset View (100%)</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
           <div class="stageSquare" id="stageSquare">
             <div class="stageSquareInner" id="stageSquareInner">
               <div class="stageCanvas" id="stageCanvas">
@@ -694,93 +631,174 @@
           <div class="miniHelp" id="stageMeta">
             Stage: <span class="mono" id="stageMetaText">24 x 16 ft</span>
           </div>
+        </div>
+      </div>
+    </section>
 
-          <!-- Selected tools: under-stage -->
-          <div class="toolsCard" id="underStageTools" style="display:none;">
-            <div class="toolsTitle">
-              <div class="t">Selected item tools</div>
-              <span class="pill mono" id="underSelName">none</span>
-            </div>
+    <!-- TOOLING (ALL BELOW STAGE) -->
+    <section class="card" id="toolsCard">
+      <div class="hd">
+        <h2>Tooling</h2>
+        <span class="pill">Below stage</span>
+      </div>
 
-            <div class="row" style="gap:14px; align-items:flex-start;">
-              <div>
-                <div class="miniHelp" style="margin-bottom:8px;">Nudge (tap or use Shift + Arrows)</div>
-                <div class="nudgeGrid">
-                  <div class="nudgeSpacer nbtn btn"> </div>
-                  <button class="btn nbtn" id="nUp" title="Nudge up">↑</button>
-                  <div class="nudgeSpacer nbtn btn"> </div>
+      <div class="bd" style="display:flex; flex-direction:column; gap:12px;">
 
-                  <button class="btn nbtn" id="nLeft" title="Nudge left">←</button>
-                  <button class="btn nbtn" id="nCenter" title="Center on stage">◎</button>
-                  <button class="btn nbtn" id="nRight" title="Nudge right">→</button>
+        <!-- Layout -->
+        <div class="card" style="box-shadow:none;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.02);">
+          <div class="hd" style="border-bottom: 1px solid rgba(255,255,255,.08);">
+            <h2 style="margin:0;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.35px;font-weight:800;">Layout</h2>
+            <span class="pill">Stage sizing</span>
+          </div>
 
-                  <div class="nudgeSpacer nbtn btn"> </div>
-                  <button class="btn nbtn" id="nDown" title="Nudge down">↓</button>
-                  <div class="nudgeSpacer nbtn btn"> </div>
-                </div>
-
-                <div class="hr"></div>
-
-                <div class="miniHelp" style="margin-bottom:8px;">Box color (applies to all selected)</div>
-                <div class="row tight" style="align-items:center;">
-                  <input type="color" id="uItemColor" value="#4aa3ff" />
-                  <span class="pill mono" id="uColorPill">none</span>
-                  <button class="btn" id="uClearColor" type="button">Clear</button>
-                </div>
-                <div class="miniHelp" style="margin-top:6px;">
-                  Pro tip: if selection is mixed, pick a color anyway and it will unify the squad.
-                </div>
-
-                <div class="hr"></div>
-
-                <div class="miniHelp" style="margin-bottom:8px;">Label size (applies to all selected)</div>
+          <div class="bd" style="padding:12px;">
+            <div class="row tight" style="justify-content:space-between;">
+              <div style="flex:1; min-width: 210px;">
                 <div class="field" style="margin:0;">
-                  <label>Label Size</label>
-                  <input type="range" min="60" max="160" value="100" id="uLabelSize" />
-                  <div class="row tight" style="justify-content:space-between;">
-                    <span class="miniHelp">60%</span>
-                    <span class="pill" id="uLabelSizePill">100%</span>
-                    <span class="miniHelp">160%</span>
+                  <label>Stage preset</label>
+                  <div class="seg">
+                    <button class="btn" data-preset="small">Small</button>
+                    <button class="btn" data-preset="med">Medium</button>
+                    <button class="btn" data-preset="large">Large</button>
+                    <button class="btn" data-preset="custom">Custom</button>
                   </div>
                 </div>
               </div>
 
+              <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+                <div class="field" style="width: 140px; margin:0;">
+                  <label>Width (<span id="unitLabelW">ft</span>)</label>
+                  <input type="number" min="1" step="0.1" id="stageW" />
+                </div>
+                <div class="field" style="width: 140px; margin:0;">
+                  <label>Depth (<span id="unitLabelD">ft</span>)</label>
+                  <input type="number" min="1" step="0.1" id="stageD" />
+                </div>
+              </div>
+            </div>
+
+            <div class="miniHelp" style="margin-top:10px;">
+              The stage always fits in the square at 100%. View Zoom can intentionally zoom in for detail.
+            </div>
+          </div>
+        </div>
+
+        <!-- View tools -->
+        <div class="card" style="box-shadow:none;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.02);">
+          <div class="hd" style="border-bottom: 1px solid rgba(255,255,255,.08);">
+            <h2 style="margin:0;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.35px;font-weight:800;">View</h2>
+            <span class="pill" id="viewZoomPill">100%</span>
+          </div>
+
+          <div class="bd" style="padding:12px;">
+            <div class="row" style="justify-content:space-between;">
               <div style="flex:1; min-width: 240px;">
-                <div class="miniHelp" style="margin-bottom:8px;">Size + Scale (pinch on touch screens)</div>
-
-                <div class="row tight" style="align-items:flex-end;">
-                  <div class="field" style="width: 120px; margin:0;">
-                    <label>Width (<span class="unitInline">ft</span>)</label>
-                    <input type="number" id="uItemW" min="0.1" step="0.1" />
-                  </div>
-                  <div class="field" style="width: 120px; margin:0;">
-                    <label>Depth (<span class="unitInline">ft</span>)</label>
-                    <input type="number" id="uItemH" min="0.1" step="0.1" />
+                <div class="field" style="margin:0;">
+                  <label>View Zoom (inside square)</label>
+                  <input type="range" min="50" max="200" value="100" id="viewZoom" />
+                  <div class="row tight" style="justify-content:space-between;">
+                    <span class="miniHelp">50%</span>
+                    <span class="pill" id="viewZoomPillInner">100%</span>
+                    <span class="miniHelp">200%</span>
                   </div>
                 </div>
-
-                <div class="row tight" style="margin-top:10px;">
-                  <div style="flex:1;">
-                    <div class="field" style="margin:0;">
-                      <label>Scale (footprint)</label>
-                      <input type="range" min="50" max="200" value="100" id="uItemScale" />
-                      <div class="row tight" style="justify-content:space-between;">
-                        <span class="miniHelp">50%</span>
-                        <span class="pill" id="uItemScalePill">100%</span>
-                        <span class="miniHelp">200%</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="miniHelp" style="margin-top:6px;">
-                  Touch tip: put two fingers on the selected item and pinch to scale.
-                </div>
+              </div>
+              <div style="display:flex; gap:8px; align-items:flex-end;">
+                <button class="btn" id="btnResetView">Reset View (100%)</button>
               </div>
             </div>
           </div>
-
         </div>
+
+        <!-- Selected tools -->
+        <div class="toolsCard" id="underStageTools" style="display:none;">
+          <div class="toolsTitle">
+            <div class="t">Selected item tools</div>
+            <span class="pill mono" id="underSelName">none</span>
+          </div>
+
+          <div class="row" style="gap:14px; align-items:flex-start;">
+            <div>
+              <div class="miniHelp" style="margin-bottom:8px;">Nudge (tap or use Shift + Arrows)</div>
+              <div class="nudgeGrid">
+                <div class="nudgeSpacer nbtn btn"> </div>
+                <button class="btn nbtn" id="nUp" title="Nudge up">↑</button>
+                <div class="nudgeSpacer nbtn btn"> </div>
+
+                <button class="btn nbtn" id="nLeft" title="Nudge left">←</button>
+                <button class="btn nbtn" id="nCenter" title="Center on stage">◎</button>
+                <button class="btn nbtn" id="nRight" title="Nudge right">→</button>
+
+                <div class="nudgeSpacer nbtn btn"> </div>
+                <button class="btn nbtn" id="nDown" title="Nudge down">↓</button>
+                <div class="nudgeSpacer nbtn btn"> </div>
+              </div>
+
+              <div class="hr"></div>
+
+              <div class="miniHelp" style="margin-bottom:8px;">Box color (applies to all selected)</div>
+              <div class="row tight" style="align-items:center;">
+                <input type="color" id="uItemColor" value="#4aa3ff" />
+                <span class="pill mono" id="uColorPill">none</span>
+                <button class="btn" id="uClearColor" type="button">Clear</button>
+              </div>
+              <div class="miniHelp" style="margin-top:6px;">
+                Pro tip: if selection is mixed, pick a color anyway and it will unify the squad.
+              </div>
+
+              <div class="hr"></div>
+
+              <div class="miniHelp" style="margin-bottom:8px;">Label size (applies to all selected)</div>
+              <div class="field" style="margin:0;">
+                <label>Label Size</label>
+                <input type="range" min="60" max="160" value="100" id="uLabelSize" />
+                <div class="row tight" style="justify-content:space-between;">
+                  <span class="miniHelp">60%</span>
+                  <span class="pill" id="uLabelSizePill">100%</span>
+                  <span class="miniHelp">160%</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="flex:1; min-width: 240px;">
+              <div class="miniHelp" style="margin-bottom:8px;">Size + Scale (pinch on touch screens)</div>
+
+              <div class="row tight" style="align-items:flex-end;">
+                <div class="field" style="width: 120px; margin:0;">
+                  <label>Width (<span class="unitInline">ft</span>)</label>
+                  <input type="number" id="uItemW" min="0.1" step="0.1" />
+                </div>
+                <div class="field" style="width: 120px; margin:0;">
+                  <label>Depth (<span class="unitInline">ft</span>)</label>
+                  <input type="number" id="uItemH" min="0.1" step="0.1" />
+                </div>
+              </div>
+
+              <div class="row tight" style="margin-top:10px;">
+                <div style="flex:1;">
+                  <div class="field" style="margin:0;">
+                    <label>Scale (footprint)</label>
+                    <input type="range" min="50" max="200" value="100" id="uItemScale" />
+                    <div class="row tight" style="justify-content:space-between;">
+                      <span class="miniHelp">50%</span>
+                      <span class="pill" id="uItemScalePill">100%</span>
+                      <span class="miniHelp">200%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="miniHelp" style="margin-top:6px;">
+                Touch tip: put two fingers on the selected item and pinch to scale.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="miniHelp">
+          Note: Width/Depth set the base footprint. Scale multiplies that footprint. View Zoom only changes your view.
+        </div>
+
       </div>
     </section>
 
@@ -931,7 +949,7 @@
 
 <script>
 (() => {
-  const APP_VERSION = "1.6.2 (UI Layout)";
+  const APP_VERSION = "1.6.3 (UI/UX)";
 
   // Internal units are FEET for compatibility.
   const FT_PER_M = 3.280839895;
@@ -1001,6 +1019,7 @@
 
     viewZoom: document.getElementById("viewZoom"),
     viewZoomPill: document.getElementById("viewZoomPill"),
+    viewZoomPillInner: document.getElementById("viewZoomPillInner"),
     btnResetView: document.getElementById("btnResetView"),
 
     btnRot0: document.getElementById("btnRot0"),
@@ -1379,6 +1398,7 @@
   function updateViewUI(){
     els.viewZoom.value = Math.round(state.viewZoom * 100);
     els.viewZoomPill.textContent = Math.round(state.viewZoom*100) + "%";
+    els.viewZoomPillInner.textContent = Math.round(state.viewZoom*100) + "%";
     els.btnFlip.textContent = state.view.flip ? "Audience View" : "Stage View";
     document.getElementById("upLabel").textContent = state.view.flip ? "AUDIENCE" : "UPSTAGE";
     document.getElementById("downLabel").textContent = state.view.flip ? "UPSTAGE" : "AUDIENCE";
@@ -1710,6 +1730,7 @@
   }
 
   // ---------- Drag + Pinch handling ----------
+  // One pointer = drag. Two pointers on the selected item = pinch to scale (primary).
   let drag = null;
 
   let pinch = {
@@ -1998,6 +2019,7 @@
   els.bandName.addEventListener("input", () => { state.bandName = els.bandName.value; save(); });
   els.showNotes.addEventListener("input", () => { state.showNotes = els.showNotes.value; save(); });
 
+  // Reset stage
   els.btnResetStage.addEventListener("click", () => {
     const ok = confirm("Reset Stage?\nThis clears items, selection, band name, notes, and resets view and stage size.");
     if(!ok) return;
@@ -2026,6 +2048,7 @@
     save();
   });
 
+  // Item edits (shared helpers)
   function applyItemWHFromDisplay(it, wDisp, hDisp){
     const wFeet = clamp(displayToFeet(wDisp), 0.5, 200);
     const hFeet = clamp(displayToFeet(hDisp), 0.5, 200);
@@ -2069,9 +2092,11 @@
     save();
   });
 
+  // Label size (applies to selection)
   els.labelSize.addEventListener("input", () => applyLabelSizeToSelectionPct(els.labelSize.value));
   els.uLabelSize.addEventListener("input", () => applyLabelSizeToSelectionPct(els.uLabelSize.value));
 
+  // Width/Depth (info)
   els.itemW.addEventListener("change", () => {
     const it = getPrimary(); if(!it) return;
     applyItemWHFromDisplay(it, els.itemW.value, els.itemH.value);
@@ -2087,6 +2112,7 @@
     save();
   });
 
+  // Width/Depth (tooling)
   els.uItemW.addEventListener("change", () => {
     const it = getPrimary(); if(!it) return;
     applyItemWHFromDisplay(it, els.uItemW.value, els.uItemH.value);
@@ -2102,6 +2128,7 @@
     save();
   });
 
+  // Scale (both places)
   function setPrimaryScalePct(pct){
     const it = getPrimary(); if(!it) return;
     it.scale = clamp(Number(pct)/100, 0.5, 2.0);
@@ -2134,12 +2161,14 @@
     save();
   });
 
+  // Color (applies to selection)
   els.itemColor.addEventListener("input", () => applyColorToSelection(els.itemColor.value));
   els.uItemColor.addEventListener("input", () => applyColorToSelection(els.uItemColor.value));
 
   els.clearColor.addEventListener("click", () => applyColorToSelection(""));
   els.uClearColor.addEventListener("click", () => applyColorToSelection(""));
 
+  // Under-stage nudge buttons
   function nudgeBtn(dx, dy){
     if(!state.selectedIds.length) return;
     const step = 0.25; // feet
@@ -2167,6 +2196,7 @@
     render(); save();
   });
 
+  // Library controls
   els.libSearch.addEventListener("input", renderLibrary);
   els.libFilter.addEventListener("change", renderLibrary);
   els.btnMisc1.addEventListener("click", () => addMisc(1));
@@ -2176,6 +2206,7 @@
   els.btnClearSel.addEventListener("click", clearSelection);
   els.btnDup.addEventListener("click", duplicateSelected);
 
+  // Export / Import
   els.btnExport.addEventListener("click", () => {
     const project = {
       version: APP_VERSION,
@@ -2243,6 +2274,7 @@
     }
   });
 
+  // Print (in-app)
   els.btnPrint.addEventListener("click", () => {
     const prev = state.viewZoom;
     state.viewZoom = 1.0;
@@ -2258,6 +2290,7 @@
     }, 50);
   });
 
+  // Keyboard shortcuts
   window.addEventListener("keydown", (e) => {
     const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : "";
     const typing = (tag === "input" || tag === "textarea" || tag === "select");
@@ -2297,6 +2330,7 @@
     save();
   }
 
+  // Accordions
   els.accLibBtn.addEventListener("click", toggleLibAccordion);
   els.accInfoBtn.addEventListener("click", toggleInfoAccordion);
 
