@@ -1,4 +1,4 @@
-StagePlot v2 (v1.6 - rainbow)
+StagePlot v2 (v1.6.3 - UI/UX)
 
 StagePlot v2 is a fast, offline-capable stage plot builder for bands, venues, and sound engineers.
 
@@ -6,12 +6,14 @@ Drag people and gear onto a stage, label inputs and monitor mixes, pinch to scal
 
 ⸻
 
-Whats new in v1.6 (rainbow)
-	•	Box color is back - set color for a selected item and yes, for multi-select too
-	•	Pinch-to-scale on touch screens for the selected item
-	•	Selected item tools under the stage - nudge + size + scale in one spot
-	•	Item sizing controls now support both gesture and sliders, plus numeric width/depth
-	•	Reset is back (real reset) - clear/clean the stage properly, not just a button that vibes quietly
+Whats new in v1.6.3 (UI/UX)
+	•	All stage tooling now lives below the stage for a clearer mental model
+	•	Tooling is grouped into a dedicated accordion section for cleaner mobile use
+	•	Layout and View controls are separated and ordered logically
+	•	Layout controls appear before View Zoom (stage first, camera second)
+	•	Selected item tools live with other tooling instead of floating the UI
+	•	Desktop keeps a clean 3-column layout while mobile stays thumb-friendly
+	•	No feature removals, just less visual noise and fewer “where did that go” moments
 
 ⸻
 
@@ -40,12 +42,14 @@ Quick tips
 	•	Touch screens: select an item, then pinch on the item to scale it
 	•	Nudge: use the on-screen arrows or Shift + Arrow keys
 	•	View Zoom is just your camera, not the actual stage size
+	•	On mobile, open the Tooling accordion to access Layout, View, and Selected tools
 
 ⸻
 
 Printing
 
-Hit Print to generate a clean handoff. For best results, keep View Zoom at 100 percent (Print auto-temporarily resets view to 100 percent so your plot doesnt print like you were zoomed in on a single wedge like its a nature documentary).
+Hit Print to generate a clean handoff.
+For best results, keep View Zoom at 100 percent. Print temporarily resets the view to 100 percent so your plot does not print like you zoomed in on a single wedge like it was a nature documentary.
 
 ⸻
 
@@ -78,7 +82,7 @@ MIT License
 Copyright (c) 2026 Pete Lippincott
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
+of this software and associated documentation files (the “Software”), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
@@ -87,7 +91,7 @@ furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
