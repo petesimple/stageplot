@@ -1,100 +1,107 @@
-StagePlot v2 (v1.6.3 - UI/UX)
+🎤 StagePlot v2
 
 StagePlot v2 is a fast, offline-capable stage plot builder for bands, venues, and sound engineers.
 
-Drag people and gear onto a stage, label inputs and monitor mixes, pinch to scale items, fine-tune with nudge controls and exact width/depth sizing, color-code boxes (even in multi-select), and print a clean one-page handoff (or save it as a PDF). No accounts, no drama, just “here is the plot, please do not mic the tambourine.”
+Drag musicians and gear onto a stage, label inputs and monitor mixes, scale footprints accurately, and print a clean one-page plot for load-in. No accounts, no logins, no nonsense.
+
+Built by a working musician for working musicians.
+
+🔗 Live app:
+https://petesimple.github.io/stageplot/
 
 ⸻
 
-Whats new in v1.6.3 (UI/UX)
-	•	All stage tooling now lives below the stage for a clearer mental model
-	•	Tooling is grouped into a dedicated accordion section for cleaner mobile use
-	•	Layout and View controls are separated and ordered logically
-	•	Layout controls appear before View Zoom (stage first, camera second)
-	•	Selected item tools live with other tooling instead of floating the UI
-	•	Desktop keeps a clean 3-column layout while mobile stays thumb-friendly
-	•	No feature removals, just less visual noise and fewer “where did that go” moments
+✨ Features
+
+🎛 Stage & Layout
+	•	Square stage canvas that always fits at 100% scale
+	•	Preset stage sizes (Small, Medium, Large) plus Custom
+	•	Toggle Stage View / Audience View
+	•	Optional view zoom (does not affect actual dimensions)
+	•	Supports feet and meters, switchable at any time
+
+🧩 Items & Editing
+	•	Add people, instruments, stage gear, and power drops
+	•	Drag to position, pinch-to-scale on touch screens
+	•	Width, depth, and scale controls
+	•	Rotation control with reset
+	•	Nudge controls (buttons or keyboard)
+	•	Duplicate and multi-select support
+
+🔷 Shapes & Visuals
+	•	Rectangle, Circle, Diamond, and Triangle shapes
+	•	Shape changes apply to multi-selection
+	•	Diamond and triangle shapes auto-handle label rotation
+	•	Per-item box color with multi-select color unification
+	•	Adjustable label size independent of item size
+
+📝 Labels & Lists
+	•	Editable labels, inputs, monitor mixes, and notes
+	•	Auto-generated Input List and Monitor Mix List
+	•	Clean one-page print layout for FOH or stage use
+
+📱 Mobile Friendly
+	•	Touch-first interactions
+	•	Pinch to scale items
+	•	Accordion panels for smaller screens
+	•	iOS double-tap zoom safely disabled only on stage area
+
+💾 Save & Share
+	•	Autosaves to browser storage
+	•	Export and import projects as JSON
+	•	Backwards-compatible project imports
+	•	Printable without losing layout fidelity
 
 ⸻
 
-What it does
-	•	Build a stage diagram in real-world feet or meters (toggle anytime)
-	•	Set stage size using presets (Small, Medium, Large) or custom Width/Depth
-	•	Add musicians and gear from a built-in library plus quick “Misc” blocks
-	•	Drag to place items, multi-select items, duplicate, delete
-	•	Pinch to scale items (touch) or use Scale sliders (desktop or mobile)
-	•	Adjust item footprint with Width/Depth controls
-	•	Rotate items and reset rotation
-	•	Color-code boxes for quick visual grouping (backline, wedges, power, etc.)
-	•	Auto-generate readable Inputs and Monitor Mix lists
-	•	Add show notes and per-item notes for the one-page print sheet
-	•	Flip between Stage View and Audience View
-	•	View Zoom lets you zoom your view for precise placement without changing real scale
-	•	Export and import a project JSON to share or archive
-	•	Print a clean one-page sheet
+🆕 What’s New in v1.7.3
+	•	Fixed item selection issues across browsers
+	•	Stable click selection (items stay selected for editing)
+	•	Label size scaling added
+	•	Shape system expanded to include Triangle
+	•	Improved touch handling for iOS and mobile browsers
+	•	Better separation between drag, click, and pinch gestures
 
 ⸻
 
-Quick tips
-	•	Click an item to select it
-	•	Shift, Cmd, or Ctrl click to multi-select
-	•	Drag selected items to move as a group
-	•	Touch screens: select an item, then pinch on the item to scale it
-	•	Nudge: use the on-screen arrows or Shift + Arrow keys
-	•	View Zoom is just your camera, not the actual stage size
-	•	On mobile, open the Tooling accordion to access Layout, View, and Selected tools
+🖨 Printing
+
+Click Print to generate a clean, one-page stage plot suitable for:
+	•	FOH
+	•	Monitor engineers
+	•	Venue advance emails
+
+Print view removes UI controls automatically.
 
 ⸻
 
-Printing
-
-Hit Print to generate a clean handoff.
-For best results, keep View Zoom at 100 percent. Print temporarily resets the view to 100 percent so your plot does not print like you zoomed in on a single wedge like it was a nature documentary.
-
-⸻
-
-Export and import
-	•	Export saves a JSON file with stage settings, items, labels, notes, and colors
-	•	Import restores a saved project (backward-friendly migrations included)
+🛠 Tech Notes
+	•	Single-file HTML, CSS, and JavaScript
+	•	No frameworks
+	•	No network dependency after load
+	•	Works best in Chrome and Safari
+	•	Firefox support improving (selection fixes in progress)
 
 ⸻
 
-Tech notes
-	•	Offline friendly (runs as a single static page)
-	•	Autosaves to localStorage
-	•	Internal units are feet for consistency; meters are a display toggle
-	•	Works on desktop, tablet, and phone
+❤️ Support the Project
+
+This is a free tool built and maintained in the open.
+
+If you find it useful and want to help keep it alive:
+
+💖 Donate here:
+https://www.paypal.com/donate/?hosted_button_id=4BP339J2UAL46
 
 ⸻
 
-Roadmap ideas
-	•	Snap-to-grid toggle
-	•	Alignment tools (line up, distribute)
-	•	Better grouping labels (color legend or tags)
-	•	Export as PDF button (one-tap)
+📣 Feedback & Contributions
 
-⸻
+Feedback is welcome and encouraged.
 
-License
+If something feels off:
+	•	Tell me what browser and OS you’re using
+	•	What you expected to happen
+	•	What actually happened
 
-MIT License
-
-Copyright (c) 2026 Pete Lippincott
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the “Software”), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+This app exists because musicians asked for it.
