@@ -5,27 +5,30 @@
   <meta name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
   <script>
-  // iOS/Safari: prevent double-tap to zoom ONLY on stage area, not on controls
+  // iOS/Safari: prevent double-tap to zoom on stage area only
   (() => {
     let lastTouchEnd = 0;
-    document.addEventListener('touchend', (e) => {
-      // Only prevent double-tap zoom on stage elements, not on interactive controls
-      const target = e.target;
-      const isStageArea = target.closest('#stageSquare, #stageCanvas, .item');
-      const isInteractive = target.closest('input, textarea, select, button, a, [role="button"]');
-      
-      if (isStageArea && !isInteractive) {
-        const now = Date.now();
-        if (now - lastTouchEnd <= 300) {
-          e.preventDefault();
-        }
-        lastTouchEnd = now;
+    // Wait for DOM to load, then attach to stage element
+    window.addEventListener('DOMContentLoaded', () => {
+      const stageArea = document.getElementById('stageSquare');
+      if(stageArea){
+        stageArea.addEventListener('touchend', (e) => {
+          // Only prevent if target is not an interactive control
+          const isInteractive = e.target.closest('input, textarea, select, button, a, [role="button"]');
+          if(!isInteractive){
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+              e.preventDefault();
+            }
+            lastTouchEnd = now;
+          }
+        }, { passive: false });
       }
-    }, { passive: false });
+    });
   })();
 </script>
   <meta name="theme-color" content="#0b0d12" />
-  <title>StagePlot v2 - v1.7.2 (Firefox + iOS Fixes)</title>
+  <title>StagePlot v2 - v1.7.3 (Triangle + Fixes)</title>
 
   <style>
     :root{
@@ -361,6 +364,11 @@
       border-radius: 4px;
       transform-origin: center;
     }
+    .item[data-shape="triangle"]{
+      border-radius: 4px;
+      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+      transform-origin: center;
+    }
 
     .item .lbl{
       font-size: 12px;
@@ -578,7 +586,7 @@
         <div class="logo" aria-hidden="true">SP</div>
         <div>
           <h1>StagePlot v2</h1>
-          <div class="sub">v1.7.2 (Firefox + iOS Fixes) - fixed Firefox selection bug, scoped iOS double-tap prevention, shapes feature</div>
+          <div class="sub">v1.7.3 (Triangle + Fixes) - fixed drag/pinch/click issues, added triangle shape, production ready</div>
         </div>
       </div>
 
@@ -978,6 +986,7 @@
             <button class="btn" data-shape="rectangle" type="button">Rectangle</button>
             <button class="btn" data-shape="circle" type="button">Circle</button>
             <button class="btn" data-shape="diamond" type="button">Diamond</button>
+            <button class="btn" data-shape="triangle" type="button">Triangle</button>
           </div>
         </div>
 
@@ -1014,7 +1023,7 @@
 
 <script>
 (() => {
-  const APP_VERSION = "1.7.2 (Firefox + iOS Fixes)";
+  const APP_VERSION = "1.7.3 (Triangle + Fixes)";
   const FT_PER_M = 3.280839895;
 
   const els = {
@@ -1604,39 +1613,45 @@
       el.style.top  = (d.y * pxPerFoot) + "px";
       el.style.width  = (d.w * pxPerFoot) + "px";
       el.style.height = (d.h * pxPerFoot) + "px";
+      
+      // Handle rotation based on shape
       if(it.shape === "diamond"){
         el.style.transform = `rotate(${d.rot + 45}deg)`;
       } else {
         el.style.transform = `rotate(${d.rot}deg)`;
       }
+      
       const lbl = document.createElement("div");
       lbl.className = "lbl";
       lbl.textContent = it.label || "Item";
       const ls = clamp(Number(it.labelScale || 1.0), 0.6, 1.6);
       lbl.style.fontSize = (12 * ls) + "px";
+      
+      // Counter-rotate label for diamond so text stays upright
       if(it.shape === "diamond"){
         lbl.style.transform = `rotate(-45deg)`;
       }
+      // Triangle labels stay with the shape rotation (no counter-rotation)
+      
       el.appendChild(lbl);
       el.addEventListener("pointerdown", onItemPointerDown);
       el.addEventListener("click", (ev) => {
-        // IMPORTANT: This is the ONLY place where item selection happens
-        // pointerdown only sets up drag/pinch - it does NOT change selection
-        // This prevents the Firefox bug where selection was being set then immediately cleared
+        // IMPORTANT: Selection happens here for modifier-based multi-select
+        // Non-modifier selection already happened in pointerdown (for immediate drag)
         
         // Don't change selection if we just finished dragging or pinching
-        if(hasMoved){
-          hasMoved = false;
+        // Check the gesture-specific hasMoved flags
+        if((drag && drag.hasMoved) || (pinch.hasMoved)){
           return;
         }
         
         ev.stopPropagation();
-        ev.preventDefault();
+        // Don't preventDefault - it can cause issues on mobile
         
         const mod = ev.shiftKey || ev.metaKey || ev.ctrlKey;
         if(!mod){
-          // Simple click: select only this item
-          setSelection([it.id], it.id);
+          // Simple click was already handled in pointerdown for immediate drag
+          // But we still open mobile panels in case pointerdown didn't fire
           openInfoAccordionIfMobile();
           openToolsSelectedIfMobile();
           return;
@@ -1783,9 +1798,9 @@
     itemId: null,
     pointers: new Map(),
     startDist: 0,
-    startScale: 1.0
+    startScale: 1.0,
+    hasMoved: false  // Track movement per pinch gesture
   };
-  let hasMoved = false; // Track if pointer has moved (for drag detection)
 
   function dist(a,b){
     const dx = a.x - b.x;
@@ -1794,25 +1809,31 @@
   }
 
   function onItemPointerDown(e){
-    // Only prevent default for touch to avoid text selection
-    // Don't call setSelection here - let click handler do it
     const id = e.currentTarget.dataset.id;
+    const mod = e.shiftKey || e.metaKey || e.ctrlKey;
     
-    hasMoved = false; // Reset movement flag
-    
-    // Setup for pinch gesture detection
-    const primary = getPrimary();
-    if(primary && primary.id === id){
-      pinch.pointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
-      if(pinch.pointers.size === 2){
+    // Setup for pinch gesture detection (works for any item, not just primary)
+    pinch.pointers.set(e.pointerId, { x:e.clientX, y:e.clientY, itemId:id });
+    if(pinch.pointers.size === 2){
+      // Check if both pointers are on the same item
+      const pointerItems = Array.from(pinch.pointers.values()).map(p => p.itemId);
+      if(pointerItems[0] === pointerItems[1]){
         e.preventDefault();
         e.stopPropagation();
         drag = null;
+        
+        // Select the item if not already selected (for pinch to work)
+        if(!state.selectedIds.includes(id)){
+          setSelection([id], id);
+        }
+        
         const pts = Array.from(pinch.pointers.values());
         pinch.active = true;
         pinch.itemId = id;
         pinch.startDist = dist(pts[0], pts[1]);
-        pinch.startScale = primary.scale || 1.0;
+        pinch.hasMoved = false;
+        const primary = getPrimary();
+        pinch.startScale = primary ? (primary.scale || 1.0) : 1.0;
         window.addEventListener("pointermove", onPinchMove, { passive:false });
         window.addEventListener("pointerup", onPinchUp, { once:false });
         window.addEventListener("pointercancel", onPinchUp, { once:false });
@@ -1821,7 +1842,12 @@
       }
     }
     
-    // Setup for drag - but don't modify selection yet
+    // Auto-select unselected item when no modifiers (enables immediate drag)
+    if(!state.selectedIds.includes(id) && !mod){
+      setSelection([id], id);
+    }
+    
+    // Setup for drag
     const start = stagePointFromPointer(e);
     const selectedSet = new Set(state.selectedIds);
     const offsets = {};
@@ -1834,7 +1860,8 @@
       offsets,
       selectedSet,
       startX: e.clientX,
-      startY: e.clientY
+      startY: e.clientY,
+      hasMoved: false  // Track movement per drag gesture
     };
     try{ e.currentTarget.setPointerCapture(e.pointerId); }catch(_){}
     window.addEventListener("pointermove", onDragMove, { passive:false });
@@ -1851,7 +1878,7 @@
     const dx = Math.abs(e.clientX - drag.startX);
     const dy = Math.abs(e.clientY - drag.startY);
     if(dx > 3 || dy > 3){
-      hasMoved = true;
+      drag.hasMoved = true;
     }
     
     const p = stagePointFromPointer(e);
@@ -1868,16 +1895,19 @@
   }
 
   function onDragUp(){
+    const didMove = drag && drag.hasMoved;
     drag = null;
     window.removeEventListener("pointermove", onDragMove);
+    // Return whether we moved so click handler can check
+    return didMove;
   }
 
   function onPinchMove(e){
     if(!pinch.active) return;
     if(!pinch.pointers.has(e.pointerId)) return;
     e.preventDefault();
-    hasMoved = true; // Mark as moved so click handler doesn't change selection
-    pinch.pointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
+    pinch.hasMoved = true; // Mark this pinch gesture as having moved
+    pinch.pointers.set(e.pointerId, { x:e.clientX, y:e.clientY, itemId:pinch.itemId });
     if(pinch.pointers.size !== 2) return;
     const primary = getPrimary();
     if(!primary || primary.id !== pinch.itemId) return;
@@ -1900,14 +1930,17 @@
   function onPinchUp(e){
     if(pinch.pointers.has(e.pointerId)) pinch.pointers.delete(e.pointerId);
     if(pinch.pointers.size < 2){
+      const didMove = pinch.hasMoved;
       pinch.active = false;
       pinch.itemId = null;
       pinch.startDist = 0;
       pinch.startScale = 1.0;
+      pinch.hasMoved = false;
       pinch.pointers.clear();
       window.removeEventListener("pointermove", onPinchMove);
       window.removeEventListener("pointerup", onPinchUp);
       window.removeEventListener("pointercancel", onPinchUp);
+      return didMove;
     }
   }
 
