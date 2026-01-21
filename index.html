@@ -28,7 +28,7 @@
   })();
 </script>
   <meta name="theme-color" content="#0b0d12" />
-  <title>StagePlot v2 - v1.7.3 (Triangle + Fixes)</title>
+  <title>StagePlot v2 - v1.7.4 (Circle Fix)</title>
 
   <style>
     :root{
@@ -359,6 +359,8 @@
     /* Shape variants */
     .item[data-shape="circle"]{
       border-radius: 50%;
+      padding: 0; /* Prevent padding from distorting the circle */
+      justify-content: center; /* Keep label centered with no padding */
     }
     .item[data-shape="diamond"]{
       border-radius: 4px;
@@ -586,7 +588,7 @@
         <div class="logo" aria-hidden="true">SP</div>
         <div>
           <h1>StagePlot v2</h1>
-          <div class="sub">v1.7.3 (Triangle + Fixes) - fixed drag/pinch/click issues, added triangle shape, production ready</div>
+          <div class="sub">v1.7.4 (Circle Fix) - circles now auto-square to prevent ovals, all shapes working perfectly</div>
         </div>
       </div>
 
@@ -1023,7 +1025,7 @@
 
 <script>
 (() => {
-  const APP_VERSION = "1.7.3 (Triangle + Fixes)";
+  const APP_VERSION = "1.7.4 (Circle Fix)";
   const FT_PER_M = 3.280839895;
 
   const els = {
@@ -1419,13 +1421,32 @@
     save();
   }
 
+  function enforceCircleSquare(item){
+    // When shape is circle, ensure width and height are equal
+    // Use max to avoid unexpected shrinking
+    const w = Number(item.w) || 2;
+    const h = Number(item.h) || 2;
+    const size = Math.max(w, h);
+    item.w = size;
+    item.h = size;
+  }
+
   function applyShapeToSelection(shape){
     if(!state.selectedIds.length) return;
     const set = new Set(state.selectedIds);
     state.items.forEach(it => {
       if(!set.has(it.id)) return;
+      
+      // Enforce square dimensions for circles to prevent ovals
+      if(shape === "circle"){
+        enforceCircleSquare(it);
+      }
+      
       it.shape = shape;
     });
+    
+    // Update UI to reflect any dimension changes
+    updateSelectionUI();
     updateShapeButtons();
     render();
     save();
