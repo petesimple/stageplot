@@ -28,7 +28,7 @@
   })();
 </script>
   <meta name="theme-color" content="#0b0d12" />
-  <title>StagePlot v2 - v1.7.4 (Circle Fix)</title>
+  <title>StagePlot v2 - v1.7.5 (Triangle Selection Fix)</title>
 
   <style>
     :root{
@@ -387,9 +387,23 @@
       outline: 2px solid rgba(74,163,255,.85);
       outline-offset: 2px;
     }
+    /* Triangle selection: outline doesn't work with clip-path, use box-shadow glow */
+    .item.selected[data-shape="triangle"]{
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(74,163,255,.85);
+    }
     .item.multi{
       outline: 2px solid rgba(64,217,138,.75);
       outline-offset: 2px;
+    }
+    /* Triangle multi-select: use box-shadow for clip-path compatibility */
+    .item.multi[data-shape="triangle"]{
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(64,217,138,.75);
+    }
+    /* Triangle with both selected and multi (primary in multi-select) */
+    .item.selected.multi[data-shape="triangle"]{
+      box-shadow: 0 0 0 3px rgba(74,163,255,.85);
     }
 
     /* Under-stage selected tools */
@@ -588,7 +602,7 @@
         <div class="logo" aria-hidden="true">SP</div>
         <div>
           <h1>StagePlot v2</h1>
-          <div class="sub">v1.7.4 (Circle Fix) - circles now auto-square to prevent ovals, all shapes working perfectly</div>
+          <div class="sub">v1.7.5 (Triangle Selection Fix) - triangle selection now visible via box-shadow glow</div>
         </div>
       </div>
 
@@ -1025,7 +1039,7 @@
 
 <script>
 (() => {
-  const APP_VERSION = "1.7.4 (Circle Fix)";
+  const APP_VERSION = "1.7.5 (Triangle Selection Fix)";
   const FT_PER_M = 3.280839895;
 
   const els = {
