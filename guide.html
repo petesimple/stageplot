@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0b0d12" />
-  <title>StagePlot v2 - Guide (v1.6.3)</title>
+  <title>StagePlot v2 - Guide (v1.7.3)</title>
   <style>
     :root{
       --bg:#0b0d12;
@@ -294,11 +294,11 @@
         <div class="logo" aria-hidden="true">SP</div>
         <div>
           <h1>StagePlot v2 Guide</h1>
-          <div class="sub">How to use it, how to share it, and how to bribe it with coffee money</div>
+          <div class="sub">How to use it, how to share it, and how to keep the triangle from hiding in plain sight</div>
         </div>
       </div>
       <div class="row tight">
-        <span class="pill">Guide v1.6.3</span>
+        <span class="pill">Guide v1.7.3</span>
         <a class="button primary" id="btnOpenApp" href="./index.html">Open the app</a>
         <button class="btn" id="btnShare">Share + QR</button>
         <a class="button ok" id="btnDonateTop" href="https://www.paypal.com/donate/?hosted_button_id=4BP339J2UAL46" target="_blank" rel="noopener">Donate</a>
@@ -310,34 +310,41 @@
 <main>
   <section class="card">
     <div class="hd">
-      <h2>Whats New in v1.6.3</h2>
-      <span class="pill">UI layout update</span>
+      <h2>Whats New in v1.7.3</h2>
+      <span class="pill">Triangle + Fixes</span>
     </div>
     <div class="bd">
       <div class="grid2">
         <div>
-          <div class="miniHelp"><b>Layout section moved</b></div>
+          <div class="miniHelp"><b>New shape: Triangle</b></div>
           <ul>
-            <li><b>Mobile:</b> the <b>Layout</b> section is shown first (top of the panel).</li>
-            <li><b>Desktop (PC/Mac):</b> <b>Layout</b> is at the top of the middle section for quicker access.</li>
+            <li>Select an item, then choose <b>Triangle</b> in the shape control.</li>
+            <li>Triangles use <code>clip-path</code>, so we show selection using a glow instead of outline.</li>
           </ul>
+
           <div class="hr"></div>
-          <div class="miniHelp"><b>Tooling lives under the stage</b></div>
+
+          <div class="miniHelp"><b>Circles stay circles</b></div>
           <ul>
-            <li>All the on-canvas tools (nudge, center, resize, zoom tools, etc.) sit <b>below the stage</b>.</li>
-            <li>If you are looking for the buttons, scroll under the stage area first.</li>
+            <li>Circle mode now enforces equal width and height so it does not turn into an oval.</li>
+            <li>If you had older stretched circles, toggle shape off and back to circle to re-normalize.</li>
           </ul>
         </div>
 
         <div>
-          <div class="miniHelp"><b>Why it matters</b></div>
+          <div class="miniHelp"><b>Triangle selection highlight</b></div>
           <ul>
-            <li>You set the stage layout faster, then place gear without hunting for controls.</li>
-            <li>The stage stays visually clean, and the controls stay predictable.</li>
+            <li>If a triangle is selected, you should see a visible glow. No more invisible selection.</li>
+            <li>Multi-select triangles also glow so you can see what is included.</li>
           </ul>
-          <div class="miniHelp" style="margin-top:10px;">
-            If you share a screenshot with someone, tell them: "Layout is first on mobile, tools are under the stage."
-          </div>
+
+          <div class="hr"></div>
+
+          <div class="miniHelp"><b>iOS double tap zoom reduction</b></div>
+          <ul>
+            <li>Stage area gestures are less likely to trigger Safari zoom.</li>
+            <li>If something feels odd on iPhone, reload once after installing as a PWA.</li>
+          </ul>
         </div>
       </div>
     </div>
@@ -429,6 +436,45 @@
             <li>Select an item and fill out <code>Input</code> and <code>Mix</code>.</li>
             <li>The Inputs and Monitor Mix lists auto-build from your items.</li>
           </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="hd">
+      <h2>Shapes</h2>
+      <span class="pill">Circle, Rectangle, Triangle</span>
+    </div>
+    <div class="bd">
+      <div class="grid2">
+        <div>
+          <div class="miniHelp"><b>Circle</b></div>
+          <ul>
+            <li>Circle mode forces width and height to match so circles do not become ovals.</li>
+            <li>Best for wedges, stools, mic stands, and that one percussionist who brought three shakers and a dream.</li>
+          </ul>
+
+          <div class="hr"></div>
+
+          <div class="miniHelp"><b>Rectangle</b></div>
+          <ul>
+            <li>Default shape for most gear and people.</li>
+            <li>Selection shows as an outline.</li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="miniHelp"><b>Triangle</b></div>
+          <ul>
+            <li>Great for marking corners, risers, or directional props.</li>
+            <li>Because triangles use <code>clip-path</code>, selection uses a glow highlight, not an outline.</li>
+            <li>If you do not see the glow, you are probably selecting something else (or the triangle is being sneaky).</li>
+          </ul>
+
+          <div class="miniHelp" style="margin-top:10px;">
+            Nerd note: <code>outline</code> is not reliable with <code>clip-path</code> in some browsers, so glow is the safer selection indicator.
+          </div>
         </div>
       </div>
     </div>
@@ -578,11 +624,11 @@
     <div class="bd">
       <ul>
         <li><b>I cannot find Layout</b> - On mobile it is first. On desktop it is at the top of the middle panel section.</li>
-        <li><b>I cannot find the tools</b> - Scroll under the stage. All tooling sits below the stage area in v1.6.3.</li>
+        <li><b>I cannot find the tools</b> - Scroll under the stage. All tooling sits below the stage area.</li>
         <li><b>My items look huge</b> - Check <code>View Zoom</code> and reset it to 100% in the app.</li>
         <li><b>I cannot pinch to scale</b> - Make sure the item is selected, then pinch directly on it using two fingers.</li>
         <li><b>My changes disappeared</b> - If the browser storage was cleared, import your exported JSON to restore.</li>
-        <li><b>Nothing happens when I hit Clear</b> - Clear is meant to clear selection, not wipe the stage. (If you want a "Reset Stage" button, add one and make it loud.)</li>
+        <li><b>Triangle is selected but I cannot tell</b> - Look for the glow highlight, triangles do not use outline selection.</li>
       </ul>
     </div>
   </section>
@@ -668,7 +714,6 @@
       toast("Copied");
       return true;
     }catch(e){
-      // fallback
       const ta = document.createElement("textarea");
       ta.value = text;
       ta.style.position = "fixed";
@@ -757,7 +802,6 @@
     g.setAttribute("fill", "#000000");
     svg.appendChild(g);
 
-    // draw as path for smaller DOM
     let d = "";
     for(let y=0;y<n;y++){
       for(let x=0;x<n;x++){
@@ -776,9 +820,7 @@
   }
 
   // Minimal QR encoder (Byte mode, EC level L/M/Q/H)
-  // Adapted from public-domain style compact logic.
   const QRCode = (function(){
-    // Galois field tables
     const EXP = new Array(512);
     const LOG = new Array(256);
     (function initGF(){
@@ -830,17 +872,14 @@
       return msg.slice(msg.length - ecLen);
     }
 
-    // QR capacities for Byte mode, EC level M, versions 1..10 (approx table)
     const CAP_M_BYTE = [0,
       14,26,42,62,84,106,122,152,180,213
     ];
 
-    // EC codewords per block total for level M (versions 1..10)
     const EC_M = [0,
       10,16,26,36,48,64,72,88,110,130
     ];
 
-    // Total codewords for versions 1..10
     const TOTAL_CODEWORDS = [0,
       26,44,70,100,134,172,196,242,292,346
     ];
@@ -873,7 +912,7 @@
     function makeMatrix(n){
       const m = new Array(n);
       for(let y=0;y<n;y++){
-        m[y] = new Array(n).fill(null); // null = unset
+        m[y] = new Array(n).fill(null);
       }
       return m;
     }
@@ -901,7 +940,6 @@
     }
 
     function setDarkModule(m, v){
-      // version v: dark module at (8, 4v + 9)
       m[4*v + 9][8] = 1;
     }
 
@@ -910,7 +948,7 @@
       let i = 0;
       let dirUp = true;
       for(let x=n-1; x>0; x-=2){
-        if(x===6) x--; // skip timing column
+        if(x===6) x--;
         for(let y0=0; y0<n; y0++){
           const y = dirUp ? (n-1-y0) : y0;
           for(let dx=0; dx<2; dx++){
@@ -925,11 +963,9 @@
     }
 
     function formatBits(ecLevel, maskId){
-      // L=01, M=00, Q=11, H=10
       const ecBits = (ecLevel==="M") ? 0 : (ecLevel==="L") ? 1 : (ecLevel==="H") ? 2 : 3;
       let data = (ecBits << 3) | maskId;
 
-      // BCH(15,5) with poly 0x537
       let d = data << 10;
       const poly = 0x537;
       for(let i=14;i>=10;i--){
@@ -945,7 +981,6 @@
 
       function bit(i){ return (bits >>> i) & 1; }
 
-      // around top-left
       const coords1 = [
         [8,0],[8,1],[8,2],[8,3],[8,4],[8,5],[8,7],[8,8],
         [7,8],[5,8],[4,8],[3,8],[2,8],[1,8],[0,8]
@@ -955,16 +990,14 @@
         m[y][x] = bit(14-i);
       }
 
-      // top-right and bottom-left
       const coords2 = [];
-      for(let i=0;i<8;i++) coords2.push([n-1-i,8]); // top-right row
-      for(let i=0;i<7;i++) coords2.push([8,n-7+i]); // bottom-left col
+      for(let i=0;i<8;i++) coords2.push([n-1-i,8]);
+      for(let i=0;i<7;i++) coords2.push([8,n-7+i]);
       for(let i=0;i<15;i++){
         const [x,y] = coords2[i];
         m[y][x] = bit(14-i);
       }
 
-      // fixed module
       m[8][6] = 1;
     }
 
@@ -978,9 +1011,8 @@
       const ecLen = EC_M[v];
       const dataLen = total - ecLen;
 
-      // build bit stream: mode(0100) + len + data + terminator + pad
       const bits = [];
-      bitBufferPush(bits, 0b0100, 4); // Byte mode
+      bitBufferPush(bits, 0b0100, 4);
       const lenBits = (v <= 9) ? 8 : 16;
       bitBufferPush(bits, bytes.length, lenBits);
       for(const b of bytes) bitBufferPush(bits, b, 8);
@@ -992,7 +1024,6 @@
 
       let data = bitsToBytes(bits);
 
-      // pad bytes
       const PAD0 = 0xec, PAD1 = 0x11;
       let padToggle = false;
       while(data.length < dataLen){
@@ -1003,20 +1034,17 @@
       const ec = reedSolomonRemainder(data, ecLen);
       const codewords = data.concat(ec);
 
-      // convert to bits MSB first
       const cwBits = [];
       for(const cw of codewords){
         for(let i=7;i>=0;i--) cwBits.push((cw>>>i)&1);
       }
 
-      // matrix setup
       const m = makeMatrix(n);
       setFinder(m, 0, 0);
       setFinder(m, n-7, 0);
       setFinder(m, 0, n-7);
       setTiming(m);
 
-      // reserve format areas
       for(let i=0;i<9;i++){
         if(m[8][i]===null) m[8][i] = 0;
         if(m[i][8]===null) m[i][8] = 0;
@@ -1031,7 +1059,6 @@
 
       setDarkModule(m, v);
 
-      // mark locked modules (function patterns)
       const locked = new Array(n).fill(0).map(()=>new Array(n).fill(false));
       for(let y=0;y<n;y++){
         for(let x=0;x<n;x++){
@@ -1039,10 +1066,8 @@
         }
       }
 
-      // place data into remaining nulls
       placeData(m, cwBits);
 
-      // masking: mask 0
       const maskId = 0;
       for(let y=0;y<n;y++){
         for(let x=0;x<n;x++){
