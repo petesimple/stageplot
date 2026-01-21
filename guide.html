@@ -298,7 +298,7 @@
         </div>
       </div>
       <div class="row tight">
-        <span class="pill">Guide v1.7.3</span>
+        <span class="pill">Guide v1.7.5</span>
         <a class="button primary" id="btnOpenApp" href="./index.html">Open the app</a>
         <button class="btn" id="btnShare">Share + QR</button>
         <a class="button ok" id="btnDonateTop" href="https://www.paypal.com/donate/?hosted_button_id=4BP339J2UAL46" target="_blank" rel="noopener">Donate</a>
@@ -310,40 +310,39 @@
 <main>
   <section class="card">
     <div class="hd">
-      <h2>Whats New in v1.7.3</h2>
-      <span class="pill">Triangle + Fixes</span>
+      <h2>Whats New in v1.7.5</h2>
+      <span class="pill">Shapes + polish</span>
     </div>
     <div class="bd">
       <div class="grid2">
         <div>
-          <div class="miniHelp"><b>New shape: Triangle</b></div>
+          <div class="miniHelp"><b>Triangle shape (with visible selection)</b></div>
           <ul>
-            <li>Select an item, then choose <b>Triangle</b> in the shape control.</li>
-            <li>Triangles use <code>clip-path</code>, so we show selection using a glow instead of outline.</li>
+            <li>Triangle is available in the item shape control.</li>
+            <li>Triangles use <code>clip-path</code>, so selection shows via glow highlight instead of outline.</li>
           </ul>
 
           <div class="hr"></div>
 
-          <div class="miniHelp"><b>Circles stay circles</b></div>
+          <div class="miniHelp"><b>Circle mode stays round</b></div>
           <ul>
-            <li>Circle mode now enforces equal width and height so it does not turn into an oval.</li>
-            <li>If you had older stretched circles, toggle shape off and back to circle to re-normalize.</li>
+            <li>Circle enforces equal width and height so circles do not become ovals.</li>
+            <li>If an older project has stretched circles, toggle shape off and back to circle to normalize.</li>
           </ul>
         </div>
 
         <div>
-          <div class="miniHelp"><b>Triangle selection highlight</b></div>
+          <div class="miniHelp"><b>Better multi select visibility</b></div>
           <ul>
-            <li>If a triangle is selected, you should see a visible glow. No more invisible selection.</li>
-            <li>Multi-select triangles also glow so you can see what is included.</li>
+            <li>Selected items are easier to spot, including triangles.</li>
+            <li>Multi select triangles glow too, so your selection is not a guessing game.</li>
           </ul>
 
           <div class="hr"></div>
 
-          <div class="miniHelp"><b>iOS double tap zoom reduction</b></div>
+          <div class="miniHelp"><b>Small usability tweaks</b></div>
           <ul>
-            <li>Stage area gestures are less likely to trigger Safari zoom.</li>
-            <li>If something feels odd on iPhone, reload once after installing as a PWA.</li>
+            <li>Less “where is that control” and more “done already”.</li>
           </ul>
         </div>
       </div>
@@ -426,7 +425,7 @@
           <ul>
             <li>Drag an item to move it.</li>
             <li>Shift, Cmd, or Ctrl click to multi select.</li>
-            <li>All the on-canvas tools are <b>below the stage</b> (nudge, center, resize, and friends).</li>
+            <li>All the on-canvas tools are below the stage (nudge, center, resize, and friends).</li>
           </ul>
 
           <div class="hr"></div>
@@ -452,7 +451,7 @@
           <div class="miniHelp"><b>Circle</b></div>
           <ul>
             <li>Circle mode forces width and height to match so circles do not become ovals.</li>
-            <li>Best for wedges, stools, mic stands, and that one percussionist who brought three shakers and a dream.</li>
+            <li>Best for wedges, stools, mic stands, and the occasional mysterious “perc island”.</li>
           </ul>
 
           <div class="hr"></div>
@@ -468,8 +467,7 @@
           <div class="miniHelp"><b>Triangle</b></div>
           <ul>
             <li>Great for marking corners, risers, or directional props.</li>
-            <li>Because triangles use <code>clip-path</code>, selection uses a glow highlight, not an outline.</li>
-            <li>If you do not see the glow, you are probably selecting something else (or the triangle is being sneaky).</li>
+            <li>Triangles use <code>clip-path</code>, so selection uses a glow highlight, not an outline.</li>
           </ul>
 
           <div class="miniHelp" style="margin-top:10px;">
@@ -549,7 +547,6 @@
           <ul>
             <li>Use <code>Export Project JSON</code> to save a file you can share or archive.</li>
             <li>Use <code>Import Project JSON</code> to load it later on any device.</li>
-            <li>If units differ, StagePlot keeps internal measurements consistent and handles the display.</li>
           </ul>
         </div>
       </div>
@@ -567,9 +564,6 @@
         <li>StagePlot temporarily resets View Zoom to 100% so the print is clean and predictable.</li>
         <li>Save as PDF if you want to email it to a venue or keep it in your band folder.</li>
       </ul>
-      <div class="miniHelp" style="margin-top:10px;">
-        Pro tip: Put the band name and show notes in the Info panel so the printout tells the whole story.
-      </div>
     </div>
   </section>
 
@@ -580,17 +574,13 @@
     </div>
     <div class="bd">
       <div class="miniHelp">
-        This guide page can generate a QR code for your StagePlot link. Great for rehearsals, load-in, and that one bandmate who only reads QR codes because it feels like a side quest.
+        This guide page can generate a QR code for your StagePlot link.
       </div>
 
       <div class="row" style="margin-top:12px;">
         <button class="btn primary" id="btnShare3">Open Share + QR</button>
         <button class="btn" id="btnCopyLink">Copy app link</button>
         <a class="button ok" href="https://www.paypal.com/donate/?hosted_button_id=4BP339J2UAL46" target="_blank" rel="noopener">Donate</a>
-      </div>
-
-      <div class="miniHelp" style="margin-top:10px;">
-        Note: The QR uses the current page location. If you host StagePlot on GitHub Pages, this will point to that hosted URL automatically.
       </div>
     </div>
   </section>
@@ -602,7 +592,7 @@
     </div>
     <div class="bd">
       <div class="miniHelp">
-        If StagePlot saved you 20 minutes of stage chaos, consider tossing a few bucks in the tip jar. It helps keep the project moving and keeps the app from turning into a sad little folder named "final_final_REAL2".
+        If StagePlot saved you time, consider tossing a few bucks in the tip jar.
       </div>
 
       <div class="row" style="margin-top:12px;">
@@ -626,8 +616,6 @@
         <li><b>I cannot find Layout</b> - On mobile it is first. On desktop it is at the top of the middle panel section.</li>
         <li><b>I cannot find the tools</b> - Scroll under the stage. All tooling sits below the stage area.</li>
         <li><b>My items look huge</b> - Check <code>View Zoom</code> and reset it to 100% in the app.</li>
-        <li><b>I cannot pinch to scale</b> - Make sure the item is selected, then pinch directly on it using two fingers.</li>
-        <li><b>My changes disappeared</b> - If the browser storage was cleared, import your exported JSON to restore.</li>
         <li><b>Triangle is selected but I cannot tell</b> - Look for the glow highlight, triangles do not use outline selection.</li>
       </ul>
     </div>
@@ -642,9 +630,7 @@
       <button class="btn danger" id="btnCloseQr">Close</button>
     </div>
     <div class="modalBd">
-      <div class="qrBox" id="qrBox">
-        <!-- QR renders here -->
-      </div>
+      <div class="qrBox" id="qrBox"></div>
       <div class="qrCaption">
         Link: <span class="mono" id="shareUrlText"></span>
       </div>
@@ -663,10 +649,6 @@
 <div class="toast" id="toast">Copied</div>
 
 <script>
-/* Tiny QR generator (alphanumeric/byte) based on a compact implementation.
-   It generates a QR as an SVG with quiet zone.
-   Good enough for URLs and short text.
-*/
 (function(){
   const DONATE_URL = "https://www.paypal.com/donate/?hosted_button_id=4BP339J2UAL46";
 
@@ -686,7 +668,6 @@
 
   document.getElementById("donateUrlText").textContent = DONATE_URL;
 
-  // Try to prefer index.html on same folder for sharing
   function getAppUrl(){
     try{
       const u = new URL(window.location.href);
@@ -738,7 +719,7 @@
     elShareUrlText.textContent = url;
 
     elQrBox.innerHTML = "";
-    elQrBox.appendChild(makeQrSvg(url, 6)); // scale
+    elQrBox.appendChild(makeQrSvg(url, 6));
     elModal.classList.add("on");
   }
   function closeModal(){
@@ -763,20 +744,14 @@
     if(navigator.share){
       try{
         await navigator.share({ title: "StagePlot v2", text: "StagePlot link", url });
-      }catch(e){
-        // user canceled or not allowed
-      }
+      }catch(e){}
     }else{
       copyText(url);
     }
   });
 
-  // ---------------- QR implementation (compact) ----------------
-  // This is a small QR encoder for Version 3..10 range auto.
-  // It uses Byte mode for simplicity and error correction level M.
-  // Plenty for URLs.
   function makeQrSvg(text, scale){
-    const qr = QRCode.encode(text, "M"); // returns modules boolean matrix
+    const qr = QRCode.encode(text, "M");
     const n = qr.size;
     const quiet = 4;
     const dim = (n + quiet*2);
@@ -819,7 +794,6 @@
     return svg;
   }
 
-  // Minimal QR encoder (Byte mode, EC level L/M/Q/H)
   const QRCode = (function(){
     const EXP = new Array(512);
     const LOG = new Array(256);
@@ -872,17 +846,9 @@
       return msg.slice(msg.length - ecLen);
     }
 
-    const CAP_M_BYTE = [0,
-      14,26,42,62,84,106,122,152,180,213
-    ];
-
-    const EC_M = [0,
-      10,16,26,36,48,64,72,88,110,130
-    ];
-
-    const TOTAL_CODEWORDS = [0,
-      26,44,70,100,134,172,196,242,292,346
-    ];
+    const CAP_M_BYTE = [0,14,26,42,62,84,106,122,152,180,213];
+    const EC_M = [0,10,16,26,36,48,64,72,88,110,130];
+    const TOTAL_CODEWORDS = [0,26,44,70,100,134,172,196,242,292,346];
 
     function chooseVersion(byteLen){
       for(let v=1; v<=10; v++){
@@ -911,9 +877,7 @@
 
     function makeMatrix(n){
       const m = new Array(n);
-      for(let y=0;y<n;y++){
-        m[y] = new Array(n).fill(null);
-      }
+      for(let y=0;y<n;y++) m[y] = new Array(n).fill(null);
       return m;
     }
 
@@ -978,7 +942,6 @@
     function applyFormat(m, ecLevel, maskId){
       const n = m.length;
       const bits = formatBits(ecLevel, maskId);
-
       function bit(i){ return (bits >>> i) & 1; }
 
       const coords1 = [
