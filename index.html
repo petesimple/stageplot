@@ -1,34 +1,34 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport"
-      content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+  <meta charset="utf-8" /><meta name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5" />
   <script>
-  // iOS/Safari: prevent double-tap to zoom on stage area only
-  (() => {
-    let lastTouchEnd = 0;
-    // Wait for DOM to load, then attach to stage element
-    window.addEventListener('DOMContentLoaded', () => {
-      const stageArea = document.getElementById('stageSquare');
-      if(stageArea){
-        stageArea.addEventListener('touchend', (e) => {
-          // Only prevent if target is not an interactive control
-          const isInteractive = e.target.closest('input, textarea, select, button, a, [role="button"]');
-          if(!isInteractive){
-            const now = Date.now();
-            if (now - lastTouchEnd <= 300) {
-              e.preventDefault();
-            }
-            lastTouchEnd = now;
-          }
-        }, { passive: false });
+(() => {
+  let lastTap = 0;
+
+  window.addEventListener("DOMContentLoaded", () => {
+    const stageArea = document.getElementById("stageSquare");
+    if (!stageArea) return;
+
+    const isInteractiveTarget = (t) =>
+      !!t.closest('input, textarea, select, button, a, [role="button"]');
+
+    stageArea.addEventListener("touchend", (e) => {
+      if (e.touches && e.touches.length) return; // ignore pinch or any multi-touch leftovers
+      if (isInteractiveTarget(e.target)) return;
+
+      const now = Date.now();
+      if (now - lastTap < 300) {
+        e.preventDefault();
       }
-    });
-  })();
+      lastTap = now;
+    }, { passive: false });
+  });
+})();
 </script>
   <meta name="theme-color" content="#0b0d12" />
-  <title>StagePlot v2 - v1.7.5 (Triangle Selection Fix)</title>
+  <title>StagePlot v2 - v1.8.0 (Modular Panels)</title>
 
   <style>
     :root{
@@ -51,11 +51,14 @@
       --stageGrid: rgba(255,255,255,.06);
 
       --sqPad: 10px;
+      --header-height: 70px;
     }
 
     *{ box-sizing:border-box; }
-    html,body{ height:100%; }
+    html,body{
+      overflow: hidden; height:100%; }
     body{
+      overflow: hidden;
       margin:0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
       background: radial-gradient(1200px 700px at 50% -10%, #1a2540, var(--bg));
@@ -64,18 +67,24 @@
     }
 
     header{
-      position: sticky;
+      position: fixed;
       top: 0;
-      z-index: 20;
+      left: 0;
+      right: 0;
+      z-index: 100;
       border-bottom: 1px solid var(--line);
       background: rgba(10,12,18,.78);
       backdrop-filter: blur(10px);
     }
     .wrap{
-      max-width: 1200px;
-      margin: 0 auto;
+      max-width: none;
+      margin: 0;
       padding: 12px 14px;
+      height: 100%;
+      display: flex;
+      align-items: center;
     }
+    .top{ width: 100%; }
     .top{
       display:flex;
       align-items:center;
@@ -163,24 +172,18 @@
       border-color: rgba(255,204,102,.35);
     }
 
-    main{
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 14px 14px 26px 14px;
-      display:grid;
-      grid-template-columns: 320px 1fr 340px;
-      gap: 12px;
-      align-items:start;
+    #workspace{
+      position: fixed;
+      top: var(--header-height);
+      left: 0;
+      right: 0;
+      bottom: 0;
+      overflow: hidden;
     }
 
-    .midCol{
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-      min-width: 0;
-    }
-
-    .card{
+    /* PANEL SYSTEM */
+    .panel{
+      position: fixed;
       background: linear-gradient(180deg, rgba(18,24,38,.92), rgba(12,16,26,.92));
       border: 1px solid var(--line);
       border-radius: 18px;
@@ -188,7 +191,7 @@
       overflow:hidden;
       min-width: 0;
     }
-    .card .hd{
+    .panel-handle{
       padding: 12px 12px;
       border-bottom: 1px solid rgba(255,255,255,.08);
       display:flex;
@@ -197,7 +200,7 @@
       gap:10px;
       flex-wrap:wrap;
     }
-    .card .hd h2{
+    .panel-handle h2{
       margin:0;
       font-size: 12px;
       color: var(--muted);
@@ -205,7 +208,7 @@
       letter-spacing: .35px;
       font-weight: 800;
     }
-    .card .bd{
+    .panel-body{
       padding: 12px 12px 14px 12px;
     }
 
@@ -280,7 +283,7 @@
       gap:10px;
     }
 
-    .stageSquare{
+        .stageSquare{
       width:100%;
       aspect-ratio: 1 / 1;
       border-radius: 18px;
@@ -289,6 +292,7 @@
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
       position: relative;
       overflow: hidden;
+      touch-action: manipulation;
     }
 
     .stageSquareInner{
@@ -371,6 +375,64 @@
       clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
       transform-origin: center;
     }
+
+        /* Dock mode styles */
+    .panel.dock-left{
+      left: 12px !important;
+      top: calc(var(--header-height) + 12px) !important;
+      bottom: 12px !important;
+      height: auto !important;
+      width: 340px !important;
+    }
+
+    .panel.dock-right{
+      right: 12px !important;
+      left: auto !important;
+      top: calc(var(--header-height) + 12px) !important;
+      bottom: 12px !important;
+      height: auto !important;
+      width: 340px !important;
+    }
+
+    .panel.dock-bottom{
+      left: 12px !important;
+      right: 12px !important;
+      bottom: 12px !important;
+      top: auto !important;
+      height: 280px !important;
+      width: auto !important;
+    }
+
+    .panel.dock-center{
+      left: 50% !important;
+      top: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      max-width: min(800px, 90vw);
+      max-height: calc(100vh - var(--header-height) - 24px);
+    }
+
+    .panel.collapsed .panel-body{
+      display: none !important;
+    }
+
+    .panel.collapsed{
+      height: auto !important;
+    }
+
+    .panel.dragging{
+      opacity: 0.9;
+      cursor: grabbing !important;
+      box-shadow: 0 20px 50px rgba(0,0,0,.6) !important;
+    }
+
+    .toolsCard{
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.02);
+      border-radius: 16px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
 
     .item .lbl{
       font-size: 12px;
@@ -531,45 +593,25 @@
     }
 
     /* Mobile accordion */
-    .accBtn{
-      display:none;
-      width:100%;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.04);
-      cursor:pointer;
-      user-select:none;
-      margin-bottom: 10px;
-      font-weight: 850;
-    }
+    
     .chev{ opacity:.85; }
-    .accHidden{ display:none !important; }
+    
 
-    .tAccBtn{
-      display:none;
-      width:100%;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.04);
-      cursor:pointer;
-      user-select:none;
-      font-weight: 850;
-    }
-    .tAccBtn .chev{ opacity:.85; }
-    .tAccHidden{ display:none !important; }
+    
+    
+    
 
     @media (max-width: 980px){
-      main{ grid-template-columns: 1fr; }
-      .accBtn{ display:flex; }
-      .tAccBtn{ display:flex; }
+      #workspace{
+      position: fixed;
+      top: var(--header-height);
+      left: 0;
+      right: 0;
+      bottom: 0;
+      overflow: hidden;
+    }
+      
+      
       #midCol{ order: 1; }
       #libCard{ order: 2; }
       #infoCard{ order: 3; }
@@ -578,10 +620,16 @@
     /* Print */
     @media print{
       header{ display:none !important; }
-      body{ background:#fff !important; color:#000 !important; }
+      body{ overflow: visible !important; }
+      #workspace{ position: static !important; }
+      .panel{ position: static !important; page-break-inside: avoid; }
+      #libraryPanel, #toolingPanel { display: none !important; }
+      #stagePanel, #infoPanel { display: block !important; }
+      body{
+      overflow: hidden; background:#fff !important; color:#000 !important; }
       main{ display:block !important; max-width: 7.8in !important; padding: 0 !important; }
-      .card{ box-shadow:none !important; background:#fff !important; border: 1px solid #ddd !important; margin-bottom: 10px !important; }
-      .card .hd{ border-bottom:1px solid #ddd !important; }
+      .panel{ box-shadow:none !important; background:#fff !important; border: 1px solid #ddd !important; margin-bottom: 10px !important; }
+      .panel-handle{ border-bottom:1px solid #ddd !important; }
       .pill, .actions, .accBtn, .tAccBtn, #libCard, #toolsCard { display:none !important; }
       #stageCard .bd{ padding: 10px !important; }
       .stageSquare{ border: 1px solid #ddd !important; }
@@ -602,13 +650,14 @@
         <div class="logo" aria-hidden="true">SP</div>
         <div>
           <h1>StagePlot v2</h1>
-          <div class="sub">v1.7.5 (Triangle Selection Fix) - triangle selection now visible via box-shadow glow</div>
+          <div class="sub">v1.8.0 (Modular Panels) - drag and dock panels anywhere, stage interactions preserved</div>
         </div>
       </div>
 
       <div class="actions">
         <span class="pill"><span class="dot"></span>Autosave friendly</span>
         <a class="button" href="./guide.html">Guide</a>
+        <button class="button" id="btnResetLayout">Reset Layout</button>
         <button class="button primary" id="btnPrint">Print</button>
         <button class="button" id="btnExport">Export Project JSON</button>
         <button class="button" id="btnImport">Import Project JSON</button>
@@ -617,20 +666,21 @@
   </div>
 </header>
 
-<main>
-  <!-- LIBRARY -->
-  <section class="card" id="libCard">
-    <div class="hd">
-      <h2>Item Library</h2>
-      <span class="pill" id="libCount">0 items</span>
+<div id="workspace">
+  <!-- Library Panel -->
+  <div class="panel" id="libraryPanel">
+    <div class="panel-handle" data-panel-id="library">
+      <div class="title-area">
+        <h2>Item Library</h2>
+        <span class="pill" id="libCount">0 items</span>
+      </div>
+      <div class="controls">
+        <button class="btn" onclick="window.togglePanelCollapse('library')" title="Collapse">−</button>
+      </div>
     </div>
-    <div class="bd" id="libBody">
-      <button class="accBtn" id="accLibBtn" type="button">
-        <span>Library</span><span class="chev" id="accLibChev">▾</span>
-      </button>
+    <div class="panel-body">
 
-      <div id="libAccContent">
-        <div class="libTop">
+      <div class="libTop">
           <input id="libSearch" type="text" placeholder="Search (guitar, vox, wedge, power...)" />
           <select id="libFilter" style="max-width: 160px;">
             <option value="all">All</option>
@@ -655,27 +705,24 @@
         <div style="margin-top:10px" class="miniHelp">
           Tips: click to select - shift/cmd/ctrl click for multi select - drag to move - pinch to scale on touch screens.
         </div>
+    </div>
+  </div>
+
+  <!-- Stage Panel -->
+  <div class="panel" id="stagePanel">
+    <div class="panel-handle" data-panel-id="stage">
+      <div class="title-area">
+        <h2>Stage</h2>
+        <span class="pill" id="unitsPill">Units: ft</span>
+      </div>
+      <div class="controls">
+        <button class="btn" id="btnUnits" type="button">ft/m</button>
+        <button class="btn" id="btnFlip" type="button">View</button>
+        <button class="btn" onclick="window.togglePanelCollapse('stage')" title="Collapse">−</button>
       </div>
     </div>
-  </section>
+    <div class="panel-body">
 
-  <!-- MIDDLE COLUMN: STAGE THEN TOOLING -->
-  <div class="midCol" id="midCol">
-
-    <!-- STAGE -->
-    <section class="card" id="stageCard">
-      <div class="hd">
-        <h2>Stage</h2>
-        <div class="row tight">
-          <span class="pill" id="unitsPill">Units: ft</span>
-          <button class="btn" id="btnUnits" type="button">Toggle ft/m</button>
-          <button class="btn" id="btnFlip" type="button">Stage View</button>
-          <button class="btn" id="btnClearSel" title="Clears selection only" type="button">Clear</button>
-          <button class="btn warn" id="btnResetStage" title="Resets stage, view, notes, and removes items" type="button">Reset Stage</button>
-        </div>
-      </div>
-
-      <div class="bd">
         <div class="stageWrap">
           <div class="stageSquare" id="stageSquare">
             <div class="stageSquareInner" id="stageSquareInner">
@@ -691,26 +738,23 @@
             Stage: <span class="mono" id="stageMetaText">24 x 16 ft</span>
           </div>
         </div>
-      </div>
-    </section>
+      
+    </div>
+  </div>
 
-    <!-- TOOLING -->
-    <section class="card" id="toolsCard">
-      <div class="hd">
+  <!-- Tooling Panel -->
+  <div class="panel" id="toolingPanel">
+    <div class="panel-handle" data-panel-id="tooling">
+      <div class="title-area">
         <h2>Tooling</h2>
-        <span class="pill">Below stage</span>
       </div>
-
-      <div class="bd" style="display:flex; flex-direction:column; gap:12px;">
-
-        <!-- Layout accordion header -->
-        <button class="tAccBtn" id="accToolsLayoutBtn" type="button">
-          <span>Layout</span><span class="chev" id="accToolsLayoutChev">▾</span>
-        </button>
-
-        <!-- Layout content -->
-        <div id="toolsLayoutAccContent">
-          <div class="card" style="box-shadow:none;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.02);">
+      <div class="controls">
+        <button class="btn warn" id="btnResetStage" title="Reset stage, view, notes, items">Reset Stage</button>
+        <button class="btn" onclick="window.togglePanelCollapse('tooling')" title="Collapse">−</button>
+      </div>
+    </div>
+    <div class="panel-body">
+        <div class="toolsCard" style="box-shadow:none;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.02);">
             <div class="hd" style="border-bottom: 1px solid rgba(255,255,255,.08);">
               <h2 style="margin:0;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.35px;font-weight:800;">Layout</h2>
               <span class="pill">Stage sizing</span>
@@ -747,16 +791,8 @@
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- View accordion header -->
-        <button class="tAccBtn" id="accToolsViewBtn" type="button">
-          <span>View</span><span class="chev" id="accToolsViewChev">▾</span>
-        </button>
-
-        <!-- View content -->
-        <div id="toolsViewAccContent">
-          <div class="card" style="box-shadow:none;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.02);">
+        <div class="toolsCard" style="box-shadow:none;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.02);">
             <div class="hd" style="border-bottom: 1px solid rgba(255,255,255,.08);">
               <h2 style="margin:0;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.35px;font-weight:800;">View</h2>
               <span class="pill" id="viewZoomPill">100%</span>
@@ -781,16 +817,8 @@
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Selected tools accordion header -->
-        <button class="tAccBtn" id="accToolsSelBtn" type="button">
-          <span>Selected item tools</span><span class="chev" id="accToolsSelChev">▾</span>
-        </button>
-
-        <!-- Selected tools content -->
-        <div id="toolsSelAccContent">
-          <div class="toolsCard" id="underStageTools" style="display:none;">
+        <div class="toolsCard" id="underStageTools" style="display:none;">
             <div class="toolsTitle">
               <div class="t">Selected item tools</div>
               <span class="pill mono" id="underSelName">none</span>
@@ -873,30 +901,27 @@
               </div>
             </div>
           </div>
-        </div>
 
         <div class="miniHelp">
           Note: Width/Depth set the base footprint. Scale multiplies that footprint. View Zoom only changes your view.
         </div>
-
-      </div>
-    </section>
-
+    </div>
   </div>
 
-  <!-- INFO -->
-  <section class="card" id="infoCard">
-    <div class="hd">
-      <h2>One-Page Info</h2>
-      <button class="btn" id="btnDup" type="button">Duplicate</button>
+  <!-- Info Panel -->
+  <div class="panel" id="infoPanel">
+    <div class="panel-handle" data-panel-id="info">
+      <div class="title-area">
+        <h2>One-Page Info</h2>
+      </div>
+      <div class="controls">
+        <button class="btn" id="btnDup" type="button">Duplicate</button>
+        <button class="btn" onclick="window.togglePanelCollapse('info')" title="Collapse">−</button>
+      </div>
     </div>
-    <div class="bd" id="infoBody">
-      <button class="accBtn" id="accInfoBtn" type="button">
-        <span>Info + Lists</span><span class="chev" id="accInfoChev">▾</span>
-      </button>
+    <div class="panel-body">
 
-      <div id="infoAccContent">
-        <div class="field">
+      <div class="field">
           <label>Band / Show name (prints at top)</label>
           <input type="text" id="bandName" placeholder="Example: Petesimple Trio - Oasis Patio" />
         </div>
@@ -1032,14 +1057,221 @@
         </div>
       </div>
     </div>
-  </section>
-</main>
+  </div>
 
 <input type="file" id="fileImport" accept="application/json" style="display:none;" />
 
 <script>
 (() => {
-  const APP_VERSION = "1.7.5 (Triangle Selection Fix)";
+  const APP_VERSION = "1.8.0 (Modular Panels)";
+  // ========== PANEL SYSTEM ==========
+  const LS_PANELS = "stageplot_v2_panels_v1";
+  
+  const PANEL_REGISTRY = {
+    library: { id: 'libraryPanel', defaultDock: 'left' },
+    stage: { id: 'stagePanel', defaultDock: 'center' },
+    tooling: { id: 'toolingPanel', defaultDock: 'right' },
+    info: { id: 'infoPanel', defaultDock: 'bottom' }
+  };
+  
+  let panelState = {};
+  let panelDrag = null;
+  let highestZ = 100;
+
+  function getDefaultPanelState(){
+    const headerH = 70;
+    return {
+      library: { dock: 'left', x: 12, y: headerH + 12, w: 340, h: 600, collapsed: false, z: 101 },
+      stage: { dock: 'center', x: 400, y: 150, w: 700, h: 700, collapsed: false, z: 102 },
+      tooling: { dock: 'right', x: window.innerWidth - 352, y: headerH + 12, w: 340, h: 600, collapsed: false, z: 103 },
+      info: { dock: 'bottom', x: 12, y: window.innerHeight - 312, w: 800, h: 280, collapsed: false, z: 104 }
+    };
+  }
+
+  function loadPanelState(){
+    try{
+      const raw = localStorage.getItem(LS_PANELS);
+      if(!raw) return getDefaultPanelState();
+      const loaded = JSON.parse(raw);
+      const defaults = getDefaultPanelState();
+      Object.keys(PANEL_REGISTRY).forEach(key => {
+        if(!loaded[key]) loaded[key] = defaults[key];
+      });
+      return loaded;
+    }catch(e){
+      return getDefaultPanelState();
+    }
+  }
+
+  function savePanelState(){
+    try{
+      localStorage.setItem(LS_PANELS, JSON.stringify(panelState));
+    }catch(e){}
+  }
+
+  function applyPanelState(){
+    Object.keys(PANEL_REGISTRY).forEach(key => {
+      const panel = document.getElementById(PANEL_REGISTRY[key].id);
+      if(!panel) return;
+      
+      const ps = panelState[key];
+      if(!ps) return;
+
+      panel.classList.remove('dock-left', 'dock-right', 'dock-bottom', 'dock-center');
+      
+      // Always reset transform unless dock-center wants it
+      panel.style.transform = "";
+      
+      if(ps.dock && ps.dock !== 'float'){
+        panel.classList.add('dock-' + ps.dock);
+        // Clear inline styles when docked so CSS takes over
+        panel.style.left = '';
+        panel.style.top = '';
+        panel.style.width = '';
+        panel.style.height = '';
+      } else {
+        panel.style.left = ps.x + 'px';
+        panel.style.top = ps.y + 'px';
+        panel.style.width = ps.w + 'px';
+        panel.style.height = ps.h + 'px';
+      }
+
+      panel.style.zIndex = ps.z || 100;
+
+      if(ps.collapsed){
+        panel.classList.add('collapsed');
+      } else {
+        panel.classList.remove('collapsed');
+      }
+    });
+  }
+
+  function bringToFront(panelId){
+    const panel = document.getElementById(panelId);
+    if(!panel) return;
+    
+    highestZ++;
+    panel.style.zIndex = highestZ;
+    
+    Object.keys(PANEL_REGISTRY).forEach(key => {
+      if(PANEL_REGISTRY[key].id === panelId){
+        panelState[key].z = highestZ;
+      }
+    });
+    
+    savePanelState();
+  }
+
+  window.togglePanelCollapse = function(key){
+    const ps = panelState[key];
+    if(!ps) return;
+    
+    ps.collapsed = !ps.collapsed;
+    applyPanelState();
+    savePanelState();
+  };
+
+  function beginPanelDrag(panelId, e){
+    if(e.target.closest('input, textarea, select, button, a, [role="button"]')){
+      return;
+    }
+
+    const panel = document.getElementById(panelId);
+    if(!panel) return;
+
+    let panelKey = null;
+    Object.keys(PANEL_REGISTRY).forEach(key => {
+      if(PANEL_REGISTRY[key].id === panelId) panelKey = key;
+    });
+    if(!panelKey) return;
+
+    bringToFront(panelId);
+
+    const rect = panel.getBoundingClientRect();
+    
+    panelDrag = {
+      panelId,
+      panelKey,
+      startX: e.clientX,
+      startY: e.clientY,
+      panelX: rect.left,
+      panelY: rect.top,
+      panelW: rect.width,
+      panelH: rect.height
+    };
+
+    panel.classList.add('dragging');
+    panel.classList.remove('dock-left', 'dock-right', 'dock-bottom', 'dock-center');
+    panelState[panelKey].dock = 'float';
+
+    window.addEventListener('pointermove', movePanelDrag, { passive: false });
+    window.addEventListener('pointerup', endPanelDrag, { once: true });
+    window.addEventListener('pointercancel', endPanelDrag, { once: true });
+  }
+
+  function movePanelDrag(e){
+    if(!panelDrag) return;
+    e.preventDefault();
+
+    const panel = document.getElementById(panelDrag.panelId);
+    if(!panel) return;
+
+    const dx = e.clientX - panelDrag.startX;
+    const dy = e.clientY - panelDrag.startY;
+
+    let newX = panelDrag.panelX + dx;
+    let newY = panelDrag.panelY + dy;
+
+    const headerH = 70;
+    const minX = 0;
+    const minY = headerH;
+    const maxX = window.innerWidth - panelDrag.panelW;
+    const maxY = window.innerHeight - 60;
+
+    newX = clamp(newX, minX, maxX);
+    newY = clamp(newY, minY, maxY);
+
+    panel.style.left = newX + 'px';
+    panel.style.top = newY + 'px';
+
+    panelState[panelDrag.panelKey].x = newX;
+    panelState[panelDrag.panelKey].y = newY;
+  }
+
+  function endPanelDrag(){
+    if(!panelDrag) return;
+
+    const panel = document.getElementById(panelDrag.panelId);
+    if(panel){
+      panel.classList.remove('dragging');
+
+      const rect = panel.getBoundingClientRect();
+      const snapThreshold = 50;
+
+      if(rect.left < snapThreshold){
+        panelState[panelDrag.panelKey].dock = 'left';
+      } else if(rect.right > window.innerWidth - snapThreshold){
+        panelState[panelDrag.panelKey].dock = 'right';
+      } else if(rect.bottom > window.innerHeight - snapThreshold){
+        panelState[panelDrag.panelKey].dock = 'bottom';
+      }
+      
+      // Re-apply state to ensure clean styling (clears inline styles when docked)
+      applyPanelState();
+    }
+
+    savePanelState();
+    window.removeEventListener('pointermove', movePanelDrag);
+    panelDrag = null;
+  }
+
+  function resetPanelLayout(){
+    if(!confirm('Reset panel layout to default positions?')) return;
+    panelState = getDefaultPanelState();
+    applyPanelState();
+    savePanelState();
+  }
+
   const FT_PER_M = 3.280839895;
 
   const els = {
@@ -1061,8 +1293,6 @@
     itemNotes: document.getElementById("itemNotes"),
     labelSize: document.getElementById("labelSize"),
     labelSizePill: document.getElementById("labelSizePill"),
-    uLabelSize: document.getElementById("uLabelSize"),
-    uLabelSizePill: document.getElementById("uLabelSizePill"),
     itemW: document.getElementById("itemW"),
     itemH: document.getElementById("itemH"),
     itemScale: document.getElementById("itemScale"),
@@ -1084,7 +1314,6 @@
     btnMisc2: document.getElementById("btnMisc2"),
     btnMisc3: document.getElementById("btnMisc3"),
     btnDeleteSel: document.getElementById("btnDeleteSel"),
-    btnClearSel: document.getElementById("btnClearSel"),
     btnResetStage: document.getElementById("btnResetStage"),
     btnDup: document.getElementById("btnDup"),
     btnFlip: document.getElementById("btnFlip"),
@@ -1097,21 +1326,6 @@
     viewZoomPillInner: document.getElementById("viewZoomPillInner"),
     btnResetView: document.getElementById("btnResetView"),
     btnRot0: document.getElementById("btnRot0"),
-    accLibBtn: document.getElementById("accLibBtn"),
-    accInfoBtn: document.getElementById("accInfoBtn"),
-    accLibChev: document.getElementById("accLibChev"),
-    accInfoChev: document.getElementById("accInfoChev"),
-    libAccContent: document.getElementById("libAccContent"),
-    infoAccContent: document.getElementById("infoAccContent"),
-    accToolsLayoutBtn: document.getElementById("accToolsLayoutBtn"),
-    accToolsViewBtn: document.getElementById("accToolsViewBtn"),
-    accToolsSelBtn: document.getElementById("accToolsSelBtn"),
-    accToolsLayoutChev: document.getElementById("accToolsLayoutChev"),
-    accToolsViewChev: document.getElementById("accToolsViewChev"),
-    accToolsSelChev: document.getElementById("accToolsSelChev"),
-    toolsLayoutAccContent: document.getElementById("toolsLayoutAccContent"),
-    toolsViewAccContent: document.getElementById("toolsViewAccContent"),
-    toolsSelAccContent: document.getElementById("toolsSelAccContent"),
     underStageTools: document.getElementById("underStageTools"),
     underSelName: document.getElementById("underSelName"),
     uItemW: document.getElementById("uItemW"),
@@ -1121,6 +1335,8 @@
     uItemColor: document.getElementById("uItemColor"),
     uClearColor: document.getElementById("uClearColor"),
     uColorPill: document.getElementById("uColorPill"),
+    uLabelSize: document.getElementById("uLabelSize"),
+    uLabelSizePill: document.getElementById("uLabelSizePill"),
     nUp: document.getElementById("nUp"),
     nDown: document.getElementById("nDown"),
     nLeft: document.getElementById("nLeft"),
@@ -1145,8 +1361,6 @@
   ];
 
   const LS_KEY = "stageplot_v2_state";
-  const LS_UI  = "stageplot_v2_ui";
-
   let state = {
     version: APP_VERSION,
     units: "ft",
@@ -1676,7 +1890,7 @@
         
         // Don't change selection if we just finished dragging or pinching
         // Check the gesture-specific hasMoved flags
-        if((drag && drag.hasMoved) || (pinch.hasMoved)){
+        if((drag && drag.hasMoved) || (Date.now() - pinch.justEndedAt < 250)){
           return;
         }
         
@@ -1687,8 +1901,6 @@
         if(!mod){
           // Simple click was already handled in pointerdown for immediate drag
           // But we still open mobile panels in case pointerdown didn't fire
-          openInfoAccordionIfMobile();
-          openToolsSelectedIfMobile();
           return;
         }
         // Multi-select: toggle this item in the selection
@@ -1696,9 +1908,7 @@
         if(set.has(it.id)) set.delete(it.id); else set.add(it.id);
         const arr = Array.from(set);
         setSelection(arr, state.primaryId && set.has(state.primaryId) ? state.primaryId : (arr[0] || null));
-        openInfoAccordionIfMobile();
-        openToolsSelectedIfMobile();
-      });
+        });
       els.stageCanvas.appendChild(el);
     }
     renderTables();
@@ -1788,9 +1998,7 @@
     renderLibrary();
     render();
     save();
-    openInfoAccordionIfMobile();
-    openToolsSelectedIfMobile();
-  }
+    }
 
   function addMisc(size){
     const base = (size===1) ? { w:2.0, h:1.4 } : (size===2) ? { w:3.0, h:2.0 } : { w:4.0, h:2.8 };
@@ -1823,9 +2031,7 @@
     renderLibrary();
     render();
     save();
-    openInfoAccordionIfMobile();
-    openToolsSelectedIfMobile();
-  }
+    }
 
   let drag = null;
   let pinch = {
@@ -1930,11 +2136,8 @@
   }
 
   function onDragUp(){
-    const didMove = drag && drag.hasMoved;
     drag = null;
     window.removeEventListener("pointermove", onDragMove);
-    // Return whether we moved so click handler can check
-    return didMove;
   }
 
   function onPinchMove(e){
@@ -1971,149 +2174,12 @@
       pinch.startDist = 0;
       pinch.startScale = 1.0;
       pinch.hasMoved = false;
+      pinch.justEndedAt = Date.now();
       pinch.pointers.clear();
       window.removeEventListener("pointermove", onPinchMove);
       window.removeEventListener("pointerup", onPinchUp);
       window.removeEventListener("pointercancel", onPinchUp);
       return didMove;
-    }
-  }
-
-  function loadUIState(){
-    try{
-      const raw = localStorage.getItem(LS_UI);
-      if(!raw) return {
-        libOpen:true,
-        infoOpen:true,
-        toolsLayoutOpen:true,
-        toolsViewOpen:true,
-        toolsSelOpen:true
-      };
-      const obj = JSON.parse(raw);
-      return {
-        libOpen: !!obj.libOpen,
-        infoOpen: !!obj.infoOpen,
-        toolsLayoutOpen: (obj.toolsLayoutOpen !== false),
-        toolsViewOpen: (obj.toolsViewOpen !== false),
-        toolsSelOpen: (obj.toolsSelOpen !== false),
-      };
-    }catch(e){
-      return {
-        libOpen:true,
-        infoOpen:true,
-        toolsLayoutOpen:true,
-        toolsViewOpen:true,
-        toolsSelOpen:true
-      };
-    }
-  }
-  function saveUIState(ui){
-    localStorage.setItem(LS_UI, JSON.stringify(ui));
-  }
-
-  function applyAccordions(){
-    const isMobile = window.matchMedia("(max-width: 980px)").matches;
-    const ui = loadUIState();
-    if(!isMobile){
-      els.libAccContent.classList.remove("accHidden");
-      els.infoAccContent.classList.remove("accHidden");
-      els.toolsLayoutAccContent.classList.remove("tAccHidden");
-      els.toolsViewAccContent.classList.remove("tAccHidden");
-      els.toolsSelAccContent.classList.remove("tAccHidden");
-      els.accLibChev.textContent = "▾";
-      els.accInfoChev.textContent = "▾";
-      els.accToolsLayoutChev.textContent = "▾";
-      els.accToolsViewChev.textContent = "▾";
-      els.accToolsSelChev.textContent = "▾";
-      return;
-    }
-    if(ui.libOpen){
-      els.libAccContent.classList.remove("accHidden");
-      els.accLibChev.textContent = "▾";
-    }else{
-      els.libAccContent.classList.add("accHidden");
-      els.accLibChev.textContent = "▸";
-    }
-    if(ui.infoOpen){
-      els.infoAccContent.classList.remove("accHidden");
-      els.accInfoChev.textContent = "▾";
-    }else{
-      els.infoAccContent.classList.add("accHidden");
-      els.accInfoChev.textContent = "▸";
-    }
-    if(ui.toolsLayoutOpen){
-      els.toolsLayoutAccContent.classList.remove("tAccHidden");
-      els.accToolsLayoutChev.textContent = "▾";
-    }else{
-      els.toolsLayoutAccContent.classList.add("tAccHidden");
-      els.accToolsLayoutChev.textContent = "▸";
-    }
-    if(ui.toolsViewOpen){
-      els.toolsViewAccContent.classList.remove("tAccHidden");
-      els.accToolsViewChev.textContent = "▾";
-    }else{
-      els.toolsViewAccContent.classList.add("tAccHidden");
-      els.accToolsViewChev.textContent = "▸";
-    }
-    if(ui.toolsSelOpen){
-      els.toolsSelAccContent.classList.remove("tAccHidden");
-      els.accToolsSelChev.textContent = "▾";
-    }else{
-      els.toolsSelAccContent.classList.add("tAccHidden");
-      els.accToolsSelChev.textContent = "▸";
-    }
-  }
-
-  function toggleLibAccordion(){
-    const ui = loadUIState();
-    ui.libOpen = !ui.libOpen;
-    saveUIState(ui);
-    applyAccordions();
-  }
-  function toggleInfoAccordion(){
-    const ui = loadUIState();
-    ui.infoOpen = !ui.infoOpen;
-    saveUIState(ui);
-    applyAccordions();
-  }
-  function toggleToolsLayoutAccordion(){
-    const ui = loadUIState();
-    ui.toolsLayoutOpen = !ui.toolsLayoutOpen;
-    saveUIState(ui);
-    applyAccordions();
-  }
-  function toggleToolsViewAccordion(){
-    const ui = loadUIState();
-    ui.toolsViewOpen = !ui.toolsViewOpen;
-    saveUIState(ui);
-    applyAccordions();
-  }
-  function toggleToolsSelAccordion(){
-    const ui = loadUIState();
-    ui.toolsSelOpen = !ui.toolsSelOpen;
-    saveUIState(ui);
-    applyAccordions();
-  }
-
-  function openInfoAccordionIfMobile(){
-    const isMobile = window.matchMedia("(max-width: 980px)").matches;
-    if(!isMobile) return;
-    const ui = loadUIState();
-    if(!ui.infoOpen){
-      ui.infoOpen = true;
-      saveUIState(ui);
-      applyAccordions();
-    }
-  }
-
-  function openToolsSelectedIfMobile(){
-    const isMobile = window.matchMedia("(max-width: 980px)").matches;
-    if(!isMobile) return;
-    const ui = loadUIState();
-    if(!ui.toolsSelOpen){
-      ui.toolsSelOpen = true;
-      saveUIState(ui);
-      applyAccordions();
     }
   }
 
@@ -2254,9 +2320,7 @@
   });
 
   els.labelSize.addEventListener("input", () => applyLabelSizeToSelectionPct(els.labelSize.value));
-  els.uLabelSize.addEventListener("input", () => applyLabelSizeToSelectionPct(els.uLabelSize.value));
-
-  els.itemW.addEventListener("change", () => {
+    els.itemW.addEventListener("change", () => {
     const it = getPrimary(); if(!it) return;
     applyItemWHFromDisplay(it, els.itemW.value, els.itemH.value);
     syncItemWHUI(it);
@@ -2299,9 +2363,7 @@
     save();
   }
   els.itemScale.addEventListener("input", () => setPrimaryScalePct(els.itemScale.value));
-  els.uItemScale.addEventListener("input", () => setPrimaryScalePct(els.uItemScale.value));
-
-  els.itemRot.addEventListener("input", () => {
+    els.itemRot.addEventListener("input", () => {
     const it = getPrimary(); if(!it) return;
     it.rot = ((Number(els.itemRot.value)||0) % 360 + 360) % 360;
     els.itemRotPill.textContent = Math.round(it.rot) + "°";
@@ -2317,42 +2379,12 @@
   });
 
   els.itemColor.addEventListener("input", () => applyColorToSelection(els.itemColor.value));
-  els.uItemColor.addEventListener("input", () => applyColorToSelection(els.uItemColor.value));
-  els.clearColor.addEventListener("click", () => applyColorToSelection(""));
-  els.uClearColor.addEventListener("click", () => applyColorToSelection(""));
-
-  document.querySelectorAll('[data-shape]').forEach(btn => {
+    els.clearColor.addEventListener("click", () => applyColorToSelection(""));
+    document.querySelectorAll('[data-shape]').forEach(btn => {
     btn.addEventListener("click", () => {
       const shape = btn.getAttribute("data-shape");
       applyShapeToSelection(shape);
     });
-  });
-
-  function nudgeBtn(dx, dy){
-    if(!state.selectedIds.length) return;
-    const step = 0.25;
-    const set = new Set(state.selectedIds);
-    state.items.forEach(it => {
-      if(!set.has(it.id)) return;
-      const w = it.w * it.scale;
-      const h = it.h * it.scale;
-      it.x = clamp(it.x + dx*step, 0, Math.max(0, state.stage.w - w));
-      it.y = clamp(it.y + dy*step, 0, Math.max(0, state.stage.d - h));
-    });
-    render();
-    save();
-  }
-  els.nUp.addEventListener("click", () => nudgeBtn(0, -1));
-  els.nDown.addEventListener("click", () => nudgeBtn(0, 1));
-  els.nLeft.addEventListener("click", () => nudgeBtn(-1, 0));
-  els.nRight.addEventListener("click", () => nudgeBtn(1, 0));
-  els.nCenter.addEventListener("click", () => {
-    const it = getPrimary(); if(!it) return;
-    const w = it.w * it.scale;
-    const h = it.h * it.scale;
-    it.x = clamp((state.stage.w - w)/2, 0, Math.max(0, state.stage.w - w));
-    it.y = clamp((state.stage.d - h)/2, 0, Math.max(0, state.stage.d - h));
-    render(); save();
   });
 
   els.libSearch.addEventListener("input", renderLibrary);
@@ -2361,8 +2393,13 @@
   els.btnMisc2.addEventListener("click", () => addMisc(2));
   els.btnMisc3.addEventListener("click", () => addMisc(3));
   els.btnDeleteSel.addEventListener("click", deleteSelected);
-  els.btnClearSel.addEventListener("click", clearSelection);
-  els.btnDup.addEventListener("click", duplicateSelected);
+    els.btnDup.addEventListener("click", duplicateSelected);
+
+  // Nudge button listeners
+  els.nUp.addEventListener("click", () => nudgeSelected("ArrowUp"));
+  els.nDown.addEventListener("click", () => nudgeSelected("ArrowDown"));
+  els.nLeft.addEventListener("click", () => nudgeSelected("ArrowLeft"));
+  els.nRight.addEventListener("click", () => nudgeSelected("ArrowRight"));
 
   els.btnExport.addEventListener("click", () => {
     const project = {
@@ -2423,6 +2460,22 @@
     }
   });
 
+  
+  // Wire nudge buttons
+  if(els.nCenter) els.nCenter.addEventListener("click", () => {
+    const sel = getSelectedItems();
+    sel.forEach(it => {
+      it.x = (state.stage.w - it.w * it.scale) / 2;
+      it.y = (state.stage.d - it.h * it.scale) / 2;
+      clampItemInStage(it);
+    });
+    render();
+    save();
+  });
+
+
+  document.getElementById('btnResetLayout').addEventListener('click', resetPanelLayout);
+
   els.btnPrint.addEventListener("click", () => {
     const prev = state.viewZoom;
     state.viewZoom = 1.0;
@@ -2475,15 +2528,24 @@
     save();
   }
 
-  els.accLibBtn.addEventListener("click", toggleLibAccordion);
-  els.accInfoBtn.addEventListener("click", toggleInfoAccordion);
-  els.accToolsLayoutBtn.addEventListener("click", toggleToolsLayoutAccordion);
-  els.accToolsViewBtn.addEventListener("click", toggleToolsViewAccordion);
-  els.accToolsSelBtn.addEventListener("click", toggleToolsSelAccordion);
-
   window.addEventListener("resize", () => {
-    applyAccordions();
     render();
+  });
+
+
+  // Initialize panels
+  panelState = loadPanelState();
+  applyPanelState();
+
+  // Attach panel drag handlers
+  document.querySelectorAll('.panel-handle').forEach(handle => {
+    const panelId = handle.closest('.panel').id;
+    handle.addEventListener('pointerdown', (e) => beginPanelDrag(panelId, e));
+  });
+
+  // Bring panel to front on click
+  document.querySelectorAll('.panel').forEach(panel => {
+    panel.addEventListener('pointerdown', () => bringToFront(panel.id));
   });
 
   load();
@@ -2493,7 +2555,6 @@
   updateViewUI();
   updateSelectionUI();
   renderLibrary();
-  applyAccordions();
   render();
 
 })();
