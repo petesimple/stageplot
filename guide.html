@@ -215,6 +215,19 @@
     .linkTile .d{ color: var(--muted); font-size: 12px; }
     .linkTile .row{ margin-top: 10px; }
 
+    .callout{
+      border: 1px solid rgba(255,204,102,.30);
+      background: rgba(255,204,102,.08);
+      border-radius: 16px;
+      padding: 12px;
+    }
+    .callout .t{
+      font-weight: 900;
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: #ffe29a;
+    }
+
     /* QR Modal */
     .modal{
       position: fixed;
@@ -283,6 +296,88 @@
       z-index: 1000;
     }
     .toast.on{ display:block; }
+
+    @media print{
+      @page{
+        size:auto;
+        margin:0.55in;
+      }
+
+      html, body{
+        background:#fff !important;
+        color:#000 !important;
+        height:auto !important;
+        overflow:visible !important;
+      }
+
+      header{
+        position:static !important;
+        background:#fff !important;
+        backdrop-filter:none !important;
+        border-bottom:1px solid #ddd !important;
+      }
+
+      body{
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .card{
+        background:#fff !important;
+        color:#000 !important;
+        box-shadow:none !important;
+        border:1px solid #ddd !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+
+      .card .hd{
+        background:#fff !important;
+        border-bottom:1px solid #ddd !important;
+      }
+
+      .card .hd h2,
+      .miniHelp,
+      .sub,
+      .linkTile .d,
+      .pill{
+        color:#333 !important;
+      }
+
+      .pill,
+      .btn,
+      .button{
+        background:#fff !important;
+        border:1px solid #ccc !important;
+        color:#000 !important;
+      }
+
+      .modal,
+      .toast{
+        display:none !important;
+      }
+
+      a{
+        color:#000 !important;
+        text-decoration:none !important;
+      }
+
+      code{
+        background:#f5f5f5 !important;
+        border:1px solid #ddd !important;
+        color:#000 !important;
+      }
+
+      .linkTile,
+      .callout{
+        background:#fff !important;
+        border:1px solid #ddd !important;
+      }
+
+      .callout .t{
+        color:#000 !important;
+      }
+    }
   </style>
 </head>
 
@@ -311,7 +406,7 @@
   <section class="card">
     <div class="hd">
       <h2>Whats New in v1.7.5</h2>
-      <span class="pill">Shapes + print fix + polish</span>
+      <span class="pill">Shapes + print stability</span>
     </div>
     <div class="bd">
       <div class="grid2">
@@ -332,18 +427,18 @@
         </div>
 
         <div>
-          <div class="miniHelp"><b>More reliable printing</b></div>
+          <div class="miniHelp"><b>Better multi select visibility</b></div>
           <ul>
-            <li>Print output now behaves more consistently across different browser window sizes.</li>
-            <li>Printed stage scaling is based on the stage fit logic instead of whatever weird mood Safari was in that day.</li>
+            <li>Selected items are easier to spot, including triangles.</li>
+            <li>Multi select triangles glow too, so your selection is not a guessing game.</li>
           </ul>
 
           <div class="hr"></div>
 
-          <div class="miniHelp"><b>Small usability tweaks</b></div>
+          <div class="miniHelp"><b>Print behavior is more predictable</b></div>
           <ul>
-            <li>Better multi-select visibility, including triangles.</li>
-            <li>Less “where is that control” and more “done already”.</li>
+            <li>Recent print fixes aim to make stage output less dependent on browser window size.</li>
+            <li>Long notes still print, but may flow to page 2 if you write a full novel to FOH.</li>
           </ul>
         </div>
       </div>
@@ -416,7 +511,7 @@
 
           <div class="miniHelp">2) Add items</div>
           <ul>
-            <li>Use the Item Library to add Vocal, Guitar, Keys, Drums, wedges, power, and more.</li>
+            <li>Use the Item Library to add Vocal, Guitar, Keys, Drums, wedges, power, etc.</li>
             <li>Items appear centered, ready to drag.</li>
           </ul>
         </div>
@@ -444,7 +539,7 @@
   <section class="card">
     <div class="hd">
       <h2>Shapes</h2>
-      <span class="pill">Rectangle, Circle, Diamond, Triangle</span>
+      <span class="pill">Circle, Rectangle, Diamond, Triangle</span>
     </div>
     <div class="bd">
       <div class="grid2">
@@ -462,20 +557,12 @@
             <li>Default shape for most gear and people.</li>
             <li>Selection shows as an outline.</li>
           </ul>
-
-          <div class="hr"></div>
-
-          <div class="miniHelp"><b>Diamond</b></div>
-          <ul>
-            <li>Useful when you want a visual marker that feels directional without going full triangle chaos.</li>
-            <li>Diamond labels auto-counter-rotate so text stays readable.</li>
-          </ul>
         </div>
 
         <div>
           <div class="miniHelp"><b>Triangle</b></div>
           <ul>
-            <li>Great for marking corners, risers, directional elements, or “do not put Greg’s amp here” zones.</li>
+            <li>Great for marking corners, risers, or directional props.</li>
             <li>Triangles use <code>clip-path</code>, so selection uses a glow highlight, not an outline.</li>
           </ul>
 
@@ -525,14 +612,14 @@
 
           <div class="miniHelp">Colors</div>
           <ul>
-            <li>StagePlot supports item box colors, and yes, multi-select color changes are the fun part.</li>
+            <li>StagePlot supports item box colors.</li>
             <li>If you set a color on multiple selected items, they all update together.</li>
           </ul>
         </div>
       </div>
 
       <div class="miniHelp" style="margin-top:10px;">
-        Nerdy detail: View Zoom only changes what you see while editing. It does not change stage dimensions, stored item dimensions, or intended print size.
+        Nerdy detail: View Zoom only changes what you see. It does not change the stage size or item sizes.
       </div>
     </div>
   </section>
@@ -556,7 +643,6 @@
           <ul>
             <li>Use <code>Export Project JSON</code> to save a file you can share or archive.</li>
             <li>Use <code>Import Project JSON</code> to load it later on any device.</li>
-            <li>JSON export is also the best thing to send when reporting a weird bug.</li>
           </ul>
         </div>
       </div>
@@ -570,14 +656,51 @@
     </div>
     <div class="bd">
       <ul>
-        <li>Hit <code>Print</code> in the app header.</li>
-        <li>StagePlot temporarily resets View Zoom for print so the exported page is clean and predictable.</li>
-        <li>Print scaling now aims to stay consistent even if your browser window is resized or rearranged.</li>
-        <li>Save as PDF if you want to email it to a venue, bandmate, or your future self.</li>
+        <li>Hit <code>Print</code> in the header.</li>
+        <li>StagePlot temporarily normalizes print scaling so output is more consistent.</li>
+        <li>Save as PDF if you want to email it to a venue or keep it in your band folder.</li>
       </ul>
 
-      <div class="miniHelp" style="margin-top:10px;">
-        If a browser still manages to do something cursed, sending the JSON file and the PDF is extremely helpful for debugging.
+      <div class="callout" style="margin-top:12px;">
+        <div class="t">Important real-world note</div>
+        <div class="miniHelp" style="color:inherit;">
+          If your <b>Show Notes</b> are long, they may still continue onto page 2. That is normal. The stage plot stays the hero on page 1, and extra notes can flow after it. If something is mission critical, keep it short, high priority, and near the top of your notes.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="hd">
+      <h2>Print Notes + Readability</h2>
+      <span class="pill">Make page 2 less chaotic</span>
+    </div>
+    <div class="bd">
+      <div class="grid2">
+        <div>
+          <div class="miniHelp"><b>Best practice for notes</b></div>
+          <ul>
+            <li>Put the most important info first.</li>
+            <li>Use short phrases instead of giant paragraphs.</li>
+            <li>Think: load-in time, FOH contact, monitor needs, power weirdness, backline must-knows.</li>
+            <li>If a venue only glances at one page, page 1 should still tell the story.</li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="miniHelp"><b>What prints clearly</b></div>
+          <ul>
+            <li>Short notes print best.</li>
+            <li>Input and Mix lists are easier to scan than buried prose.</li>
+            <li>If something must not be missed, put it in both the notes and the label/list structure where possible.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="miniHelp">
+        Translation: do not hide “lead vocal needs phantom and no wedge” inside a dramatic wall of text written like a Civil War letter.
       </div>
     </div>
   </section>
@@ -632,7 +755,8 @@
         <li><b>I cannot find the tools</b> - Scroll under the stage. All tooling sits below the stage area.</li>
         <li><b>My items look huge</b> - Check <code>View Zoom</code> and reset it to 100% in the app.</li>
         <li><b>Triangle is selected but I cannot tell</b> - Look for the glow highlight. Triangles do not use outline selection.</li>
-        <li><b>My print or PDF looks different than expected</b> - Try again after the latest update. If it still acts weird, send the JSON export and the PDF because that gives a much clearer trail of browser nonsense.</li>
+        <li><b>My notes went to page 2</b> - That usually means the notes are longer than the remaining printable space. Keep the critical stuff at the top and trim fluff where possible.</li>
+        <li><b>The PDF looks different between windows</b> - Use the latest app build. Recent fixes reduce browser window size from affecting final print scale.</li>
       </ul>
     </div>
   </section>
