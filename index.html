@@ -2614,27 +2614,16 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
   });
 
 els.btnPrint.addEventListener("click", () => {
-  const prevZoom = state.viewZoom;
-  const prevFlip = state.view.flip;
-
-  prepareForPrintLayout();
+  const prev = prepareForPrintLayout();
   updateViewUI();
-
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        window.print();
-      }, 180);
-    });
-  });
 
   let restored = false;
 
   const restorePrintState = () => {
     if(restored) return;
     restored = true;
-    state.viewZoom = prevZoom;
-    state.view.flip = prevFlip;
+    state.viewZoom = prev.viewZoom;
+    state.printScale = prev.printScale;
     updateViewUI();
     render();
     save();
@@ -2643,9 +2632,15 @@ els.btnPrint.addEventListener("click", () => {
 
   window.addEventListener("afterprint", restorePrintState);
 
-  setTimeout(() => {
-    restorePrintState();
-  }, 2000);
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        window.print();
+      }, 150);
+    });
+  });
+
+  setTimeout(restorePrintState, 2500);
 });
 
   window.addEventListener("keydown", (e) => {
