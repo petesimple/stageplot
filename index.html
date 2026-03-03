@@ -2584,18 +2584,36 @@
   });
 
   els.btnPrint.addEventListener("click", () => {
-    const prev = state.viewZoom;
-    state.viewZoom = 1.0;
+  const prevZoom = state.viewZoom;
+  const prevFlip = state.view.flip;
+
+  state.viewZoom = 1.0;
+  updateViewUI();
+  render();
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        window.print();
+      }, 180);
+    });
+  });
+
+  const restorePrintState = () => {
+    state.viewZoom = prevZoom;
+    state.view.flip = prevFlip;
     updateViewUI();
     render();
-    setTimeout(() => {
-      window.print();
-      state.viewZoom = prev;
-      updateViewUI();
-      render();
-      save();
-    }, 50);
-  });
+    save();
+    window.removeEventListener("afterprint", restorePrintState);
+  };
+
+  window.addEventListener("afterprint", restorePrintState);
+
+  setTimeout(() => {
+    restorePrintState();
+  }, 2000);
+});
 
   window.addEventListener("keydown", (e) => {
     const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : "";
