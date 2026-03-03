@@ -2391,14 +2391,30 @@
   }
 
   function prepareForPrintLayout(){
-  const primary = getPrimary();
-  state.viewZoom = 1.0;
-  if(primary){
-    clampItemInStage(primary);
-  }
-  render();
-}
+  const prev = {
+    viewZoom: state.viewZoom,
+    printScale: state.printScale || 1
+  };
 
+  state.viewZoom = 1.0;
+
+  const square = els.stageSquareInner.getBoundingClientRect();
+  const paddingPx = 24; // safety gutter for print
+  const usableW = Math.max(50, square.width - paddingPx);
+  const usableH = Math.max(50, square.height - paddingPx);
+
+  const fitScale = Math.min(
+    usableW / square.width,
+    usableH / square.height
+  );
+
+  state.printScale = Math.min(1, fitScale);
+
+  render();
+
+  return prev;
+}
+  
   els.itemLabel.addEventListener("input", () => {
     const it = getPrimary(); if(!it) return;
     it.label = els.itemLabel.value;
