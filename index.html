@@ -2592,7 +2592,7 @@
     }
   });
 
-  els.btnPrint.addEventListener("click", () => {
+els.btnPrint.addEventListener("click", () => {
   const prevZoom = state.viewZoom;
   const prevFlip = state.view.flip;
 
@@ -2607,7 +2607,11 @@
     });
   });
 
+  let restored = false;
+
   const restorePrintState = () => {
+    if(restored) return;
+    restored = true;
     state.viewZoom = prevZoom;
     state.view.flip = prevFlip;
     updateViewUI();
