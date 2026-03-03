@@ -2391,26 +2391,29 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
     els.uItemH.value = hDisp;
   }
 
-  function prepareForPrintLayout(){
+ function prepareForPrintLayout(){
   const prev = {
     viewZoom: state.viewZoom,
     printScale: state.printScale || 1
   };
 
   state.viewZoom = 1.0;
+  state.printScale = 1;
+  render();
 
-  const square = els.stageSquareInner.getBoundingClientRect();
-  const paddingPx = 24; // safety gutter for print
-  const usableW = Math.max(50, square.width - paddingPx);
-  const usableH = Math.max(50, square.height - paddingPx);
+  const innerRect = els.stageSquareInner.getBoundingClientRect();
+  const canvasRect = els.stageCanvas.getBoundingClientRect();
+
+  const gutter = 20; // extra safety inside print square
+  const usableW = Math.max(40, innerRect.width - gutter);
+  const usableH = Math.max(40, innerRect.height - gutter);
 
   const fitScale = Math.min(
-    usableW / square.width,
-    usableH / square.height
+    usableW / canvasRect.width,
+    usableH / canvasRect.height
   );
 
-  state.printScale = Math.min(1, fitScale);
-
+  state.printScale = Math.min(1, fitScale * 0.98);
   render();
 
   return prev;
