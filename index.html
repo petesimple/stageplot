@@ -2597,6 +2597,7 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
         next.units = state.units;
       }
       state = next;
+      state.printScale = 1;
       state.selectedIds = [];
       state.primaryId = null;
       els.bandName.value = state.bandName || "";
