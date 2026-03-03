@@ -2596,9 +2596,8 @@
   const prevZoom = state.viewZoom;
   const prevFlip = state.view.flip;
 
-  state.viewZoom = 1.0;
+  prepareForPrintLayout();
   updateViewUI();
-  render();
 
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
