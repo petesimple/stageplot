@@ -577,7 +577,7 @@
 
     /* Print */
   @media print{
-  @page{
+  @page {
     size: auto;
     margin: 0.5in;
   }
@@ -587,29 +587,61 @@
     color:#000 !important;
     height:auto !important;
     overflow:visible !important;
+  }
+
+  body{
     margin:0 !important;
     padding:0 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
+  body *{
+    visibility:hidden !important;
+  }
+
+  #stageCard, #stageCard *,
+  #infoCard, #infoCard *{
+    visibility:visible !important;
+  }
+
   header,
   #libCard,
-  #toolsCard{
+  #toolsCard,
+  .actions,
+  .pill,
+  .accBtn,
+  .tAccBtn,
+  #btnDup,
+  #btnPrint,
+  #btnExport,
+  #btnImport,
+  #btnDeleteSel,
+  #btnClearSel,
+  #btnResetStage,
+  #btnResetView,
+  #btnUnits,
+  #btnFlip,
+  #btnRot0,
+  #clearColor,
+  #uClearColor{
     display:none !important;
   }
 
   main{
     display:block !important;
-    max-width: 8in !important;
-    margin: 0 auto !important;
-    padding: 0 !important;
+    width:100% !important;
+    max-width:none !important;
+    margin:0 !important;
+    padding:0 !important;
+    gap:0 !important;
   }
 
   #stageCard,
   #infoCard{
     display:block !important;
     width:100% !important;
+    max-width:none !important;
     margin:0 0 12px 0 !important;
     break-inside: avoid !important;
     page-break-inside: avoid !important;
@@ -621,8 +653,8 @@
 
   #stageCard .hd,
   #infoCard .hd{
-    background:#fff !important;
     border-bottom:1px solid #ddd !important;
+    background:#fff !important;
   }
 
   #stageCard .bd,
@@ -642,15 +674,17 @@
   }
 
   .stageSquare{
-    width: 7.1in !important;
-    height: 7.1in !important;
-    aspect-ratio: auto !important;
-    margin: 0 auto !important;
+    width:100% !important;
+    max-width:6.6in !important;
+    aspect-ratio: 1 / 1 !important;
+    height:auto !important;
+    margin:0 auto !important;
     border:1px solid #ddd !important;
-    border-radius: 12px !important;
+    border-radius:12px !important;
     overflow:hidden !important;
     background:#fff !important;
     position:relative !important;
+    box-sizing:border-box !important;
   }
 
   .stageSquareInner{
@@ -660,6 +694,7 @@
     border-radius:10px !important;
     overflow:hidden !important;
     background:#fff !important;
+    box-sizing:border-box !important;
   }
 
   .stageCanvas{
@@ -682,7 +717,7 @@
   .upLabel,
   .downLabel{
     color:#000 !important;
-    background:rgba(255,255,255,.92) !important;
+    background:rgba(255,255,255,.9) !important;
     border:1px solid #bbb !important;
     text-shadow:none !important;
   }
@@ -698,30 +733,10 @@
     text-shadow:none !important;
   }
 
-  .pill,
-  .accBtn,
-  .tAccBtn,
-  #btnDup,
-  #btnPrint,
-  #btnExport,
-  #btnImport,
-  #btnDeleteSel,
-  #btnClearSel,
-  #btnResetStage,
-  #btnResetView,
-  #btnUnits,
-  #btnFlip,
-  #btnRot0,
-  #clearColor,
-  #uClearColor,
-  button{
-    display:none !important;
-  }
-
-  input, textarea, select{
+  input, textarea, select, button{
+    border:1px solid #ccc !important;
     color:#000 !important;
     background:#fff !important;
-    border:1px solid #ccc !important;
   }
 
   .table{
@@ -730,9 +745,9 @@
   }
 
   .table th, .table td{
+    border-bottom:1px solid #ddd !important;
     color:#000 !important;
     background:#fff !important;
-    border-bottom:1px solid #ddd !important;
   }
 
   .table th{
