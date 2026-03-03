@@ -1792,7 +1792,8 @@
     const { pxPerFoot, stagePxW, stagePxH } = computeStagePixels();
     els.stageCanvas.style.width = stagePxW + "px";
     els.stageCanvas.style.height = stagePxH + "px";
-    els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${state.viewZoom})`;
+    const finalScale = state.viewZoom * (state.printScale || 1);
+els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
     Array.from(els.stageCanvas.querySelectorAll(".item")).forEach(n => n.remove());
     for(const it of state.items){
       const d = itemDrawPos(it);
