@@ -577,20 +577,180 @@
 
     /* Print */
     @media print{
-      header{ display:none !important; }
-      body{ background:#fff !important; color:#000 !important; }
-      main{ display:block !important; max-width: 7.8in !important; padding: 0 !important; }
-      .card{ box-shadow:none !important; background:#fff !important; border: 1px solid #ddd !important; margin-bottom: 10px !important; }
-      .card .hd{ border-bottom:1px solid #ddd !important; }
-      .pill, .actions, .accBtn, .tAccBtn, #libCard, #toolsCard { display:none !important; }
-      #stageCard .bd{ padding: 10px !important; }
-      .stageSquare{ border: 1px solid #ddd !important; }
-      .stageSquareInner{ inset: 8px !important; border: 1px solid #ddd !important; }
-      .stageRect{ border-color:#111 !important; }
-      .item{ box-shadow:none !important; border-color:#111 !important; background:#fff !important; }
-      .item .lbl{ color:#000 !important; text-shadow:none !important; }
-      a{ color:#000 !important; text-decoration:none !important; }
-    }
+  @page {
+    size: auto;
+    margin: 0.5in;
+  }
+
+  html, body{
+    background:#fff !important;
+    color:#000 !important;
+    height:auto !important;
+    overflow:visible !important;
+  }
+
+  body *{
+    visibility:hidden !important;
+  }
+
+  #stageCard, #stageCard *,
+  #infoCard, #infoCard *{
+    visibility:visible !important;
+  }
+
+  header,
+  #libCard,
+  #toolsCard,
+  .actions,
+  .pill,
+  .accBtn,
+  .tAccBtn,
+  #btnDup,
+  #btnPrint,
+  #btnExport,
+  #btnImport,
+  #btnDeleteSel,
+  #btnClearSel,
+  #btnResetStage,
+  #btnResetView,
+  #btnUnits,
+  #btnFlip{
+    display:none !important;
+  }
+
+  body{
+    margin:0 !important;
+    padding:0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  main{
+    display:block !important;
+    max-width: 8in !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    gap: 0 !important;
+  }
+
+  #stageCard,
+  #infoCard{
+    display:block !important;
+    width:100% !important;
+    margin:0 0 12px 0 !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    box-shadow:none !important;
+    background:#fff !important;
+    border:1px solid #ddd !important;
+    overflow:visible !important;
+  }
+
+  #stageCard .hd,
+  #infoCard .hd{
+    border-bottom:1px solid #ddd !important;
+    background:#fff !important;
+  }
+
+  #stageCard .bd,
+  #infoCard .bd{
+    padding:10px !important;
+    overflow:visible !important;
+  }
+
+  .card{
+    box-shadow:none !important;
+    background:#fff !important;
+    border:1px solid #ddd !important;
+  }
+
+  .stageWrap{
+    overflow:visible !important;
+  }
+
+  .stageSquare{
+    width: 7.1in !important;
+    height: 7.1in !important;
+    aspect-ratio: auto !important;
+    margin: 0 auto !important;
+    border:1px solid #ddd !important;
+    border-radius: 12px !important;
+    overflow:hidden !important;
+    background:#fff !important;
+    position:relative !important;
+  }
+
+  .stageSquareInner{
+    position:absolute !important;
+    inset: 8px !important;
+    border:1px solid #ddd !important;
+    border-radius: 10px !important;
+    overflow:hidden !important;
+    background:#fff !important;
+  }
+
+  .stageCanvas{
+    position:absolute !important;
+    left:50% !important;
+    top:50% !important;
+    transform: translate(-50%,-50%) scale(1) !important;
+    transform-origin:center center !important;
+    will-change:auto !important;
+  }
+
+  .stageRect{
+    border-color:#111 !important;
+    background:
+      linear-gradient(to right, rgba(0,0,0,.08) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0,0,0,.08) 1px, transparent 1px) !important;
+    background-size: 10% 10% !important;
+  }
+
+  .upLabel,
+  .downLabel{
+    color:#000 !important;
+    background:rgba(255,255,255,.9) !important;
+    border:1px solid #bbb !important;
+    text-shadow:none !important;
+  }
+
+  .item{
+    box-shadow:none !important;
+    border-color:#111 !important;
+    background:#fff !important;
+  }
+
+  .item .lbl{
+    color:#000 !important;
+    text-shadow:none !important;
+  }
+
+  input, textarea, select, button{
+    border:1px solid #ccc !important;
+    color:#000 !important;
+    background:#fff !important;
+  }
+
+  .table{
+    border:1px solid #ccc !important;
+    background:#fff !important;
+  }
+
+  .table th, .table td{
+    border-bottom:1px solid #ddd !important;
+    color:#000 !important;
+    background:#fff !important;
+  }
+
+  .table th{
+    font-weight:800 !important;
+  }
+
+  a{
+    color:#000 !important;
+    text-decoration:none !important;
+  }
+}
   </style>
 </head>
 
