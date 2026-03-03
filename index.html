@@ -576,7 +576,7 @@
     }
 
     /* Print */
-    @media print{
+   @media print{
   @page {
     size: auto;
     margin: 0.5in;
@@ -587,6 +587,13 @@
     color:#000 !important;
     height:auto !important;
     overflow:visible !important;
+  }
+
+  body{
+    margin:0 !important;
+    padding:0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   body *{
@@ -619,13 +626,6 @@
   #clearColor,
   #uClearColor{
     display:none !important;
-  }
-
-  body{
-    margin:0 !important;
-    padding:0 !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
   }
 
   main{
@@ -712,7 +712,7 @@
   .upLabel,
   .downLabel{
     color:#000 !important;
-    background:rgba(255,255,255,.9) !important;
+    background:rgba(255,255,255,.92) !important;
     border:1px solid #bbb !important;
     text-shadow:none !important;
   }
@@ -728,15 +728,12 @@
     text-shadow:none !important;
   }
 
-  input, textarea, select, button{
-    border:1px solid #ccc !important;
-    color:#000 !important;
-    background:#fff !important;
-  }
-
   .table{
+    width:100% !important;
     border:1px solid #ccc !important;
     background:#fff !important;
+    border-collapse: collapse !important;
+    margin-top: 6px !important;
   }
 
   .table th, .table td{
@@ -752,6 +749,62 @@
   a{
     color:#000 !important;
     text-decoration:none !important;
+  }
+
+  /* Keep only the useful print stuff in the info panel */
+  #infoAccContent > .hr:nth-of-type(1),
+  #infoAccContent > .pill,
+  #infoAccContent > .field:nth-of-type(3),
+  #infoAccContent > .field:nth-of-type(4),
+  #infoAccContent > .field:nth-of-type(5),
+  #infoAccContent > .row:nth-of-type(1),
+  #infoAccContent > .field:nth-of-type(6),
+  #infoAccContent > .row:nth-of-type(2),
+  #infoAccContent > .row:nth-of-type(3),
+  #infoAccContent > .row:nth-of-type(4),
+  #infoAccContent > .field:nth-of-type(7),
+  #infoAccContent > .miniHelp:nth-of-type(1){
+    display:none !important;
+  }
+
+  /* Hide any remaining editing-only controls inside info */
+  #itemLabel,
+  #labelSize,
+  #itemInput,
+  #itemMix,
+  #itemNotes,
+  #itemW,
+  #itemH,
+  #itemScale,
+  #itemRot,
+  #itemColor,
+  #colorScopePill,
+  #clearColor,
+  #btnRot0,
+  #labelSizePill,
+  #itemScalePill,
+  #itemRotPill,
+  #colorPill,
+  #selLabel,
+  [data-shape]{
+    display:none !important;
+  }
+
+  /* Hide labels/help tied to editing controls */
+  #infoCard label[for="itemLabel"],
+  #infoCard label[for="itemInput"],
+  #infoCard label[for="itemMix"],
+  #infoCard label[for="itemNotes"],
+  #infoCard .miniHelp{
+    color:#000 !important;
+  }
+
+  /* Make band name + notes print nicely */
+  #bandName,
+  #showNotes{
+    border:1px solid #ccc !important;
+    color:#000 !important;
+    background:#fff !important;
   }
 }
   </style>
