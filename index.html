@@ -15,9 +15,7 @@
           const isInteractive = e.target.closest('input, textarea, select, button, a, [role="button"]');
           if(!isInteractive){
             const now = Date.now();
-            if (now - lastTouchEnd <= 300) {
-              e.preventDefault();
-            }
+            if (now - lastTouchEnd <= 300) e.preventDefault();
             lastTouchEnd = now;
           }
         }, { passive: false });
@@ -234,9 +232,7 @@
     }
     textarea{ min-height: 70px; resize: vertical; }
 
-    input[type="range"]{
-      width:100%;
-    }
+    input[type="range"]{ width:100%; }
 
     input[type="color"]{
       width: 54px;
@@ -271,7 +267,6 @@
       color: var(--muted);
     }
 
-    /* Stage panel */
     .stageWrap{
       display:flex;
       flex-direction:column;
@@ -335,7 +330,6 @@
     .upLabel{ left:10px; top:10px; }
     .downLabel{ right:10px; bottom:10px; opacity:.95; }
 
-    /* Items */
     .item{
       position:absolute;
       border-radius: 10px;
@@ -354,7 +348,6 @@
     .item[data-kind="gear"]{ background: rgba(255,255,255,.06); }
     .item[data-kind="power"]{ background: rgba(255,90,106,.08); border-color: rgba(255,90,106,.28); }
 
-    /* Shape variants */
     .item[data-shape="circle"]{
       border-radius: 50%;
       padding: 0;
@@ -566,7 +559,7 @@
       #infoCard{ order: 3; }
     }
 
-    /* Print */
+    /* PRINT */
     @media print{
       @page {
         size: auto;
@@ -632,12 +625,22 @@
         display:block !important;
         width:100% !important;
         margin:0 0 12px 0 !important;
-        break-inside: avoid !important;
-        page-break-inside: avoid !important;
         box-shadow:none !important;
         background:#fff !important;
         border:1px solid #ddd !important;
         overflow:visible !important;
+      }
+
+      #stageCard{
+        break-after: page !important;
+        page-break-after: always !important;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+
+      #infoCard{
+        break-inside: auto !important;
+        page-break-inside: auto !important;
       }
 
       #stageCard .hd,
@@ -650,6 +653,7 @@
       #infoCard .bd{
         padding:10px !important;
         overflow:visible !important;
+        max-height:none !important;
       }
 
       .card{
@@ -718,24 +722,52 @@
         text-shadow:none !important;
       }
 
-      input, textarea, select, button{
+      #infoCard .field,
+      #infoCard .table,
+      #infoCard .hr{
+        break-inside: avoid-page !important;
+        page-break-inside: avoid !important;
+      }
+
+      #infoCard textarea,
+      #infoCard input,
+      #infoCard select{
         border:1px solid #ccc !important;
         color:#000 !important;
         background:#fff !important;
+        overflow:visible !important;
+        box-shadow:none !important;
       }
 
-      .table{
+      #infoCard textarea{
+        min-height: unset !important;
+        height: auto !important;
+        resize: none !important;
+        white-space: pre-wrap !important;
+      }
+
+      #infoCard .table{
         border:1px solid #ccc !important;
         background:#fff !important;
+        border-collapse: collapse !important;
       }
 
-      .table th, .table td{
+      #infoCard .table thead{
+        display: table-header-group !important;
+      }
+
+      #infoCard .table tr{
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+
+      #infoCard .table th, #infoCard .table td{
         border-bottom:1px solid #ddd !important;
         color:#000 !important;
         background:#fff !important;
       }
 
-      .table th{
+      #infoCard .table th{
         font-weight:800 !important;
       }
 
@@ -812,7 +844,6 @@
   </section>
 
   <div class="midCol" id="midCol">
-
     <section class="card" id="stageCard">
       <div class="hd">
         <h2>Stage</h2>
@@ -851,7 +882,6 @@
       </div>
 
       <div class="bd" style="display:flex; flex-direction:column; gap:12px;">
-
         <button class="tAccBtn" id="accToolsLayoutBtn" type="button">
           <span>Layout</span><span class="chev" id="accToolsLayoutChev">▾</span>
         </button>
@@ -1021,10 +1051,8 @@
         <div class="miniHelp">
           Note: Width/Depth set the base footprint. Scale multiplies that footprint. View Zoom only changes your view.
         </div>
-
       </div>
     </section>
-
   </div>
 
   <section class="card" id="infoCard">
@@ -1184,12 +1212,6 @@
   const APP_VERSION = "1.7.5 (Triangle Selection Fix)";
   const FT_PER_M = 3.280839895;
 
-  const PRINT_TARGET = {
-    squarePx: 662,
-    insetPx: 14,
-    gutterPx: 20
-  };
-
   const els = {
     libGrid: document.getElementById("libGrid"),
     libSearch: document.getElementById("libSearch"),
@@ -1302,13 +1324,14 @@
     view: { flip:false },
     viewZoom: 1.0,
     printScale: 1,
-    isPreparingPrint: false,
     bandName: "",
     showNotes: "",
     items: [],
     selectedIds: [],
     primaryId: null
   };
+
+  let printRestoreFields = [];
 
   const uid = () => Math.random().toString(16).slice(2) + "-" + Date.now().toString(16);
   const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
@@ -1355,7 +1378,6 @@
       view: { flip:false },
       viewZoom: 1.0,
       printScale: 1,
-      isPreparingPrint: false,
       bandName: "",
       showNotes: "",
       items: [],
@@ -1450,23 +1472,14 @@
     return { w: r.width, h: r.height };
   }
 
-  function computeStagePixels(useFixedPrintTarget = false){
-    let inner;
-
-    if(useFixedPrintTarget){
-      const innerSize = PRINT_TARGET.squarePx - (PRINT_TARGET.insetPx * 2);
-      inner = { w: innerSize, h: innerSize };
-    }else{
-      inner = getSquareInnerSizePx();
-    }
-
+  function computeStagePixels(){
+    const inner = getSquareInnerSizePx();
     const maxSize = Math.min(inner.w, inner.h);
     const safety = 2;
     const avail = Math.max(20, maxSize - safety);
     const pxPerFoot = Math.min(avail / state.stage.w, avail / state.stage.d);
     const stagePxW = state.stage.w * pxPerFoot;
     const stagePxH = state.stage.d * pxPerFoot;
-
     return { pxPerFoot, stagePxW, stagePxH };
   }
 
@@ -1609,9 +1622,7 @@
     const set = new Set(state.selectedIds);
     state.items.forEach(it => {
       if(!set.has(it.id)) return;
-      if(shape === "circle"){
-        enforceCircleSquare(it);
-      }
+      if(shape === "circle") enforceCircleSquare(it);
       it.shape = shape;
     });
 
@@ -1681,7 +1692,6 @@
       els.itemColor, els.clearColor, els.uItemColor, els.uClearColor
     ].forEach(el => el.disabled = disabled);
     document.querySelectorAll('[data-shape]').forEach(btn => btn.disabled = disabled);
-
     const cs = selectionColorStatus();
     if(!cs.count){
       els.colorPill.textContent = "none";
@@ -1704,7 +1714,6 @@
       els.itemColor.value = cs.color || "#4aa3ff";
       els.uItemColor.value = cs.color || "#4aa3ff";
     }
-
     const ls = selectionLabelSizeStatus();
     if(!ls.count){
       els.labelSize.value = 100;
@@ -1718,9 +1727,7 @@
       els.uLabelSize.value = p;
       els.uLabelSizePill.textContent = (ls.mode === "mixed") ? `mixed (${ls.count})` : (p + "%");
     }
-
     updateShapeButtons();
-
     if(!primary){
       els.itemLabel.value = "";
       els.itemInput.value = "";
@@ -1738,7 +1745,6 @@
       els.uItemScalePill.textContent = "100%";
       return;
     }
-
     els.itemLabel.value = primary.label || "";
     els.itemInput.value = primary.input || "";
     els.itemMix.value = primary.mix || "";
@@ -1785,12 +1791,9 @@
   }
 
   function render(){
-    const useFixedPrintTarget = !!state.isPreparingPrint;
-    const { pxPerFoot, stagePxW, stagePxH } = computeStagePixels(useFixedPrintTarget);
-
+    const { pxPerFoot, stagePxW, stagePxH } = computeStagePixels();
     els.stageCanvas.style.width = stagePxW + "px";
     els.stageCanvas.style.height = stagePxH + "px";
-
     const finalScale = state.viewZoom * (state.printScale || 1);
     els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
 
@@ -1803,16 +1806,13 @@
       el.dataset.id = it.id;
       el.dataset.kind = it.kind || inferKind(it.type);
       el.dataset.shape = it.shape || "rectangle";
-
       const isSel = state.selectedIds.includes(it.id);
       if(isSel) el.classList.add("multi");
       if(state.primaryId === it.id) el.classList.add("selected");
-
       if(it.color){
         el.style.background = `color-mix(in srgb, ${it.color} 18%, rgba(255,255,255,.06))`;
         el.style.borderColor = `color-mix(in srgb, ${it.color} 42%, rgba(255,255,255,.14))`;
       }
-
       el.style.left = (d.x * pxPerFoot) + "px";
       el.style.top  = (d.y * pxPerFoot) + "px";
       el.style.width  = (d.w * pxPerFoot) + "px";
@@ -1837,19 +1837,14 @@
       el.appendChild(lbl);
       el.addEventListener("pointerdown", onItemPointerDown);
       el.addEventListener("click", (ev) => {
-        if((drag && drag.hasMoved) || (pinch.hasMoved)){
-          return;
-        }
-
+        if((drag && drag.hasMoved) || (pinch.hasMoved)) return;
         ev.stopPropagation();
-
         const mod = ev.shiftKey || ev.metaKey || ev.ctrlKey;
         if(!mod){
           openInfoAccordionIfMobile();
           openToolsSelectedIfMobile();
           return;
         }
-
         const set = new Set(state.selectedIds);
         if(set.has(it.id)) set.delete(it.id); else set.add(it.id);
         const arr = Array.from(set);
@@ -2267,6 +2262,33 @@
     }
   }
 
+  function prepareFormFieldsForPrint(){
+    restoreFormFieldsFromPrint();
+    const nodes = Array.from(document.querySelectorAll('#infoCard textarea'));
+    printRestoreFields = nodes.map(node => ({
+      node,
+      height: node.style.height,
+      overflow: node.style.overflow,
+      minHeight: node.style.minHeight
+    }));
+    nodes.forEach(node => {
+      node.style.minHeight = '0';
+      node.style.height = 'auto';
+      node.style.overflow = 'visible';
+      node.style.height = Math.max(node.scrollHeight, 40) + 'px';
+    });
+  }
+
+  function restoreFormFieldsFromPrint(){
+    if(!printRestoreFields.length) return;
+    printRestoreFields.forEach(({node, height, overflow, minHeight}) => {
+      node.style.height = height || '';
+      node.style.overflow = overflow || '';
+      node.style.minHeight = minHeight || '';
+    });
+    printRestoreFields = [];
+  }
+
   els.stageSquareInner.addEventListener("click", (e) => {
     if(e.target.closest(".item")) return;
     clearSelection();
@@ -2344,7 +2366,6 @@
     state.view = { flip:false };
     state.viewZoom = 1.0;
     state.printScale = 1;
-    state.isPreparingPrint = false;
     state.bandName = "";
     state.showNotes = "";
     state.items = [];
@@ -2369,6 +2390,7 @@
     it.h = hFeet;
     clampItemInStage(it);
   }
+
   function syncItemWHUI(it){
     const wDisp = Math.round(feetToDisplay(it.w)*100)/100;
     const hDisp = Math.round(feetToDisplay(it.h)*100)/100;
@@ -2381,28 +2403,13 @@
   function prepareForPrintLayout(){
     const prev = {
       viewZoom: state.viewZoom,
-      printScale: state.printScale || 1,
-      isPreparingPrint: !!state.isPreparingPrint
+      printScale: state.printScale || 1
     };
 
-    state.isPreparingPrint = true;
     state.viewZoom = 1.0;
-    state.printScale = 1.0;
-
-    const innerSizePx = PRINT_TARGET.squarePx - (PRINT_TARGET.insetPx * 2);
-    const usableW = innerSizePx - PRINT_TARGET.gutterPx;
-    const usableH = innerSizePx - PRINT_TARGET.gutterPx;
-
-    const { stagePxW, stagePxH } = computeStagePixels(true);
-
-    const fitScale = Math.min(
-      usableW / stagePxW,
-      usableH / stagePxH
-    );
-
-    state.printScale = Math.min(1, fitScale * 0.98);
-
+    state.printScale = 0.92;
     render();
+
     return prev;
   }
 
@@ -2586,7 +2593,6 @@
       }
       state = next;
       state.printScale = 1;
-      state.isPreparingPrint = false;
       state.selectedIds = [];
       state.primaryId = null;
       els.bandName.value = state.bandName || "";
@@ -2607,6 +2613,7 @@
 
   els.btnPrint.addEventListener("click", () => {
     const prev = prepareForPrintLayout();
+    prepareFormFieldsForPrint();
     updateViewUI();
 
     let restored = false;
@@ -2614,11 +2621,9 @@
     const restorePrintState = () => {
       if(restored) return;
       restored = true;
-
       state.viewZoom = prev.viewZoom;
       state.printScale = prev.printScale;
-      state.isPreparingPrint = prev.isPreparingPrint;
-
+      restoreFormFieldsFromPrint();
       updateViewUI();
       render();
       save();
