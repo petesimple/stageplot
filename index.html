@@ -576,8 +576,8 @@
     }
 
     /* Print */
-  @media print{
-  @page {
+    @media print{
+  @page{
     size: auto;
     margin: 0.5in;
   }
@@ -630,18 +630,17 @@
 
   main{
     display:block !important;
-    width:100% !important;
-    max-width:none !important;
-    margin:0 !important;
-    padding:0 !important;
-    gap:0 !important;
+    max-width: 7.5in !important;
+    width: 7.5in !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    gap: 0 !important;
   }
 
   #stageCard,
   #infoCard{
     display:block !important;
     width:100% !important;
-    max-width:none !important;
     margin:0 0 12px 0 !important;
     break-inside: avoid !important;
     page-break-inside: avoid !important;
@@ -674,36 +673,31 @@
   }
 
   .stageSquare{
-    width:100% !important;
-    max-width:6.6in !important;
-    aspect-ratio: 1 / 1 !important;
-    height:auto !important;
-    margin:0 auto !important;
+    width: 6.7in !important;
+    height: 6.7in !important;
+    aspect-ratio: auto !important;
+    margin: 0 auto !important;
     border:1px solid #ddd !important;
-    border-radius:12px !important;
+    border-radius: 12px !important;
     overflow:hidden !important;
     background:#fff !important;
     position:relative !important;
-    box-sizing:border-box !important;
   }
 
   .stageSquareInner{
     position:absolute !important;
-    inset:8px !important;
+    inset: 10px !important;
     border:1px solid #ddd !important;
-    border-radius:10px !important;
+    border-radius: 10px !important;
     overflow:hidden !important;
     background:#fff !important;
-    box-sizing:border-box !important;
   }
 
-    .stageCanvas{
+  .stageCanvas{
     position:absolute !important;
     left:50% !important;
     top:50% !important;
-    width:auto !important;
-    height:auto !important;
-    transform: translate(-50%,-50%) scale(0.94) !important;
+    transform: translate(-50%,-50%) scale(0.92) !important;
     transform-origin:center center !important;
     will-change:auto !important;
   }
@@ -713,13 +707,13 @@
     background:
       linear-gradient(to right, rgba(0,0,0,.08) 1px, transparent 1px),
       linear-gradient(to bottom, rgba(0,0,0,.08) 1px, transparent 1px) !important;
-    background-size:10% 10% !important;
+    background-size: 10% 10% !important;
   }
 
   .upLabel,
   .downLabel{
     color:#000 !important;
-    background:rgba(255,255,255,.9) !important;
+    background:rgba(255,255,255,.95) !important;
     border:1px solid #bbb !important;
     text-shadow:none !important;
   }
@@ -761,6 +755,7 @@
     text-decoration:none !important;
   }
 }
+    
   </style>
 </head>
 
