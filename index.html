@@ -2,9 +2,32 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+  <script>
+  // iOS/Safari: prevent double-tap to zoom on stage area only
+  (() => {
+    let lastTouchEnd = 0;
+    window.addEventListener('DOMContentLoaded', () => {
+      const stageArea = document.getElementById('stageSquare');
+      if(stageArea){
+        stageArea.addEventListener('touchend', (e) => {
+          const isInteractive = e.target.closest('input, textarea, select, button, a, [role="button"]');
+          if(!isInteractive){
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+              e.preventDefault();
+            }
+            lastTouchEnd = now;
+          }
+        }, { passive: false });
+      }
+    });
+  })();
+</script>
   <meta name="theme-color" content="#0b0d12" />
-  <title>StagePlot v2 - Guide (v1.7.5)</title>
+  <title>StagePlot v2 - v1.7.5 (Triangle Selection Fix)</title>
+
   <style>
     :root{
       --bg:#0b0d12;
@@ -21,6 +44,11 @@
       --chip: rgba(255,255,255,.06);
       --chipBorder: rgba(255,255,255,.12);
       --shadow: 0 12px 30px rgba(0,0,0,.35);
+
+      --stageBorder: rgba(255,255,255,.14);
+      --stageGrid: rgba(255,255,255,.06);
+
+      --sqPad: 10px;
     }
 
     *{ box-sizing:border-box; }
@@ -30,7 +58,7 @@
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
       background: radial-gradient(1200px 700px at 50% -10%, #1a2540, var(--bg));
       color: var(--text);
-      line-height:1.5;
+      line-height:1.4;
     }
 
     header{
@@ -42,7 +70,7 @@
       backdrop-filter: blur(10px);
     }
     .wrap{
-      max-width: 980px;
+      max-width: 1200px;
       margin: 0 auto;
       padding: 12px 14px;
     }
@@ -60,7 +88,7 @@
       min-width: 240px;
     }
     .logo{
-      width:32px; height:32px;
+      width:30px; height:30px;
       border-radius:10px;
       background: rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.12);
@@ -81,13 +109,35 @@
       margin-top: 2px;
     }
 
+    .actions{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      color: var(--muted);
+      font-size: 12px;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .dot{ width:8px; height:8px; border-radius:50%; background: var(--ok); display:inline-block; }
+
     a.button, button, .btn{
       font: inherit;
       color: var(--text);
       background: var(--chip);
       border: 1px solid var(--chipBorder);
       border-radius: 12px;
-      padding: 9px 10px;
+      padding: 8px 10px;
       text-decoration:none;
       cursor:pointer;
       transition: transform .05s ease, border-color .15s ease, background .15s ease;
@@ -95,7 +145,6 @@
       align-items:center;
       gap:8px;
       user-select:none;
-      white-space:nowrap;
     }
     a.button:hover, button:hover, .btn:hover{ border-color: rgba(74,163,255,.8); }
     a.button:active, button:active, .btn:active{ transform: translateY(1px); }
@@ -107,18 +156,26 @@
       background: rgba(255,90,106,.10);
       border-color: rgba(255,90,106,.35);
     }
-    .ok{
-      background: rgba(64,217,138,.10);
-      border-color: rgba(64,217,138,.40);
+    .warn{
+      background: rgba(255,204,102,.10);
+      border-color: rgba(255,204,102,.35);
     }
 
     main{
-      max-width: 980px;
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 14px 14px 34px 14px;
+      padding: 14px 14px 26px 14px;
+      display:grid;
+      grid-template-columns: 320px 1fr 340px;
+      gap: 12px;
+      align-items:start;
+    }
+
+    .midCol{
       display:flex;
       flex-direction:column;
       gap:12px;
+      min-width: 0;
     }
 
     .card{
@@ -144,163 +201,376 @@
       color: var(--muted);
       text-transform: uppercase;
       letter-spacing: .35px;
-      font-weight: 900;
+      font-weight: 800;
     }
-    .card .bd{ padding: 12px 12px 14px 12px; }
+    .card .bd{
+      padding: 12px 12px 14px 12px;
+    }
 
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.06);
-      color: var(--muted);
-      font-size: 12px;
-      user-select:none;
-      white-space:nowrap;
-    }
-    .row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
     .row.tight{ gap:8px; }
+    .row > *{ flex: 0 0 auto; }
 
-    .grid2{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:12px;
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      width:100%;
+      margin-bottom:10px;
     }
-    @media (max-width: 860px){
-      .grid2{ grid-template-columns: 1fr; }
+    .field label{
+      font-size: 12px;
+      color: var(--muted);
+    }
+    input[type="text"], input[type="number"], select, textarea{
+      width:100%;
+      color: var(--text);
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 12px;
+      padding: 9px 10px;
+      outline:none;
+      font: inherit;
+    }
+    textarea{ min-height: 70px; resize: vertical; }
+
+    input[type="range"]{
+      width:100%;
     }
 
-    .miniHelp{ color: var(--muted); font-size: 12px; }
-    .hr{ height:1px; background: rgba(255,255,255,.08); margin: 10px 0; }
+    input[type="color"]{
+      width: 54px;
+      height: 38px;
+      padding: 0;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 12px;
+      background: rgba(255,255,255,.04);
+      overflow: hidden;
+      cursor: pointer;
+    }
+    input[type="color"]::-webkit-color-swatch-wrapper{ padding: 0; }
+    input[type="color"]::-webkit-color-swatch{ border: none; }
 
-    code, .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
-    code{
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.10);
-      padding: 2px 6px;
-      border-radius: 8px;
+    .seg{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .seg .btn{
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+    }
+    .seg .btn.on{
+      background: rgba(74,163,255,.18);
+      border-color: rgba(74,163,255,.6);
     }
 
-    ul{ margin: 8px 0 0 18px; padding:0; }
-    li{ margin: 6px 0; }
+    .miniHelp{
+      font-size:12px;
+      color: var(--muted);
+    }
 
-    .linkList{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
+    /* Stage panel */
+    .stageWrap{
+      display:flex;
+      flex-direction:column;
       gap:10px;
-      margin-top: 10px;
     }
-    @media (max-width: 620px){
-      .linkList{ grid-template-columns: 1fr; }
-    }
-    .linkTile{
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
-      border-radius: 16px;
-      padding: 10px;
-    }
-    .linkTile .t{
-      font-weight: 900;
-      font-size: 13px;
-      margin-bottom: 4px;
-    }
-    .linkTile .d{ color: var(--muted); font-size: 12px; }
-    .linkTile .row{ margin-top: 10px; }
 
-    .callout{
-      border: 1px solid rgba(255,204,102,.30);
-      background: rgba(255,204,102,.08);
+    .stageSquare{
+      width:100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stageSquareInner{
+      position:absolute;
+      inset: var(--sqPad);
+      border-radius: 14px;
+      overflow:hidden;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(74,163,255,.08), transparent 40%),
+        radial-gradient(circle at 70% 70%, rgba(64,217,138,.06), transparent 45%),
+        rgba(0,0,0,.08);
+      border: 1px solid rgba(255,255,255,.10);
+    }
+
+    .stageCanvas{
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform: translate(-50%,-50%);
+      transform-origin: center center;
+      will-change: transform, width, height;
+    }
+
+    .stageRect{
+      position:absolute;
+      inset:0;
+      border: 2px solid var(--stageBorder);
+      border-radius: 10px;
+      background:
+        linear-gradient(to right, var(--stageGrid) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--stageGrid) 1px, transparent 1px);
+      background-size: 10% 10%;
+    }
+
+    .upLabel,.downLabel{
+      position:absolute;
+      font-size:12px;
+      color: rgba(233,238,251,.9);
+      background: rgba(0,0,0,.28);
+      border: 1px solid rgba(255,255,255,.12);
+      padding: 4px 8px;
+      border-radius: 999px;
+      user-select:none;
+      pointer-events:none;
+    }
+    .upLabel{ left:10px; top:10px; }
+    .downLabel{ right:10px; bottom:10px; opacity:.95; }
+
+    /* Items */
+    .item{
+      position:absolute;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.06);
+      box-shadow: 0 8px 18px rgba(0,0,0,.28);
+      user-select:none;
+      touch-action:none;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 6px;
+    }
+    .item[data-kind="person"]{ background: rgba(74,163,255,.10); border-color: rgba(74,163,255,.35); }
+    .item[data-kind="instr"]{ background: rgba(255,204,102,.08); border-color: rgba(255,204,102,.28); }
+    .item[data-kind="gear"]{ background: rgba(255,255,255,.06); }
+    .item[data-kind="power"]{ background: rgba(255,90,106,.08); border-color: rgba(255,90,106,.28); }
+
+    /* Shape variants */
+    .item[data-shape="circle"]{
+      border-radius: 50%;
+      padding: 0;
+      justify-content: center;
+    }
+    .item[data-shape="diamond"]{
+      border-radius: 4px;
+      transform-origin: center;
+    }
+    .item[data-shape="triangle"]{
+      border-radius: 4px;
+      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+      transform-origin: center;
+    }
+
+    .item .lbl{
+      font-size: 12px;
+      font-weight: 800;
+      text-align:center;
+      line-height:1.1;
+      color: rgba(233,238,251,.95);
+      text-shadow: 0 1px 0 rgba(0,0,0,.5);
+      pointer-events:none;
+      padding: 0 4px;
+      word-break: break-word;
+    }
+    .item.selected{
+      outline: 2px solid rgba(74,163,255,.85);
+      outline-offset: 2px;
+    }
+    .item.selected[data-shape="triangle"]{
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(74,163,255,.85);
+    }
+    .item.multi{
+      outline: 2px solid rgba(64,217,138,.75);
+      outline-offset: 2px;
+    }
+    .item.multi[data-shape="triangle"]{
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(64,217,138,.75);
+    }
+    .item.selected.multi[data-shape="triangle"]{
+      box-shadow: 0 0 0 3px rgba(74,163,255,.85);
+    }
+
+    .toolsCard{
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.02);
       border-radius: 16px;
       padding: 12px;
     }
-    .callout .t{
-      font-weight: 900;
-      font-size: 13px;
-      margin-bottom: 6px;
-      color: #ffe29a;
-    }
-
-    /* QR Modal */
-    .modal{
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.60);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding: 16px;
-      z-index: 999;
-    }
-    .modal.on{ display:flex; }
-    .modalCard{
-      width:min(520px, 100%);
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: linear-gradient(180deg, rgba(18,24,38,.98), rgba(12,16,26,.98));
-      box-shadow: 0 18px 50px rgba(0,0,0,.55);
-      overflow:hidden;
-    }
-    .modalHd{
-      padding: 12px 12px;
-      border-bottom: 1px solid rgba(255,255,255,.08);
+    .toolsTitle{
       display:flex;
-      align-items:center;
       justify-content:space-between;
+      align-items:center;
       gap:10px;
+      margin-bottom: 10px;
     }
-    .modalHd .t{
-      font-size: 12px;
+    .toolsTitle .t{
+      font-size:12px;
       color: var(--muted);
       text-transform: uppercase;
-      letter-spacing: .35px;
-      font-weight: 900;
+      letter-spacing:.35px;
+      font-weight:900;
     }
-    .modalBd{ padding: 14px 12px 14px 12px; }
-    .qrBox{
+
+    .nudgeGrid{
+      display:grid;
+      grid-template-columns: 46px 46px 46px;
+      grid-template-rows: 46px 46px 46px;
+      gap:8px;
+      justify-content:flex-start;
+      align-items:center;
+    }
+    .nbtn{
+      width:46px; height:46px;
+      display:flex; align-items:center; justify-content:center;
+      border-radius: 14px;
+    }
+    .nudgeSpacer{ visibility:hidden; }
+
+    .libTop{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-bottom: 10px;
+    }
+    .libGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    .libBtn{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:flex-start;
+      padding: 10px 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      cursor:pointer;
+      user-select:none;
+      transition: border-color .15s ease, background .15s ease, transform .05s ease;
+      min-height: 46px;
+    }
+    .libBtn:hover{ border-color: rgba(74,163,255,.55); background: rgba(74,163,255,.06); }
+    .libBtn:active{ transform: translateY(1px); }
+    .libBtn .ic{
+      width:26px; height:26px;
+      border-radius: 10px;
       display:flex;
       align-items:center;
       justify-content:center;
-      border-radius: 16px;
+      background: rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
-      padding: 14px;
-      overflow:auto;
+      font-weight: 900;
+      color: var(--accent);
+      flex: 0 0 auto;
     }
-    .qrCaption{
-      margin-top: 10px;
-      color: var(--muted);
+    .libBtn .nm{
       font-size: 12px;
-      word-break: break-word;
+      font-weight: 800;
+      line-height:1.1;
     }
-    .toast{
-      position: fixed;
-      left: 50%;
-      bottom: 16px;
-      transform: translateX(-50%);
-      background: rgba(18,24,38,.95);
-      border: 1px solid rgba(255,255,255,.14);
+    .libBtn .sm{
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .libBtn .txt{ display:flex; flex-direction:column; }
+
+    .table{
+      width:100%;
+      border-collapse: collapse;
+      overflow:hidden;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.02);
+      margin-top: 8px;
+    }
+    .table th, .table td{
+      text-align:left;
+      padding: 8px 9px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      font-size: 12px;
+      vertical-align: top;
+    }
+    .table th{
+      color: var(--muted);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing:.3px;
+      font-size: 11px;
+      background: rgba(255,255,255,.03);
+    }
+    .table tr:last-child td{ border-bottom:none; }
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+
+    .hr{
+      height:1px;
+      background: rgba(255,255,255,.08);
+      margin: 10px 0;
+    }
+
+    .accBtn{
+      display:none;
+      width:100%;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
       padding: 10px 12px;
       border-radius: 14px;
-      box-shadow: 0 12px 30px rgba(0,0,0,.40);
-      color: var(--text);
-      font-size: 13px;
-      display:none;
-      z-index: 1000;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      cursor:pointer;
+      user-select:none;
+      margin-bottom: 10px;
+      font-weight: 850;
     }
-    .toast.on{ display:block; }
+    .chev{ opacity:.85; }
+    .accHidden{ display:none !important; }
 
+    .tAccBtn{
+      display:none;
+      width:100%;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      cursor:pointer;
+      user-select:none;
+      font-weight: 850;
+    }
+    .tAccBtn .chev{ opacity:.85; }
+    .tAccHidden{ display:none !important; }
+
+    @media (max-width: 980px){
+      main{ grid-template-columns: 1fr; }
+      .accBtn{ display:flex; }
+      .tAccBtn{ display:flex; }
+      #midCol{ order: 1; }
+      #libCard{ order: 2; }
+      #infoCard{ order: 3; }
+    }
+
+    /* Print */
     @media print{
-      @page{
-        size:auto;
-        margin:0.55in;
+      @page {
+        size: auto;
+        margin: 0.5in;
       }
 
       html, body{
@@ -310,72 +580,168 @@
         overflow:visible !important;
       }
 
-      header{
-        position:static !important;
-        background:#fff !important;
-        backdrop-filter:none !important;
-        border-bottom:1px solid #ddd !important;
+      body *{
+        visibility:hidden !important;
+      }
+
+      #stageCard, #stageCard *,
+      #infoCard, #infoCard *{
+        visibility:visible !important;
+      }
+
+      header,
+      #libCard,
+      #toolsCard,
+      .actions,
+      .pill,
+      .accBtn,
+      .tAccBtn,
+      #btnDup,
+      #btnPrint,
+      #btnExport,
+      #btnImport,
+      #btnDeleteSel,
+      #btnClearSel,
+      #btnResetStage,
+      #btnResetView,
+      #btnUnits,
+      #btnFlip,
+      #btnRot0,
+      #clearColor,
+      #uClearColor{
+        display:none !important;
       }
 
       body{
+        margin:0 !important;
+        padding:0 !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       }
 
-      .card{
-        background:#fff !important;
-        color:#000 !important;
+      main{
+        display:block !important;
+        max-width: 8in !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+        gap: 0 !important;
+      }
+
+      #stageCard,
+      #infoCard{
+        display:block !important;
+        width:100% !important;
+        margin:0 0 12px 0 !important;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
         box-shadow:none !important;
+        background:#fff !important;
         border:1px solid #ddd !important;
-        break-inside: avoid;
-        page-break-inside: avoid;
+        overflow:visible !important;
       }
 
-      .card .hd{
-        background:#fff !important;
+      #stageCard .hd,
+      #infoCard .hd{
         border-bottom:1px solid #ddd !important;
-      }
-
-      .card .hd h2,
-      .miniHelp,
-      .sub,
-      .linkTile .d,
-      .pill{
-        color:#333 !important;
-      }
-
-      .pill,
-      .btn,
-      .button{
         background:#fff !important;
+      }
+
+      #stageCard .bd,
+      #infoCard .bd{
+        padding:10px !important;
+        overflow:visible !important;
+      }
+
+      .card{
+        box-shadow:none !important;
+        background:#fff !important;
+        border:1px solid #ddd !important;
+      }
+
+      .stageWrap{
+        overflow:visible !important;
+      }
+
+      .stageSquare{
+        width: 6.9in !important;
+        height: 6.9in !important;
+        aspect-ratio: auto !important;
+        margin: 0 auto !important;
+        border:1px solid #ddd !important;
+        border-radius: 12px !important;
+        overflow:hidden !important;
+        background:#fff !important;
+        position:relative !important;
+      }
+
+      .stageSquareInner{
+        position:absolute !important;
+        inset: 14px !important;
+        border:1px solid #ddd !important;
+        border-radius: 10px !important;
+        overflow:hidden !important;
+        background:#fff !important;
+      }
+
+      .stageCanvas{
+        position:absolute !important;
+        left:50% !important;
+        top:50% !important;
+        transform-origin:center center !important;
+        will-change:auto !important;
+      }
+
+      .stageRect{
+        border-color:#111 !important;
+        background:
+          linear-gradient(to right, rgba(0,0,0,.08) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(0,0,0,.08) 1px, transparent 1px) !important;
+        background-size: 10% 10% !important;
+      }
+
+      .upLabel,
+      .downLabel{
+        color:#000 !important;
+        background:rgba(255,255,255,.9) !important;
+        border:1px solid #bbb !important;
+        text-shadow:none !important;
+      }
+
+      .item{
+        box-shadow:none !important;
+        border-color:#111 !important;
+        background:#fff !important;
+      }
+
+      .item .lbl{
+        color:#000 !important;
+        text-shadow:none !important;
+      }
+
+      input, textarea, select, button{
         border:1px solid #ccc !important;
         color:#000 !important;
+        background:#fff !important;
       }
 
-      .modal,
-      .toast{
-        display:none !important;
+      .table{
+        border:1px solid #ccc !important;
+        background:#fff !important;
+      }
+
+      .table th, .table td{
+        border-bottom:1px solid #ddd !important;
+        color:#000 !important;
+        background:#fff !important;
+      }
+
+      .table th{
+        font-weight:800 !important;
       }
 
       a{
         color:#000 !important;
         text-decoration:none !important;
-      }
-
-      code{
-        background:#f5f5f5 !important;
-        border:1px solid #ddd !important;
-        color:#000 !important;
-      }
-
-      .linkTile,
-      .callout{
-        background:#fff !important;
-        border:1px solid #ddd !important;
-      }
-
-      .callout .t{
-        color:#000 !important;
       }
     }
   </style>
@@ -388,809 +754,1949 @@
       <div class="title">
         <div class="logo" aria-hidden="true">SP</div>
         <div>
-          <h1>StagePlot v2 Guide</h1>
-          <div class="sub">How to use it, how to share it, and how to keep the triangle from hiding in plain sight</div>
+          <h1>StagePlot v2</h1>
+          <div class="sub">v1.7.5 (Triangle Selection Fix) - triangle selection now visible via box-shadow glow</div>
         </div>
       </div>
-      <div class="row tight">
-        <span class="pill">Guide v1.7.5</span>
-        <a class="button primary" id="btnOpenApp" href="./index.html">Open the app</a>
-        <button class="btn" id="btnShare">Share + QR</button>
-        <a class="button ok" id="btnDonateTop" href="https://www.paypal.com/donate/?hosted_button_id=4BP339J2UAL46" target="_blank" rel="noopener">Donate</a>
+
+      <div class="actions">
+        <span class="pill"><span class="dot"></span>Autosave friendly</span>
+        <a class="button" href="./guide.html">Guide</a>
+        <button class="button primary" id="btnPrint">Print</button>
+        <button class="button" id="btnExport">Export Project JSON</button>
+        <button class="button" id="btnImport">Import Project JSON</button>
       </div>
     </div>
   </div>
 </header>
 
 <main>
-  <section class="card">
+  <section class="card" id="libCard">
     <div class="hd">
-      <h2>Whats New in v1.7.5</h2>
-      <span class="pill">Shapes + print stability</span>
+      <h2>Item Library</h2>
+      <span class="pill" id="libCount">0 items</span>
     </div>
-    <div class="bd">
-      <div class="grid2">
-        <div>
-          <div class="miniHelp"><b>Triangle shape (with visible selection)</b></div>
-          <ul>
-            <li>Triangle is available in the item shape control.</li>
-            <li>Triangles use <code>clip-path</code>, so selection shows via glow highlight instead of outline.</li>
-          </ul>
+    <div class="bd" id="libBody">
+      <button class="accBtn" id="accLibBtn" type="button">
+        <span>Library</span><span class="chev" id="accLibChev">▾</span>
+      </button>
 
-          <div class="hr"></div>
-
-          <div class="miniHelp"><b>Circle mode stays round</b></div>
-          <ul>
-            <li>Circle enforces equal width and height so circles do not become ovals.</li>
-            <li>If an older project has stretched circles, toggle shape off and back to circle to normalize.</li>
-          </ul>
+      <div id="libAccContent">
+        <div class="libTop">
+          <input id="libSearch" type="text" placeholder="Search (guitar, vox, wedge, power...)" />
+          <select id="libFilter" style="max-width: 160px;">
+            <option value="all">All</option>
+            <option value="person">People</option>
+            <option value="instr">Instruments</option>
+            <option value="gear">Stage gear</option>
+            <option value="power">Power</option>
+          </select>
         </div>
 
-        <div>
-          <div class="miniHelp"><b>Better multi select visibility</b></div>
-          <ul>
-            <li>Selected items are easier to spot, including triangles.</li>
-            <li>Multi select triangles glow too, so your selection is not a guessing game.</li>
-          </ul>
+        <div class="libGrid" id="libGrid"></div>
 
-          <div class="hr"></div>
+        <div class="hr"></div>
 
-          <div class="miniHelp"><b>Print behavior is more predictable</b></div>
-          <ul>
-            <li>Recent print fixes aim to make stage output less dependent on browser window size.</li>
-            <li>Long notes still print, but may flow to page 2 if you write a full novel to FOH.</li>
-          </ul>
+        <div class="row">
+          <button class="btn" id="btnMisc1" type="button">+ Misc 1</button>
+          <button class="btn" id="btnMisc2" type="button">+ Misc 2</button>
+          <button class="btn" id="btnMisc3" type="button">+ Misc 3</button>
+          <button class="btn danger" id="btnDeleteSel" type="button">Delete Selected</button>
+        </div>
+
+        <div style="margin-top:10px" class="miniHelp">
+          Tips: click to select - shift/cmd/ctrl click for multi select - drag to move - pinch to scale on touch screens.
         </div>
       </div>
     </div>
   </section>
 
-  <section class="card">
-    <div class="hd">
-      <h2>Quick Links</h2>
-      <span class="pill">Fast stuff first</span>
-    </div>
-    <div class="bd">
-      <div class="miniHelp">
-        If you are in a hurry, this is the "get in, get it done, get paid" section.
+  <div class="midCol" id="midCol">
+
+    <section class="card" id="stageCard">
+      <div class="hd">
+        <h2>Stage</h2>
+        <div class="row tight">
+          <span class="pill" id="unitsPill">Units: ft</span>
+          <button class="btn" id="btnUnits" type="button">Toggle ft/m</button>
+          <button class="btn" id="btnFlip" type="button">Stage View</button>
+          <button class="btn" id="btnClearSel" title="Clears selection only" type="button">Clear</button>
+          <button class="btn warn" id="btnResetStage" title="Resets stage, view, notes, and removes items" type="button">Reset Stage</button>
+        </div>
       </div>
 
-      <div class="linkList">
-        <div class="linkTile">
-          <div class="t">Open StagePlot</div>
-          <div class="d">The main app page</div>
-          <div class="row">
-            <a class="button primary" href="./index.html">Open index.html</a>
+      <div class="bd">
+        <div class="stageWrap">
+          <div class="stageSquare" id="stageSquare">
+            <div class="stageSquareInner" id="stageSquareInner">
+              <div class="stageCanvas" id="stageCanvas">
+                <div class="stageRect" id="stageRect"></div>
+                <div class="upLabel" id="upLabel">UPSTAGE</div>
+                <div class="downLabel" id="downLabel">AUDIENCE</div>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div class="linkTile">
-          <div class="t">Share + QR Code</div>
-          <div class="d">Send your plot to bandmates or the venue</div>
-          <div class="row">
-            <button class="btn" id="btnShare2">Open Share panel</button>
-          </div>
-        </div>
-
-        <div class="linkTile">
-          <div class="t">Donate</div>
-          <div class="d">Fuel the feature gremlins (they run on snacks)</div>
-          <div class="row">
-            <a class="button ok" href="https://www.paypal.com/donate/?hosted_button_id=4BP339J2UAL46" target="_blank" rel="noopener">PayPal Donate</a>
-          </div>
-        </div>
-
-        <div class="linkTile">
-          <div class="t">Print</div>
-          <div class="d">One page handoff for FOH or the stage manager</div>
-          <div class="row">
-            <span class="pill">In app: Print button</span>
+          <div class="miniHelp" id="stageMeta">
+            Stage: <span class="mono" id="stageMetaText">24 x 16 ft</span>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="card">
-    <div class="hd">
-      <h2>Getting Started</h2>
-      <span class="pill">Make a stage plot in minutes</span>
-    </div>
-    <div class="bd">
-      <div class="grid2">
-        <div>
-          <div class="miniHelp">1) Set your stage size</div>
-          <ul>
-            <li>Open the <b>Layout</b> section.</li>
-            <li>Pick a preset: Small, Medium, Large.</li>
-            <li>Or choose Custom and type <code>Width</code> and <code>Depth</code>.</li>
-            <li>Toggle <code>ft/m</code> whenever you feel like living dangerously.</li>
-          </ul>
-
-          <div class="hr"></div>
-
-          <div class="miniHelp">2) Add items</div>
-          <ul>
-            <li>Use the Item Library to add Vocal, Guitar, Keys, Drums, wedges, power, etc.</li>
-            <li>Items appear centered, ready to drag.</li>
-          </ul>
-        </div>
-
-        <div>
-          <div class="miniHelp">3) Place items</div>
-          <ul>
-            <li>Drag an item to move it.</li>
-            <li>Shift, Cmd, or Ctrl click to multi select.</li>
-            <li>All the on-canvas tools are below the stage (nudge, center, resize, and friends).</li>
-          </ul>
-
-          <div class="hr"></div>
-
-          <div class="miniHelp">4) Add inputs and mixes</div>
-          <ul>
-            <li>Select an item and fill out <code>Input</code> and <code>Mix</code>.</li>
-            <li>The Inputs and Monitor Mix lists auto-build from your items.</li>
-          </ul>
-        </div>
+    <section class="card" id="toolsCard">
+      <div class="hd">
+        <h2>Tooling</h2>
+        <span class="pill">Below stage</span>
       </div>
-    </div>
-  </section>
 
-  <section class="card">
-    <div class="hd">
-      <h2>Shapes</h2>
-      <span class="pill">Circle, Rectangle, Diamond, Triangle</span>
-    </div>
-    <div class="bd">
-      <div class="grid2">
-        <div>
-          <div class="miniHelp"><b>Circle</b></div>
-          <ul>
-            <li>Circle mode forces width and height to match so circles do not become ovals.</li>
-            <li>Best for wedges, stools, mic stands, and the occasional mysterious “perc island”.</li>
-          </ul>
+      <div class="bd" style="display:flex; flex-direction:column; gap:12px;">
 
-          <div class="hr"></div>
+        <button class="tAccBtn" id="accToolsLayoutBtn" type="button">
+          <span>Layout</span><span class="chev" id="accToolsLayoutChev">▾</span>
+        </button>
 
-          <div class="miniHelp"><b>Rectangle</b></div>
-          <ul>
-            <li>Default shape for most gear and people.</li>
-            <li>Selection shows as an outline.</li>
-          </ul>
-        </div>
+        <div id="toolsLayoutAccContent">
+          <div class="card" style="box-shadow:none;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.02);">
+            <div class="hd" style="border-bottom: 1px solid rgba(255,255,255,.08);">
+              <h2 style="margin:0;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.35px;font-weight:800;">Layout</h2>
+              <span class="pill">Stage sizing</span>
+            </div>
 
-        <div>
-          <div class="miniHelp"><b>Triangle</b></div>
-          <ul>
-            <li>Great for marking corners, risers, or directional props.</li>
-            <li>Triangles use <code>clip-path</code>, so selection uses a glow highlight, not an outline.</li>
-          </ul>
+            <div class="bd" style="padding:12px;">
+              <div class="row tight" style="justify-content:space-between;">
+                <div style="flex:1; min-width: 210px;">
+                  <div class="field" style="margin:0;">
+                    <label>Stage preset</label>
+                    <div class="seg">
+                      <button class="btn" data-preset="small" type="button">Small</button>
+                      <button class="btn" data-preset="med" type="button">Medium</button>
+                      <button class="btn" data-preset="large" type="button">Large</button>
+                      <button class="btn" data-preset="custom" type="button">Custom</button>
+                    </div>
+                  </div>
+                </div>
 
-          <div class="miniHelp" style="margin-top:10px;">
-            Nerd note: <code>outline</code> is not reliable with <code>clip-path</code> in some browsers, so glow is the safer selection indicator.
+                <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+                  <div class="field" style="width: 140px; margin:0;">
+                    <label>Width (<span id="unitLabelW">ft</span>)</label>
+                    <input type="number" min="1" step="0.1" id="stageW" />
+                  </div>
+                  <div class="field" style="width: 140px; margin:0;">
+                    <label>Depth (<span id="unitLabelD">ft</span>)</label>
+                    <input type="number" min="1" step="0.1" id="stageD" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="miniHelp" style="margin-top:10px;">
+                The stage always fits in the square at 100%. View Zoom can intentionally zoom in for detail.
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  </section>
 
-  <section class="card">
-    <div class="hd">
-      <h2>Selection, Multi Select, and Tools</h2>
-      <span class="pill">The good stuff</span>
-    </div>
-    <div class="bd">
-      <div class="grid2">
-        <div>
-          <div class="miniHelp">Selecting</div>
-          <ul>
-            <li>Click an item to select it.</li>
-            <li>Shift, Cmd, or Ctrl click to add or remove items from the selection.</li>
-            <li><code>Delete</code> or <code>Backspace</code> deletes selected items.</li>
-            <li><code>Esc</code> clears selection.</li>
-          </ul>
+        <button class="tAccBtn" id="accToolsViewBtn" type="button">
+          <span>View</span><span class="chev" id="accToolsViewChev">▾</span>
+        </button>
 
-          <div class="hr"></div>
+        <div id="toolsViewAccContent">
+          <div class="card" style="box-shadow:none;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.02);">
+            <div class="hd" style="border-bottom: 1px solid rgba(255,255,255,.08);">
+              <h2 style="margin:0;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.35px;font-weight:800;">View</h2>
+              <span class="pill" id="viewZoomPill">100%</span>
+            </div>
 
-          <div class="miniHelp">Nudge</div>
-          <ul>
-            <li>Use the on-screen nudge arrows under the stage.</li>
-            <li>Or use <code>Shift + Arrow Keys</code> for quick tiny moves.</li>
-          </ul>
+            <div class="bd" style="padding:12px;">
+              <div class="row" style="justify-content:space-between;">
+                <div style="flex:1; min-width: 240px;">
+                  <div class="field" style="margin:0;">
+                    <label>View Zoom (inside square)</label>
+                    <input type="range" min="50" max="200" value="100" id="viewZoom" />
+                    <div class="row tight" style="justify-content:space-between;">
+                      <span class="miniHelp">50%</span>
+                      <span class="pill" id="viewZoomPillInner">100%</span>
+                      <span class="miniHelp">200%</span>
+                    </div>
+                  </div>
+                </div>
+                <div style="display:flex; gap:8px; align-items:flex-end;">
+                  <button class="btn" id="btnResetView" type="button">Reset View (100%)</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div>
-          <div class="miniHelp">Resize and Scale</div>
-          <ul>
-            <li>Set base footprint with <code>Width</code> and <code>Depth</code>.</li>
-            <li>Use <code>Scale</code> to grow or shrink the footprint without changing the base size.</li>
-            <li>On touch screens, use two-finger pinch on the selected item to scale.</li>
-            <li>Rotation is available in the Info panel.</li>
-          </ul>
+        <button class="tAccBtn" id="accToolsSelBtn" type="button">
+          <span>Selected item tools</span><span class="chev" id="accToolsSelChev">▾</span>
+        </button>
 
-          <div class="hr"></div>
+        <div id="toolsSelAccContent">
+          <div class="toolsCard" id="underStageTools" style="display:none;">
+            <div class="toolsTitle">
+              <div class="t">Selected item tools</div>
+              <span class="pill mono" id="underSelName">none</span>
+            </div>
 
-          <div class="miniHelp">Colors</div>
-          <ul>
-            <li>StagePlot supports item box colors.</li>
-            <li>If you set a color on multiple selected items, they all update together.</li>
-          </ul>
+            <div class="row" style="gap:14px; align-items:flex-start;">
+              <div>
+                <div class="miniHelp" style="margin-bottom:8px;">Nudge (tap or use Shift + Arrows)</div>
+                <div class="nudgeGrid">
+                  <div class="nudgeSpacer nbtn btn"> </div>
+                  <button class="btn nbtn" id="nUp" title="Nudge up" type="button">↑</button>
+                  <div class="nudgeSpacer nbtn btn"> </div>
+
+                  <button class="btn nbtn" id="nLeft" title="Nudge left" type="button">←</button>
+                  <button class="btn nbtn" id="nCenter" title="Center on stage" type="button">◎</button>
+                  <button class="btn nbtn" id="nRight" title="Nudge right" type="button">→</button>
+
+                  <div class="nudgeSpacer nbtn btn"> </div>
+                  <button class="btn nbtn" id="nDown" title="Nudge down" type="button">↓</button>
+                  <div class="nudgeSpacer nbtn btn"> </div>
+                </div>
+
+                <div class="hr"></div>
+
+                <div class="miniHelp" style="margin-bottom:8px;">Box color (applies to all selected)</div>
+                <div class="row tight" style="align-items:center;">
+                  <input type="color" id="uItemColor" value="#4aa3ff" />
+                  <span class="pill mono" id="uColorPill">none</span>
+                  <button class="btn" id="uClearColor" type="button">Clear</button>
+                </div>
+                <div class="miniHelp" style="margin-top:6px;">
+                  Pro tip: if selection is mixed, pick a color anyway and it will unify the squad.
+                </div>
+
+                <div class="hr"></div>
+
+                <div class="miniHelp" style="margin-bottom:8px;">Label size (applies to all selected)</div>
+                <div class="field" style="margin:0;">
+                  <label>Label Size</label>
+                  <input type="range" min="60" max="160" value="100" id="uLabelSize" />
+                  <div class="row tight" style="justify-content:space-between;">
+                    <span class="miniHelp">60%</span>
+                    <span class="pill" id="uLabelSizePill">100%</span>
+                    <span class="miniHelp">160%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div style="flex:1; min-width: 240px;">
+                <div class="miniHelp" style="margin-bottom:8px;">Size + Scale (pinch on touch screens)</div>
+
+                <div class="row tight" style="align-items:flex-end;">
+                  <div class="field" style="width: 120px; margin:0;">
+                    <label>Width (<span class="unitInline">ft</span>)</label>
+                    <input type="number" id="uItemW" min="0.1" step="0.1" />
+                  </div>
+                  <div class="field" style="width: 120px; margin:0;">
+                    <label>Depth (<span class="unitInline">ft</span>)</label>
+                    <input type="number" id="uItemH" min="0.1" step="0.1" />
+                  </div>
+                </div>
+
+                <div class="row tight" style="margin-top:10px;">
+                  <div style="flex:1;">
+                    <div class="field" style="margin:0;">
+                      <label>Scale (footprint)</label>
+                      <input type="range" min="50" max="200" value="100" id="uItemScale" />
+                      <div class="row tight" style="justify-content:space-between;">
+                        <span class="miniHelp">50%</span>
+                        <span class="pill" id="uItemScalePill">100%</span>
+                        <span class="miniHelp">200%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="miniHelp" style="margin-top:6px;">
+                  Touch tip: put two fingers on the selected item and pinch to scale.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="miniHelp">
+          Note: Width/Depth set the base footprint. Scale multiplies that footprint. View Zoom only changes your view.
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+  <section class="card" id="infoCard">
+    <div class="hd">
+      <h2>One-Page Info</h2>
+      <button class="btn" id="btnDup" type="button">Duplicate</button>
+    </div>
+    <div class="bd" id="infoBody">
+      <button class="accBtn" id="accInfoBtn" type="button">
+        <span>Info + Lists</span><span class="chev" id="accInfoChev">▾</span>
+      </button>
+
+      <div id="infoAccContent">
+        <div class="field">
+          <label>Band / Show name (prints at top)</label>
+          <input type="text" id="bandName" placeholder="Example: Petesimple Trio - Oasis Patio" />
+        </div>
+
+        <div class="field">
+          <label>Show notes (load-in, contact, backline, set length, etc.)</label>
+          <textarea id="showNotes" placeholder="Example: Arrival 6:00 - downbeat 7:00 - FOH: Thomas - 2 wedges + 1 DI..."></textarea>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="pill" style="display:flex; justify-content:space-between;">
+          <span>Selected item</span>
+          <span class="mono" id="selLabel">none</span>
+        </div>
+
+        <div class="field" style="margin-top:10px;">
+          <label>Label</label>
+          <input type="text" id="itemLabel" placeholder="Example: Pete Vox" />
+        </div>
+
+        <div class="field">
+          <label>Label Size (applies to all selected)</label>
+          <input type="range" min="60" max="160" value="100" id="labelSize" />
+          <div class="row tight" style="justify-content:space-between;">
+            <span class="miniHelp">60%</span>
+            <span class="pill" id="labelSizePill">100%</span>
+            <span class="miniHelp">160%</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field" style="width: 48%; min-width:140px;">
+            <label>Input</label>
+            <input type="text" id="itemInput" placeholder="Ch 1 / DI / Multi" />
+          </div>
+          <div class="field" style="width: 48%; min-width:140px;">
+            <label>Mix</label>
+            <input type="text" id="itemMix" placeholder="M1 / IEM / Wedge" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Item notes</label>
+          <textarea id="itemNotes" placeholder="Example: needs boom - DI after pedals - phantom ok"></textarea>
+        </div>
+
+        <div class="row">
+          <div class="field" style="width: 48%; min-width:140px;">
+            <label>Item Width (<span class="unitInline">ft</span>)</label>
+            <input type="number" min="0.1" step="0.1" id="itemW" />
+          </div>
+          <div class="field" style="width: 48%; min-width:140px;">
+            <label>Item Depth (<span class="unitInline">ft</span>)</label>
+            <input type="number" min="0.1" step="0.1" id="itemH" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field" style="width: 48%; min-width:140px;">
+            <label>Item Scale (footprint)</label>
+            <input type="range" min="50" max="200" value="100" id="itemScale" />
+            <div class="row tight" style="justify-content:space-between;">
+              <span class="miniHelp">50%</span>
+              <span class="pill" id="itemScalePill">100%</span>
+              <span class="miniHelp">200%</span>
+            </div>
+          </div>
+
+          <div class="field" style="width: 48%; min-width:140px;">
+            <label>Rotation</label>
+            <input type="range" min="0" max="359" value="0" id="itemRot" />
+            <div class="row tight" style="justify-content:space-between;">
+              <span class="miniHelp">0°</span>
+              <span class="pill" id="itemRotPill">0°</span>
+              <button class="btn" id="btnRot0" type="button">Reset</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="row" style="align-items:center;">
+          <div class="field" style="width: 48%; min-width:140px; margin-bottom:0;">
+            <label>Item Box Color</label>
+            <div class="row tight" style="align-items:center;">
+              <input type="color" id="itemColor" value="#4aa3ff" />
+              <span class="pill mono" id="colorPill">none</span>
+              <button class="btn" id="clearColor" type="button">Clear</button>
+            </div>
+          </div>
+
+          <div class="field" style="width: 48%; min-width:140px; margin-bottom:0;">
+            <label>Applies to</label>
+            <div class="pill" id="colorScopePill" style="width:100%; justify-content:space-between;">
+              <span>Selected</span>
+              <span class="mono" id="colorScopeCount">0</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Item Shape (applies to all selected)</label>
+          <div class="seg">
+            <button class="btn" data-shape="rectangle" type="button">Rectangle</button>
+            <button class="btn" data-shape="circle" type="button">Circle</button>
+            <button class="btn" data-shape="diamond" type="button">Diamond</button>
+            <button class="btn" data-shape="triangle" type="button">Triangle</button>
+          </div>
+        </div>
+
+        <div class="miniHelp" style="margin-top:10px;">
+          Gesture: on touch screens, pinch the selected item to change Scale. Color, Label Size, and Shape apply to all selected items.
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="pill" style="display:flex; justify-content:space-between;">
+          <span>Auto lists</span>
+          <span class="miniHelp">from items</span>
+        </div>
+
+        <div class="field" style="margin-top:10px;">
+          <label>Inputs</label>
+          <table class="table" id="inputsTable"></table>
+        </div>
+
+        <div class="field">
+          <label>Monitor mixes</label>
+          <table class="table" id="mixesTable"></table>
+        </div>
+
+        <div class="miniHelp">
+          Note: Width/Depth set the base footprint. Scale multiplies that footprint. View Zoom only changes your view.
         </div>
       </div>
-
-      <div class="miniHelp" style="margin-top:10px;">
-        Nerdy detail: View Zoom only changes what you see. It does not change the stage size or item sizes.
-      </div>
-    </div>
-  </section>
-
-  <section class="card">
-    <div class="hd">
-      <h2>Saving, Exporting, Importing</h2>
-      <span class="pill">Backups that do not judge you</span>
-    </div>
-    <div class="bd">
-      <div class="grid2">
-        <div>
-          <div class="miniHelp">Autosave</div>
-          <ul>
-            <li>Your work is saved to your browser automatically as you edit.</li>
-            <li>If you refresh, it should come back like a loyal dog.</li>
-          </ul>
-        </div>
-        <div>
-          <div class="miniHelp">Export and Import Project JSON</div>
-          <ul>
-            <li>Use <code>Export Project JSON</code> to save a file you can share or archive.</li>
-            <li>Use <code>Import Project JSON</code> to load it later on any device.</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="card">
-    <div class="hd">
-      <h2>Printing a One Page Handoff</h2>
-      <span class="pill">FOH friendly</span>
-    </div>
-    <div class="bd">
-      <ul>
-        <li>Hit <code>Print</code> in the header.</li>
-        <li>StagePlot temporarily normalizes print scaling so output is more consistent.</li>
-        <li>Save as PDF if you want to email it to a venue or keep it in your band folder.</li>
-      </ul>
-
-      <div class="callout" style="margin-top:12px;">
-        <div class="t">Important real-world note</div>
-        <div class="miniHelp" style="color:inherit;">
-          If your <b>Show Notes</b> are long, they may still continue onto page 2. That is normal. The stage plot stays the hero on page 1, and extra notes can flow after it. If something is mission critical, keep it short, high priority, and near the top of your notes.
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="card">
-    <div class="hd">
-      <h2>Print Notes + Readability</h2>
-      <span class="pill">Make page 2 less chaotic</span>
-    </div>
-    <div class="bd">
-      <div class="grid2">
-        <div>
-          <div class="miniHelp"><b>Best practice for notes</b></div>
-          <ul>
-            <li>Put the most important info first.</li>
-            <li>Use short phrases instead of giant paragraphs.</li>
-            <li>Think: load-in time, FOH contact, monitor needs, power weirdness, backline must-knows.</li>
-            <li>If a venue only glances at one page, page 1 should still tell the story.</li>
-          </ul>
-        </div>
-
-        <div>
-          <div class="miniHelp"><b>What prints clearly</b></div>
-          <ul>
-            <li>Short notes print best.</li>
-            <li>Input and Mix lists are easier to scan than buried prose.</li>
-            <li>If something must not be missed, put it in both the notes and the label/list structure where possible.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="hr"></div>
-
-      <div class="miniHelp">
-        Translation: do not hide “lead vocal needs phantom and no wedge” inside a dramatic wall of text written like a Civil War letter.
-      </div>
-    </div>
-  </section>
-
-  <section class="card">
-    <div class="hd">
-      <h2>Share and QR Code</h2>
-      <span class="pill">Send the plot link in style</span>
-    </div>
-    <div class="bd">
-      <div class="miniHelp">
-        This guide page can generate a QR code for your StagePlot link.
-      </div>
-
-      <div class="row" style="margin-top:12px;">
-        <button class="btn primary" id="btnShare3">Open Share + QR</button>
-        <button class="btn" id="btnCopyLink">Copy app link</button>
-        <a class="button ok" href="https://www.paypal.com/donate/?hosted_button_id=4BP339J2UAL46" target="_blank" rel="noopener">Donate</a>
-      </div>
-    </div>
-  </section>
-
-  <section class="card">
-    <div class="hd">
-      <h2>Donate</h2>
-      <span class="pill">Keep it alive</span>
-    </div>
-    <div class="bd">
-      <div class="miniHelp">
-        If StagePlot saved you time, consider tossing a few bucks in the tip jar.
-      </div>
-
-      <div class="row" style="margin-top:12px;">
-        <a class="button ok" href="https://www.paypal.com/donate/?hosted_button_id=4BP339J2UAL46" target="_blank" rel="noopener">Donate via PayPal</a>
-        <button class="btn" id="btnCopyDonate">Copy donate link</button>
-      </div>
-
-      <div class="miniHelp" style="margin-top:10px;">
-        Donate URL: <span class="mono" id="donateUrlText">https://www.paypal.com/donate/?hosted_button_id=4BP339J2UAL46</span>
-      </div>
-    </div>
-  </section>
-
-  <section class="card">
-    <div class="hd">
-      <h2>Troubleshooting</h2>
-      <span class="pill">When reality fights back</span>
-    </div>
-    <div class="bd">
-      <ul>
-        <li><b>I cannot find Layout</b> - On mobile it is first. On desktop it is at the top of the middle panel section.</li>
-        <li><b>I cannot find the tools</b> - Scroll under the stage. All tooling sits below the stage area.</li>
-        <li><b>My items look huge</b> - Check <code>View Zoom</code> and reset it to 100% in the app.</li>
-        <li><b>Triangle is selected but I cannot tell</b> - Look for the glow highlight. Triangles do not use outline selection.</li>
-        <li><b>My notes went to page 2</b> - That usually means the notes are longer than the remaining printable space. Keep the critical stuff at the top and trim fluff where possible.</li>
-        <li><b>The PDF looks different between windows</b> - Use the latest app build. Recent fixes reduce browser window size from affecting final print scale.</li>
-      </ul>
     </div>
   </section>
 </main>
 
-<!-- Share/QR Modal -->
-<div class="modal" id="qrModal" role="dialog" aria-modal="true" aria-label="Share and QR">
-  <div class="modalCard">
-    <div class="modalHd">
-      <div class="t">Share + QR</div>
-      <button class="btn danger" id="btnCloseQr">Close</button>
-    </div>
-    <div class="modalBd">
-      <div class="qrBox" id="qrBox"></div>
-      <div class="qrCaption">
-        Link: <span class="mono" id="shareUrlText"></span>
-      </div>
-      <div class="row" style="margin-top:12px;">
-        <button class="btn primary" id="btnNativeShare">Share</button>
-        <button class="btn" id="btnCopyShare">Copy link</button>
-        <a class="button ok" href="https://www.paypal.com/donate/?hosted_button_id=4BP339J2UAL46" target="_blank" rel="noopener">Donate</a>
-      </div>
-      <div class="miniHelp" style="margin-top:10px;">
-        If Share does not appear on your device, Copy link works everywhere.
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast">Copied</div>
+<input type="file" id="fileImport" accept="application/json" style="display:none;" />
 
 <script>
-(function(){
-  const DONATE_URL = "https://www.paypal.com/donate/?hosted_button_id=4BP339J2UAL46";
+(() => {
+  const APP_VERSION = "1.7.5 (Triangle Selection Fix)";
+  const FT_PER_M = 3.280839895;
 
-  const elModal = document.getElementById("qrModal");
-  const elQrBox = document.getElementById("qrBox");
-  const elShareUrlText = document.getElementById("shareUrlText");
-  const elToast = document.getElementById("toast");
+  const PRINT_TARGET = {
+    squarePx: 662,
+    insetPx: 14,
+    gutterPx: 20
+  };
 
-  const btnShare = document.getElementById("btnShare");
-  const btnShare2 = document.getElementById("btnShare2");
-  const btnShare3 = document.getElementById("btnShare3");
-  const btnCloseQr = document.getElementById("btnCloseQr");
-  const btnNativeShare = document.getElementById("btnNativeShare");
-  const btnCopyShare = document.getElementById("btnCopyShare");
-  const btnCopyLink = document.getElementById("btnCopyLink");
-  const btnCopyDonate = document.getElementById("btnCopyDonate");
+  const els = {
+    libGrid: document.getElementById("libGrid"),
+    libSearch: document.getElementById("libSearch"),
+    libFilter: document.getElementById("libFilter"),
+    libCount: document.getElementById("libCount"),
+    stageSquareInner: document.getElementById("stageSquareInner"),
+    stageCanvas: document.getElementById("stageCanvas"),
+    stageW: document.getElementById("stageW"),
+    stageD: document.getElementById("stageD"),
+    stageMetaText: document.getElementById("stageMetaText"),
+    bandName: document.getElementById("bandName"),
+    showNotes: document.getElementById("showNotes"),
+    selLabel: document.getElementById("selLabel"),
+    itemLabel: document.getElementById("itemLabel"),
+    itemInput: document.getElementById("itemInput"),
+    itemMix: document.getElementById("itemMix"),
+    itemNotes: document.getElementById("itemNotes"),
+    labelSize: document.getElementById("labelSize"),
+    labelSizePill: document.getElementById("labelSizePill"),
+    uLabelSize: document.getElementById("uLabelSize"),
+    uLabelSizePill: document.getElementById("uLabelSizePill"),
+    itemW: document.getElementById("itemW"),
+    itemH: document.getElementById("itemH"),
+    itemScale: document.getElementById("itemScale"),
+    itemScalePill: document.getElementById("itemScalePill"),
+    itemRot: document.getElementById("itemRot"),
+    itemRotPill: document.getElementById("itemRotPill"),
+    itemColor: document.getElementById("itemColor"),
+    clearColor: document.getElementById("clearColor"),
+    colorPill: document.getElementById("colorPill"),
+    colorScopePill: document.getElementById("colorScopePill"),
+    colorScopeCount: document.getElementById("colorScopeCount"),
+    inputsTable: document.getElementById("inputsTable"),
+    mixesTable: document.getElementById("mixesTable"),
+    btnPrint: document.getElementById("btnPrint"),
+    btnExport: document.getElementById("btnExport"),
+    btnImport: document.getElementById("btnImport"),
+    fileImport: document.getElementById("fileImport"),
+    btnMisc1: document.getElementById("btnMisc1"),
+    btnMisc2: document.getElementById("btnMisc2"),
+    btnMisc3: document.getElementById("btnMisc3"),
+    btnDeleteSel: document.getElementById("btnDeleteSel"),
+    btnClearSel: document.getElementById("btnClearSel"),
+    btnResetStage: document.getElementById("btnResetStage"),
+    btnDup: document.getElementById("btnDup"),
+    btnFlip: document.getElementById("btnFlip"),
+    btnUnits: document.getElementById("btnUnits"),
+    unitsPill: document.getElementById("unitsPill"),
+    unitLabelW: document.getElementById("unitLabelW"),
+    unitLabelD: document.getElementById("unitLabelD"),
+    viewZoom: document.getElementById("viewZoom"),
+    viewZoomPill: document.getElementById("viewZoomPill"),
+    viewZoomPillInner: document.getElementById("viewZoomPillInner"),
+    btnResetView: document.getElementById("btnResetView"),
+    btnRot0: document.getElementById("btnRot0"),
+    accLibBtn: document.getElementById("accLibBtn"),
+    accInfoBtn: document.getElementById("accInfoBtn"),
+    accLibChev: document.getElementById("accLibChev"),
+    accInfoChev: document.getElementById("accInfoChev"),
+    libAccContent: document.getElementById("libAccContent"),
+    infoAccContent: document.getElementById("infoAccContent"),
+    accToolsLayoutBtn: document.getElementById("accToolsLayoutBtn"),
+    accToolsViewBtn: document.getElementById("accToolsViewBtn"),
+    accToolsSelBtn: document.getElementById("accToolsSelBtn"),
+    accToolsLayoutChev: document.getElementById("accToolsLayoutChev"),
+    accToolsViewChev: document.getElementById("accToolsViewChev"),
+    accToolsSelChev: document.getElementById("accToolsSelChev"),
+    toolsLayoutAccContent: document.getElementById("toolsLayoutAccContent"),
+    toolsViewAccContent: document.getElementById("toolsViewAccContent"),
+    toolsSelAccContent: document.getElementById("toolsSelAccContent"),
+    underStageTools: document.getElementById("underStageTools"),
+    underSelName: document.getElementById("underSelName"),
+    uItemW: document.getElementById("uItemW"),
+    uItemH: document.getElementById("uItemH"),
+    uItemScale: document.getElementById("uItemScale"),
+    uItemScalePill: document.getElementById("uItemScalePill"),
+    uItemColor: document.getElementById("uItemColor"),
+    uClearColor: document.getElementById("uClearColor"),
+    uColorPill: document.getElementById("uColorPill"),
+    nUp: document.getElementById("nUp"),
+    nDown: document.getElementById("nDown"),
+    nLeft: document.getElementById("nLeft"),
+    nRight: document.getElementById("nRight"),
+    nCenter: document.getElementById("nCenter"),
+  };
 
-  document.getElementById("donateUrlText").textContent = DONATE_URL;
+  const unitInlineEls = Array.from(document.querySelectorAll(".unitInline"));
 
-  function getAppUrl(){
-    try{
-      const u = new URL(window.location.href);
-      const path = u.pathname;
-      const base = path.endsWith("/") ? path : path.substring(0, path.lastIndexOf("/") + 1);
-      u.pathname = base + "index.html";
-      u.search = "";
-      u.hash = "";
-      return u.toString();
-    }catch(e){
-      return "./index.html";
-    }
+  const LIB = [
+    { id:"vox", name:"Vocal", sub:"Person", kind:"person", w:2.0, h:2.0, ic:"🎤", label:"Vox" },
+    { id:"gtr", name:"Guitar", sub:"Instrument", kind:"instr", w:2.2, h:1.8, ic:"🎸", label:"Gtr" },
+    { id:"bass", name:"Bass", sub:"Instrument", kind:"instr", w:2.2, h:1.8, ic:"🅱️", label:"Bass" },
+    { id:"keys", name:"Keys", sub:"Instrument", kind:"instr", w:3.0, h:2.0, ic:"🎹", label:"Keys" },
+    { id:"drums", name:"Drums", sub:"Instrument", kind:"instr", w:4.5, h:3.2, ic:"🥁", label:"Drums" },
+    { id:"wedge", name:"Wedge", sub:"Gear", kind:"gear", w:1.6, h:1.2, ic:"🔊", label:"Wedge" },
+    { id:"amp", name:"Amp", sub:"Gear", kind:"gear", w:1.8, h:1.4, ic:"🔈", label:"Amp" },
+    { id:"mic", name:"Mic Stand", sub:"Gear", kind:"gear", w:1.0, h:1.0, ic:"🎙️", label:"Mic" },
+    { id:"di", name:"DI Box", sub:"Gear", kind:"gear", w:1.0, h:0.8, ic:"⬛", label:"DI" },
+    { id:"riser", name:"Riser", sub:"Gear", kind:"gear", w:4.0, h:2.0, ic:"⬜", label:"Riser" },
+    { id:"power", name:"Power", sub:"Electrical", kind:"power", w:1.3, h:1.0, ic:"⚡", label:"PWR" },
+  ];
+
+  const LS_KEY = "stageplot_v2_state";
+  const LS_UI  = "stageplot_v2_ui";
+
+  let state = {
+    version: APP_VERSION,
+    units: "ft",
+    stage: { w: 24, d: 16 },
+    view: { flip:false },
+    viewZoom: 1.0,
+    printScale: 1,
+    isPreparingPrint: false,
+    bandName: "",
+    showNotes: "",
+    items: [],
+    selectedIds: [],
+    primaryId: null
+  };
+
+  const uid = () => Math.random().toString(16).slice(2) + "-" + Date.now().toString(16);
+  const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+
+  function feetToDisplay(ft){
+    if(state.units === "m") return ft / FT_PER_M;
+    return ft;
+  }
+  function displayToFeet(v){
+    const n = Number(v);
+    if(!isFinite(n)) return 0;
+    if(state.units === "m") return n * FT_PER_M;
+    return n;
   }
 
-  function toast(msg){
-    elToast.textContent = msg;
-    elToast.classList.add("on");
-    clearTimeout(toast._t);
-    toast._t = setTimeout(() => elToast.classList.remove("on"), 1100);
+  function save(){
+    const toSave = {
+      version: state.version,
+      units: state.units,
+      stage: state.stage,
+      view: state.view,
+      viewZoom: state.viewZoom,
+      bandName: state.bandName,
+      showNotes: state.showNotes,
+      items: state.items
+    };
+    localStorage.setItem(LS_KEY, JSON.stringify(toSave));
   }
 
-  async function copyText(text){
+  function load(){
     try{
-      await navigator.clipboard.writeText(text);
-      toast("Copied");
-      return true;
-    }catch(e){
-      const ta = document.createElement("textarea");
-      ta.value = text;
-      ta.style.position = "fixed";
-      ta.style.left = "-9999px";
-      document.body.appendChild(ta);
-      ta.select();
-      try{
-        document.execCommand("copy");
-        toast("Copied");
-        return true;
-      }catch(_){
-        toast("Copy failed");
-        return false;
-      }finally{
-        ta.remove();
+      const raw = localStorage.getItem(LS_KEY);
+      if(!raw) return;
+      const obj = JSON.parse(raw);
+      state = migrateProject(obj);
+    }catch(e){}
+  }
+
+  function migrateProject(obj){
+    const migrated = {
+      version: APP_VERSION,
+      units: (obj && obj.units === "m") ? "m" : "ft",
+      stage: { w: 24, d: 16 },
+      view: { flip:false },
+      viewZoom: 1.0,
+      printScale: 1,
+      isPreparingPrint: false,
+      bandName: "",
+      showNotes: "",
+      items: [],
+      selectedIds: [],
+      primaryId: null
+    };
+
+    if(obj){
+      if(obj.stage && typeof obj.stage.w === "number" && typeof obj.stage.d === "number"){
+        migrated.stage.w = obj.stage.w;
+        migrated.stage.d = obj.stage.d;
+      }else{
+        if(typeof obj.stageWidth === "number") migrated.stage.w = obj.stageWidth;
+        if(typeof obj.stageDepth === "number") migrated.stage.d = obj.stageDepth;
+      }
+
+      if(obj.units === "m"){
+        migrated.stage.w *= FT_PER_M;
+        migrated.stage.d *= FT_PER_M;
+      }
+
+      if(obj.view && typeof obj.view.flip === "boolean") migrated.view.flip = obj.view.flip;
+
+      if(typeof obj.viewZoom === "number"){
+        migrated.viewZoom = obj.viewZoom;
+      }else if(typeof obj.viewZoomPct === "number"){
+        migrated.viewZoom = clamp(obj.viewZoomPct/100, 0.5, 2.0);
+      }
+
+      if(typeof obj.bandName === "string") migrated.bandName = obj.bandName;
+      if(typeof obj.showNotes === "string") migrated.showNotes = obj.showNotes;
+
+      if(Array.isArray(obj.items)){
+        migrated.items = obj.items.map(it => {
+          const out = {
+            id: (it && it.id) ? it.id : uid(),
+            type: it.type || it.kind || "misc",
+            kind: it.kind || inferKind(it.type),
+            label: it.label || it.name || "Item",
+            x: Number(it.x)||0,
+            y: Number(it.y)||0,
+            w: Number(it.w)||2,
+            h: Number(it.h)||2,
+            rot: Number(it.rot)||0,
+            scale: (it.scale==null ? 1.0 : Number(it.scale)) || 1.0,
+            labelScale: (it.labelScale == null ? 1.0 : Number(it.labelScale)) || 1.0,
+            color: it.color || "",
+            shape: it.shape || "rectangle",
+            input: it.input || "",
+            mix: it.mix || "",
+            notes: it.notes || ""
+          };
+
+          if(obj.units === "m"){
+            out.x *= FT_PER_M; out.y *= FT_PER_M;
+            out.w *= FT_PER_M; out.h *= FT_PER_M;
+          }
+
+          out.scale = clamp(out.scale, 0.5, 2.0);
+          out.labelScale = clamp(out.labelScale, 0.6, 1.6);
+          out.rot = ((out.rot % 360) + 360) % 360;
+          return out;
+        });
       }
     }
+
+    migrated.stage.w = clamp(migrated.stage.w, 4, 200);
+    migrated.stage.d = clamp(migrated.stage.d, 4, 200);
+
+    migrated.items.forEach(it => {
+      it.w = clamp(it.w, 0.5, 200);
+      it.h = clamp(it.h, 0.5, 200);
+      it.x = clamp(it.x, 0, Math.max(0, migrated.stage.w - 0.25));
+      it.y = clamp(it.y, 0, Math.max(0, migrated.stage.d - 0.25));
+      it.labelScale = clamp(Number(it.labelScale || 1.0), 0.6, 1.6);
+    });
+
+    return migrated;
   }
 
-  function openModal(){
-    const url = getAppUrl();
-    elShareUrlText.textContent = url;
-
-    elQrBox.innerHTML = "";
-    elQrBox.appendChild(makeQrSvg(url, 6));
-    elModal.classList.add("on");
-  }
-  function closeModal(){
-    elModal.classList.remove("on");
+  function inferKind(type){
+    if(!type) return "gear";
+    const t = String(type).toLowerCase();
+    if(t.includes("vox") || t.includes("person")) return "person";
+    if(t.includes("gtr") || t.includes("bass") || t.includes("keys") || t.includes("drum")) return "instr";
+    if(t.includes("power")) return "power";
+    return "gear";
   }
 
-  btnShare.addEventListener("click", openModal);
-  btnShare2.addEventListener("click", openModal);
-  btnShare3.addEventListener("click", openModal);
-  btnCloseQr.addEventListener("click", closeModal);
+  function getSquareInnerSizePx(){
+    const r = els.stageSquareInner.getBoundingClientRect();
+    return { w: r.width, h: r.height };
+  }
 
-  elModal.addEventListener("click", (e) => {
-    if(e.target === elModal) closeModal();
-  });
+  function computeStagePixels(useFixedPrintTarget = false){
+    let inner;
 
-  btnCopyShare.addEventListener("click", () => copyText(getAppUrl()));
-  btnCopyLink.addEventListener("click", () => copyText(getAppUrl()));
-  btnCopyDonate.addEventListener("click", () => copyText(DONATE_URL));
-
-  btnNativeShare.addEventListener("click", async () => {
-    const url = getAppUrl();
-    if(navigator.share){
-      try{
-        await navigator.share({ title: "StagePlot v2", text: "StagePlot link", url });
-      }catch(e){}
+    if(useFixedPrintTarget){
+      const innerSize = PRINT_TARGET.squarePx - (PRINT_TARGET.insetPx * 2);
+      inner = { w: innerSize, h: innerSize };
     }else{
-      copyText(url);
+      inner = getSquareInnerSizePx();
     }
-  });
 
-  function makeQrSvg(text, scale){
-    const qr = QRCode.encode(text, "M");
-    const n = qr.size;
-    const quiet = 4;
-    const dim = (n + quiet*2);
+    const maxSize = Math.min(inner.w, inner.h);
+    const safety = 2;
+    const avail = Math.max(20, maxSize - safety);
+    const pxPerFoot = Math.min(avail / state.stage.w, avail / state.stage.d);
+    const stagePxW = state.stage.w * pxPerFoot;
+    const stagePxH = state.stage.d * pxPerFoot;
 
-    const s = scale || 6;
-    const w = dim * s;
-    const h = dim * s;
-
-    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("viewBox", `0 0 ${dim} ${dim}`);
-    svg.setAttribute("width", w);
-    svg.setAttribute("height", h);
-    svg.style.maxWidth = "100%";
-    svg.style.height = "auto";
-
-    const bg = document.createElementNS(svg.namespaceURI, "rect");
-    bg.setAttribute("x","0"); bg.setAttribute("y","0");
-    bg.setAttribute("width", dim); bg.setAttribute("height", dim);
-    bg.setAttribute("fill", "#ffffff");
-    svg.appendChild(bg);
-
-    const g = document.createElementNS(svg.namespaceURI, "g");
-    g.setAttribute("fill", "#000000");
-    svg.appendChild(g);
-
-    let d = "";
-    for(let y=0;y<n;y++){
-      for(let x=0;x<n;x++){
-        if(qr.get(x,y)){
-          const xx = x + quiet;
-          const yy = y + quiet;
-          d += `M${xx} ${yy}h1v1h-1z `;
-        }
-      }
-    }
-    const path = document.createElementNS(svg.namespaceURI, "path");
-    path.setAttribute("d", d.trim());
-    g.appendChild(path);
-
-    return svg;
+    return { pxPerFoot, stagePxW, stagePxH };
   }
 
-  const QRCode = (function(){
-    const EXP = new Array(512);
-    const LOG = new Array(256);
-    (function initGF(){
-      let x = 1;
-      for(let i=0;i<255;i++){
-        EXP[i] = x;
-        LOG[x] = i;
-        x <<= 1;
-        if(x & 0x100) x ^= 0x11d;
-      }
-      for(let i=255;i<512;i++) EXP[i] = EXP[i-255];
-    })();
+  function stagePointFromPointer(e){
+    const canvasRect = els.stageCanvas.getBoundingClientRect();
+    const px = e.clientX - canvasRect.left;
+    const py = e.clientY - canvasRect.top;
+    const { pxPerFoot } = computeStagePixels();
+    const z = state.viewZoom;
+    const basePx = px / z;
+    const basePy = py / z;
+    let fx = basePx / pxPerFoot;
+    let fy = basePy / pxPerFoot;
+    if(state.view.flip){
+      fx = state.stage.w - fx;
+      fy = state.stage.d - fy;
+    }
+    return { x: fx, y: fy };
+  }
 
-    function gfMul(a,b){
-      if(a===0 || b===0) return 0;
-      return EXP[LOG[a] + LOG[b]];
+  function itemDrawPos(it){
+    const w = it.w * it.scale;
+    const h = it.h * it.scale;
+    if(!state.view.flip){
+      return { x: it.x, y: it.y, rot: it.rot, w, h };
+    }
+    const x = state.stage.w - (it.x + w);
+    const y = state.stage.d - (it.y + h);
+    const rot = (it.rot + 180) % 360;
+    return { x, y, rot, w, h };
+  }
+
+  function getPrimary(){
+    if(state.primaryId){
+      return state.items.find(x => x.id === state.primaryId) || null;
+    }
+    if(state.selectedIds.length){
+      const id = state.selectedIds[0];
+      return state.items.find(x => x.id === id) || null;
+    }
+    return null;
+  }
+
+  function setSelection(ids, primaryId=null){
+    state.selectedIds = Array.from(new Set(ids));
+    state.primaryId = primaryId || (state.selectedIds[0] || null);
+    updateSelectionUI();
+    render();
+    save();
+  }
+
+  function clearSelection(){
+    state.selectedIds = [];
+    state.primaryId = null;
+    updateSelectionUI();
+    render();
+    save();
+  }
+
+  function normalizeHex(c){
+    if(!c) return "";
+    const s = String(c).trim();
+    if(!s) return "";
+    if(/^#([0-9a-f]{3})$/i.test(s)){
+      const m = s.slice(1);
+      return "#" + m.split("").map(ch => ch + ch).join("").toLowerCase();
+    }
+    if(/^#([0-9a-f]{6})$/i.test(s)) return s.toLowerCase();
+    return s;
+  }
+
+  function getSelectedItems(){
+    const set = new Set(state.selectedIds);
+    return state.items.filter(it => set.has(it.id));
+  }
+
+  function selectionColorStatus(){
+    const sel = getSelectedItems();
+    if(!sel.length) return { count:0, mode:"none", color:"" };
+    const colors = sel.map(it => normalizeHex(it.color || ""));
+    const nonEmpty = colors.filter(Boolean);
+    if(!nonEmpty.length) return { count:sel.length, mode:"none", color:"" };
+    const first = nonEmpty[0];
+    const allSame = nonEmpty.every(c => c === first) && nonEmpty.length === colors.length;
+    if(allSame) return { count:sel.length, mode:"same", color:first };
+    const anySame = nonEmpty.every(c => c === first);
+    if(anySame) return { count:sel.length, mode:"same", color:first };
+    return { count:sel.length, mode:"mixed", color:first };
+  }
+
+  function applyColorToSelection(hexOrEmpty){
+    if(!state.selectedIds.length) return;
+    const set = new Set(state.selectedIds);
+    state.items.forEach(it => {
+      if(!set.has(it.id)) return;
+      it.color = hexOrEmpty ? normalizeHex(hexOrEmpty) : "";
+    });
+    updateSelectionUI();
+    render();
+    save();
+  }
+
+  function selectionLabelSizeStatus(){
+    const sel = getSelectedItems();
+    if(!sel.length) return { count:0, mode:"none", scale:1.0 };
+    const scales = sel.map(it => clamp(Number(it.labelScale || 1.0), 0.6, 1.6));
+    const first = scales[0];
+    const allSame = scales.every(s => Math.abs(s - first) < 0.0001);
+    if(allSame) return { count:sel.length, mode:"same", scale:first };
+    return { count:sel.length, mode:"mixed", scale:first };
+  }
+
+  function applyLabelSizeToSelectionPct(pct){
+    if(!state.selectedIds.length) return;
+    const next = clamp(Number(pct)/100, 0.6, 1.6);
+    const set = new Set(state.selectedIds);
+    state.items.forEach(it => {
+      if(!set.has(it.id)) return;
+      it.labelScale = next;
+    });
+    const p = Math.round(next*100);
+    els.labelSize.value = p;
+    els.labelSizePill.textContent = p + "%";
+    els.uLabelSize.value = p;
+    els.uLabelSizePill.textContent = p + "%";
+    render();
+    save();
+  }
+
+  function enforceCircleSquare(item){
+    const w = Number(item.w) || 2;
+    const h = Number(item.h) || 2;
+    const size = Math.max(w, h);
+    item.w = size;
+    item.h = size;
+  }
+
+  function applyShapeToSelection(shape){
+    if(!state.selectedIds.length) return;
+    const set = new Set(state.selectedIds);
+    state.items.forEach(it => {
+      if(!set.has(it.id)) return;
+      if(shape === "circle"){
+        enforceCircleSquare(it);
+      }
+      it.shape = shape;
+    });
+
+    updateSelectionUI();
+    updateShapeButtons();
+    render();
+    save();
+  }
+
+  function updateShapeButtons(){
+    const sel = getSelectedItems();
+    document.querySelectorAll('[data-shape]').forEach(btn => btn.classList.remove("on"));
+    if(sel.length === 0) return;
+    const shapes = sel.map(it => it.shape || "rectangle");
+    const first = shapes[0];
+    const allSame = shapes.every(s => s === first);
+    if(allSame){
+      const btn = document.querySelector(`[data-shape="${first}"]`);
+      if(btn) btn.classList.add("on");
+    }
+  }
+
+  function updateUnitsUI(){
+    els.unitsPill.textContent = "Units: " + state.units;
+    els.unitLabelW.textContent = state.units;
+    els.unitLabelD.textContent = state.units;
+    unitInlineEls.forEach(x => x.textContent = state.units);
+    els.stageW.value = (Math.round(feetToDisplay(state.stage.w)*100)/100);
+    els.stageD.value = (Math.round(feetToDisplay(state.stage.d)*100)/100);
+    els.stageMetaText.textContent =
+      `${(Math.round(feetToDisplay(state.stage.w)*100)/100)} x ${(Math.round(feetToDisplay(state.stage.d)*100)/100)} ${state.units}`;
+  }
+
+  function updateViewUI(){
+    els.viewZoom.value = Math.round(state.viewZoom * 100);
+    els.viewZoomPill.textContent = Math.round(state.viewZoom*100) + "%";
+    els.viewZoomPillInner.textContent = Math.round(state.viewZoom*100) + "%";
+    els.btnFlip.textContent = state.view.flip ? "Audience View" : "Stage View";
+    document.getElementById("upLabel").textContent = state.view.flip ? "AUDIENCE" : "UPSTAGE";
+    document.getElementById("downLabel").textContent = state.view.flip ? "UPSTAGE" : "AUDIENCE";
+  }
+
+  function clampItemInStage(it){
+    const w = it.w * it.scale;
+    const h = it.h * it.scale;
+    it.x = clamp(it.x, 0, Math.max(0, state.stage.w - w));
+    it.y = clamp(it.y, 0, Math.max(0, state.stage.d - h));
+  }
+
+  function updateSelectionUI(){
+    const primary = getPrimary();
+    els.selLabel.textContent = primary ? primary.label : "none";
+    if(primary){
+      els.underStageTools.style.display = "block";
+      els.underSelName.textContent = primary.label || "Item";
+    }else{
+      els.underStageTools.style.display = "none";
+      els.underSelName.textContent = "none";
+    }
+    els.colorScopeCount.textContent = String(state.selectedIds.length);
+    const disabled = !primary;
+    [
+      els.itemLabel, els.itemInput, els.itemMix, els.itemNotes,
+      els.labelSize, els.uLabelSize,
+      els.itemW, els.itemH, els.itemScale, els.itemRot, els.btnRot0,
+      els.btnDup, els.uItemW, els.uItemH, els.uItemScale,
+      els.itemColor, els.clearColor, els.uItemColor, els.uClearColor
+    ].forEach(el => el.disabled = disabled);
+    document.querySelectorAll('[data-shape]').forEach(btn => btn.disabled = disabled);
+
+    const cs = selectionColorStatus();
+    if(!cs.count){
+      els.colorPill.textContent = "none";
+      els.uColorPill.textContent = "none";
+      els.itemColor.value = "#4aa3ff";
+      els.uItemColor.value = "#4aa3ff";
+    }else if(cs.mode === "none"){
+      els.colorPill.textContent = cs.count === 1 ? "none" : `none (${cs.count})`;
+      els.uColorPill.textContent = cs.count === 1 ? "none" : `none (${cs.count})`;
+      els.itemColor.value = "#4aa3ff";
+      els.uItemColor.value = "#4aa3ff";
+    }else if(cs.mode === "mixed"){
+      els.colorPill.textContent = `mixed (${cs.count})`;
+      els.uColorPill.textContent = `mixed (${cs.count})`;
+      els.itemColor.value = cs.color || "#4aa3ff";
+      els.uItemColor.value = cs.color || "#4aa3ff";
+    }else{
+      els.colorPill.textContent = cs.color;
+      els.uColorPill.textContent = cs.color;
+      els.itemColor.value = cs.color || "#4aa3ff";
+      els.uItemColor.value = cs.color || "#4aa3ff";
     }
 
-    function polyMul(p,q){
-      const r = new Array(p.length + q.length - 1).fill(0);
-      for(let i=0;i<p.length;i++){
-        for(let j=0;j<q.length;j++){
-          r[i+j] ^= gfMul(p[i], q[j]);
+    const ls = selectionLabelSizeStatus();
+    if(!ls.count){
+      els.labelSize.value = 100;
+      els.labelSizePill.textContent = "100%";
+      els.uLabelSize.value = 100;
+      els.uLabelSizePill.textContent = "100%";
+    }else{
+      const p = Math.round(ls.scale * 100);
+      els.labelSize.value = p;
+      els.labelSizePill.textContent = (ls.mode === "mixed") ? `mixed (${ls.count})` : (p + "%");
+      els.uLabelSize.value = p;
+      els.uLabelSizePill.textContent = (ls.mode === "mixed") ? `mixed (${ls.count})` : (p + "%");
+    }
+
+    updateShapeButtons();
+
+    if(!primary){
+      els.itemLabel.value = "";
+      els.itemInput.value = "";
+      els.itemMix.value = "";
+      els.itemNotes.value = "";
+      els.itemW.value = "";
+      els.itemH.value = "";
+      els.itemScale.value = 100;
+      els.itemScalePill.textContent = "100%";
+      els.itemRot.value = 0;
+      els.itemRotPill.textContent = "0°";
+      els.uItemW.value = "";
+      els.uItemH.value = "";
+      els.uItemScale.value = 100;
+      els.uItemScalePill.textContent = "100%";
+      return;
+    }
+
+    els.itemLabel.value = primary.label || "";
+    els.itemInput.value = primary.input || "";
+    els.itemMix.value = primary.mix || "";
+    els.itemNotes.value = primary.notes || "";
+    const dispW = Math.round(feetToDisplay(primary.w) * 100) / 100;
+    const dispH = Math.round(feetToDisplay(primary.h) * 100) / 100;
+    els.itemW.value = dispW;
+    els.itemH.value = dispH;
+    els.uItemW.value = dispW;
+    els.uItemH.value = dispH;
+    const scPct = Math.round((primary.scale || 1)*100);
+    els.itemScale.value = scPct;
+    els.itemScalePill.textContent = scPct + "%";
+    els.uItemScale.value = scPct;
+    els.uItemScalePill.textContent = scPct + "%";
+    els.itemRot.value = Math.round(primary.rot || 0);
+    els.itemRotPill.textContent = Math.round(primary.rot || 0) + "°";
+  }
+
+  function renderLibrary(){
+    const q = (els.libSearch.value || "").trim().toLowerCase();
+    const f = els.libFilter.value || "all";
+    const filtered = LIB.filter(x => {
+      if(f !== "all" && x.kind !== f) return false;
+      if(!q) return true;
+      const hay = (x.name + " " + x.sub + " " + x.label + " " + x.id).toLowerCase();
+      return hay.includes(q);
+    });
+    els.libGrid.innerHTML = "";
+    filtered.forEach(x => {
+      const btn = document.createElement("div");
+      btn.className = "libBtn";
+      btn.innerHTML = `
+        <div class="ic" aria-hidden="true">${x.ic}</div>
+        <div class="txt">
+          <div class="nm">${x.name}</div>
+          <div class="sm">${x.sub}</div>
+        </div>
+      `;
+      btn.addEventListener("click", () => addFromLib(x));
+      els.libGrid.appendChild(btn);
+    });
+    els.libCount.textContent = `${state.items.length} items`;
+  }
+
+  function render(){
+    const useFixedPrintTarget = !!state.isPreparingPrint;
+    const { pxPerFoot, stagePxW, stagePxH } = computeStagePixels(useFixedPrintTarget);
+
+    els.stageCanvas.style.width = stagePxW + "px";
+    els.stageCanvas.style.height = stagePxH + "px";
+
+    const finalScale = state.viewZoom * (state.printScale || 1);
+    els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
+
+    Array.from(els.stageCanvas.querySelectorAll(".item")).forEach(n => n.remove());
+
+    for(const it of state.items){
+      const d = itemDrawPos(it);
+      const el = document.createElement("div");
+      el.className = "item";
+      el.dataset.id = it.id;
+      el.dataset.kind = it.kind || inferKind(it.type);
+      el.dataset.shape = it.shape || "rectangle";
+
+      const isSel = state.selectedIds.includes(it.id);
+      if(isSel) el.classList.add("multi");
+      if(state.primaryId === it.id) el.classList.add("selected");
+
+      if(it.color){
+        el.style.background = `color-mix(in srgb, ${it.color} 18%, rgba(255,255,255,.06))`;
+        el.style.borderColor = `color-mix(in srgb, ${it.color} 42%, rgba(255,255,255,.14))`;
+      }
+
+      el.style.left = (d.x * pxPerFoot) + "px";
+      el.style.top  = (d.y * pxPerFoot) + "px";
+      el.style.width  = (d.w * pxPerFoot) + "px";
+      el.style.height = (d.h * pxPerFoot) + "px";
+
+      if(it.shape === "diamond"){
+        el.style.transform = `rotate(${d.rot + 45}deg)`;
+      } else {
+        el.style.transform = `rotate(${d.rot}deg)`;
+      }
+
+      const lbl = document.createElement("div");
+      lbl.className = "lbl";
+      lbl.textContent = it.label || "Item";
+      const ls = clamp(Number(it.labelScale || 1.0), 0.6, 1.6);
+      lbl.style.fontSize = (12 * ls) + "px";
+
+      if(it.shape === "diamond"){
+        lbl.style.transform = `rotate(-45deg)`;
+      }
+
+      el.appendChild(lbl);
+      el.addEventListener("pointerdown", onItemPointerDown);
+      el.addEventListener("click", (ev) => {
+        if((drag && drag.hasMoved) || (pinch.hasMoved)){
+          return;
         }
-      }
-      return r;
-    }
 
-    function reedSolomonGen(deg){
-      let g = [1];
-      for(let i=0;i<deg;i++){
-        g = polyMul(g, [1, EXP[i]]);
-      }
-      return g;
-    }
+        ev.stopPropagation();
 
-    function reedSolomonRemainder(data, ecLen){
-      const gen = reedSolomonGen(ecLen);
-      const msg = data.slice();
-      msg.push(...new Array(ecLen).fill(0));
-      for(let i=0;i<data.length;i++){
-        const coef = msg[i];
-        if(coef !== 0){
-          for(let j=0;j<gen.length;j++){
-            msg[i+j] ^= gfMul(gen[j], coef);
-          }
+        const mod = ev.shiftKey || ev.metaKey || ev.ctrlKey;
+        if(!mod){
+          openInfoAccordionIfMobile();
+          openToolsSelectedIfMobile();
+          return;
         }
-      }
-      return msg.slice(msg.length - ecLen);
+
+        const set = new Set(state.selectedIds);
+        if(set.has(it.id)) set.delete(it.id); else set.add(it.id);
+        const arr = Array.from(set);
+        setSelection(arr, state.primaryId && set.has(state.primaryId) ? state.primaryId : (arr[0] || null));
+        openInfoAccordionIfMobile();
+        openToolsSelectedIfMobile();
+      });
+      els.stageCanvas.appendChild(el);
     }
 
-    const CAP_M_BYTE = [0,14,26,42,62,84,106,122,152,180,213];
-    const EC_M = [0,10,16,26,36,48,64,72,88,110,130];
-    const TOTAL_CODEWORDS = [0,26,44,70,100,134,172,196,242,292,346];
+    renderTables();
+    els.stageMetaText.textContent =
+      `${(Math.round(feetToDisplay(state.stage.w)*100)/100)} x ${(Math.round(feetToDisplay(state.stage.d)*100)/100)} ${state.units}`;
+  }
 
-    function chooseVersion(byteLen){
-      for(let v=1; v<=10; v++){
-        if(byteLen <= CAP_M_BYTE[v]) return v;
-      }
-      return 10;
+  function renderTables(){
+    const rows = state.items
+      .filter(it => (it.input || "").trim() || (it.label || "").trim())
+      .map(it => ({ input: (it.input||"").trim(), label: (it.label||"").trim(), notes:(it.notes||"").trim() }))
+      .sort((a,b) => (a.input||"").localeCompare(b.input||"", undefined, { numeric:true, sensitivity:"base" }));
+
+    els.inputsTable.innerHTML = "";
+    els.inputsTable.insertAdjacentHTML("beforeend", `
+      <thead><tr><th style="width:28%;">Input</th><th>Source</th></tr></thead>
+      <tbody></tbody>
+    `);
+    const tb = els.inputsTable.querySelector("tbody");
+    if(!rows.length){
+      tb.innerHTML = `<tr><td colspan="2" style="color: rgba(169,180,204,.95);">No inputs yet - add items and fill in Input.</td></tr>`;
+    }else{
+      rows.forEach(r => {
+        tb.insertAdjacentHTML("beforeend", `
+          <tr>
+            <td class="mono">${escapeHtml(r.input || "-")}</td>
+            <td>${escapeHtml(r.label || "-")}${r.notes ? `<div style="color:rgba(169,180,204,.95); font-size:11px; margin-top:2px;">${escapeHtml(r.notes)}</div>`:""}</td>
+          </tr>
+        `);
+      });
     }
 
-    function bitBufferPush(bits, val, len){
-      for(let i=len-1;i>=0;i--){
-        bits.push((val >>> i) & 1);
-      }
+    const mixMap = new Map();
+    state.items.forEach(it => {
+      const m = (it.mix||"").trim();
+      if(!m) return;
+      if(!mixMap.has(m)) mixMap.set(m, []);
+      mixMap.get(m).push(it);
+    });
+    const mixes = Array.from(mixMap.entries()).sort((a,b) => a[0].localeCompare(b[0], undefined, { numeric:true, sensitivity:"base" }));
+    els.mixesTable.innerHTML = "";
+    els.mixesTable.insertAdjacentHTML("beforeend", `
+      <thead><tr><th style="width:20%;">Mix</th><th>Members</th></tr></thead>
+      <tbody></tbody>
+    `);
+    const mb = els.mixesTable.querySelector("tbody");
+    if(!mixes.length){
+      mb.innerHTML = `<tr><td colspan="2" style="color: rgba(169,180,204,.95);">No mixes yet - fill in Mix on items (M1, IEM, Wedge...).</td></tr>`;
+    }else{
+      mixes.forEach(([mix, items]) => {
+        const members = items.map(it => escapeHtml(it.label || "Item")).join(", ");
+        mb.insertAdjacentHTML("beforeend", `
+          <tr>
+            <td class="mono">${escapeHtml(mix)}</td>
+            <td>${members}</td>
+          </tr>
+        `);
+      });
     }
+  }
 
-    function bitsToBytes(bits){
-      const out = [];
-      for(let i=0;i<bits.length;i+=8){
-        let b=0;
-        for(let j=0;j<8;j++){
-          b = (b<<1) | (bits[i+j] || 0);
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]));
+  }
+
+  function addFromLib(def){
+    const it = {
+      id: uid(),
+      type: def.id,
+      kind: def.kind,
+      label: def.label || def.name,
+      x: (state.stage.w/2) - (def.w/2),
+      y: (state.stage.d/2) - (def.h/2),
+      w: def.w,
+      h: def.h,
+      rot: 0,
+      scale: 1.0,
+      labelScale: 1.0,
+      color: "",
+      shape: "rectangle",
+      input: "",
+      mix: "",
+      notes: ""
+    };
+    it.x = clamp(it.x, 0, Math.max(0, state.stage.w - it.w));
+    it.y = clamp(it.y, 0, Math.max(0, state.stage.d - it.h));
+    state.items.push(it);
+    setSelection([it.id], it.id);
+    renderLibrary();
+    render();
+    save();
+    openInfoAccordionIfMobile();
+    openToolsSelectedIfMobile();
+  }
+
+  function addMisc(size){
+    const base = (size===1) ? { w:2.0, h:1.4 } : (size===2) ? { w:3.0, h:2.0 } : { w:4.0, h:2.8 };
+    addFromLib({ id:`misc${size}`, name:"Misc", sub:"Gear", kind:"gear", w:base.w, h:base.h, ic:"⬛", label:`Misc` });
+  }
+
+  function deleteSelected(){
+    if(!state.selectedIds.length) return;
+    const set = new Set(state.selectedIds);
+    state.items = state.items.filter(it => !set.has(it.id));
+    clearSelection();
+    renderLibrary();
+    render();
+    save();
+  }
+
+  function duplicateSelected(){
+    if(!state.selectedIds.length) return;
+    const newIds = [];
+    const sel = state.items.filter(it => state.selectedIds.includes(it.id));
+    sel.forEach(it => {
+      const copy = JSON.parse(JSON.stringify(it));
+      copy.id = uid();
+      copy.x = clamp(copy.x + 0.5, 0, Math.max(0, state.stage.w - copy.w*copy.scale));
+      copy.y = clamp(copy.y + 0.5, 0, Math.max(0, state.stage.d - copy.h*copy.scale));
+      state.items.push(copy);
+      newIds.push(copy.id);
+    });
+    setSelection(newIds, newIds[0] || null);
+    renderLibrary();
+    render();
+    save();
+    openInfoAccordionIfMobile();
+    openToolsSelectedIfMobile();
+  }
+
+  let drag = null;
+  let pinch = {
+    active: false,
+    itemId: null,
+    pointers: new Map(),
+    startDist: 0,
+    startScale: 1.0,
+    hasMoved: false
+  };
+
+  function dist(a,b){
+    const dx = a.x - b.x;
+    const dy = a.y - b.y;
+    return Math.hypot(dx,dy);
+  }
+
+  function onItemPointerDown(e){
+    const id = e.currentTarget.dataset.id;
+    const mod = e.shiftKey || e.metaKey || e.ctrlKey;
+
+    pinch.pointers.set(e.pointerId, { x:e.clientX, y:e.clientY, itemId:id });
+    if(pinch.pointers.size === 2){
+      const pointerItems = Array.from(pinch.pointers.values()).map(p => p.itemId);
+      if(pointerItems[0] === pointerItems[1]){
+        e.preventDefault();
+        e.stopPropagation();
+        drag = null;
+
+        if(!state.selectedIds.includes(id)){
+          setSelection([id], id);
         }
-        out.push(b);
-      }
-      return out;
-    }
 
-    function makeMatrix(n){
-      const m = new Array(n);
-      for(let y=0;y<n;y++) m[y] = new Array(n).fill(null);
-      return m;
-    }
-
-    function setFinder(m, x, y){
-      const n = m.length;
-      for(let dy=-1; dy<=7; dy++){
-        for(let dx=-1; dx<=7; dx++){
-          const xx = x+dx, yy = y+dy;
-          if(xx<0||yy<0||xx>=n||yy>=n) continue;
-          const on =
-            (dx>=0&&dx<=6&&dy>=0&&dy<=6) &&
-            (dx===0||dx===6||dy===0||dy===6|| (dx>=2&&dx<=4&&dy>=2&&dy<=4));
-          m[yy][xx] = on ? 1 : 0;
-        }
+        const pts = Array.from(pinch.pointers.values());
+        pinch.active = true;
+        pinch.itemId = id;
+        pinch.startDist = dist(pts[0], pts[1]);
+        pinch.hasMoved = false;
+        const primary = getPrimary();
+        pinch.startScale = primary ? (primary.scale || 1.0) : 1.0;
+        window.addEventListener("pointermove", onPinchMove, { passive:false });
+        window.addEventListener("pointerup", onPinchUp, { once:false });
+        window.addEventListener("pointercancel", onPinchUp, { once:false });
+        try{ e.currentTarget.setPointerCapture(e.pointerId); }catch(_){}
+        return;
       }
     }
 
-    function setTiming(m){
-      const n = m.length;
-      for(let i=8;i<n-8;i++){
-        if(m[6][i]===null) m[6][i] = (i%2===0)?1:0;
-        if(m[i][6]===null) m[i][6] = (i%2===0)?1:0;
-      }
+    if(!state.selectedIds.includes(id) && !mod){
+      setSelection([id], id);
     }
 
-    function setDarkModule(m, v){
-      m[4*v + 9][8] = 1;
+    const start = stagePointFromPointer(e);
+    const selectedSet = new Set(state.selectedIds);
+    const offsets = {};
+    state.items.forEach(it => {
+      if(!selectedSet.has(it.id)) return;
+      offsets[it.id] = { dx: it.x - start.x, dy: it.y - start.y };
+    });
+    drag = {
+      pointerId: e.pointerId,
+      offsets,
+      selectedSet,
+      startX: e.clientX,
+      startY: e.clientY,
+      hasMoved: false
+    };
+    try{ e.currentTarget.setPointerCapture(e.pointerId); }catch(_){}
+    window.addEventListener("pointermove", onDragMove, { passive:false });
+    window.addEventListener("pointerup", onDragUp, { once:true });
+    window.addEventListener("pointercancel", onDragUp, { once:true });
+  }
+
+  function onDragMove(e){
+    if(!drag) return;
+    if(pinch.active) return;
+    e.preventDefault();
+
+    const dx = Math.abs(e.clientX - drag.startX);
+    const dy = Math.abs(e.clientY - drag.startY);
+    if(dx > 3 || dy > 3){
+      drag.hasMoved = true;
     }
 
-    function placeData(m, dataBits){
-      const n = m.length;
-      let i = 0;
-      let dirUp = true;
-      for(let x=n-1; x>0; x-=2){
-        if(x===6) x--;
-        for(let y0=0; y0<n; y0++){
-          const y = dirUp ? (n-1-y0) : y0;
-          for(let dx=0; dx<2; dx++){
-            const xx = x-dx;
-            if(m[y][xx] !== null) continue;
-            const bit = dataBits[i++] || 0;
-            m[y][xx] = bit;
-          }
-        }
-        dirUp = !dirUp;
-      }
+    const p = stagePointFromPointer(e);
+    state.items.forEach(it => {
+      if(!drag.selectedSet.has(it.id)) return;
+      const off = drag.offsets[it.id] || { dx:0, dy:0 };
+      const w = it.w * it.scale;
+      const h = it.h * it.scale;
+      it.x = clamp(p.x + off.dx, 0, Math.max(0, state.stage.w - w));
+      it.y = clamp(p.y + off.dy, 0, Math.max(0, state.stage.d - h));
+    });
+    render();
+    save();
+  }
+
+  function onDragUp(){
+    drag = null;
+    window.removeEventListener("pointermove", onDragMove);
+  }
+
+  function onPinchMove(e){
+    if(!pinch.active) return;
+    if(!pinch.pointers.has(e.pointerId)) return;
+    e.preventDefault();
+    pinch.hasMoved = true;
+    pinch.pointers.set(e.pointerId, { x:e.clientX, y:e.clientY, itemId:pinch.itemId });
+    if(pinch.pointers.size !== 2) return;
+    const primary = getPrimary();
+    if(!primary || primary.id !== pinch.itemId) return;
+    const pts = Array.from(pinch.pointers.values());
+    const dNow = dist(pts[0], pts[1]);
+    if(pinch.startDist <= 0) return;
+    const ratio = dNow / pinch.startDist;
+    const nextScale = clamp(pinch.startScale * ratio, 0.5, 2.0);
+    primary.scale = nextScale;
+    clampItemInStage(primary);
+    const pct = Math.round(nextScale * 100);
+    els.itemScale.value = pct;
+    els.itemScalePill.textContent = pct + "%";
+    els.uItemScale.value = pct;
+    els.uItemScalePill.textContent = pct + "%";
+    render();
+    save();
+  }
+
+  function onPinchUp(e){
+    if(pinch.pointers.has(e.pointerId)) pinch.pointers.delete(e.pointerId);
+    if(pinch.pointers.size < 2){
+      pinch.active = false;
+      pinch.itemId = null;
+      pinch.startDist = 0;
+      pinch.startScale = 1.0;
+      pinch.hasMoved = false;
+      pinch.pointers.clear();
+      window.removeEventListener("pointermove", onPinchMove);
+      window.removeEventListener("pointerup", onPinchUp);
+      window.removeEventListener("pointercancel", onPinchUp);
     }
+  }
 
-    function formatBits(ecLevel, maskId){
-      const ecBits = (ecLevel==="M") ? 0 : (ecLevel==="L") ? 1 : (ecLevel==="H") ? 2 : 3;
-      let data = (ecBits << 3) | maskId;
-
-      let d = data << 10;
-      const poly = 0x537;
-      for(let i=14;i>=10;i--){
-        if((d >>> i) & 1) d ^= poly << (i-10);
-      }
-      const bits = ((data << 10) | d) ^ 0x5412;
-      return bits & 0x7fff;
-    }
-
-    function applyFormat(m, ecLevel, maskId){
-      const n = m.length;
-      const bits = formatBits(ecLevel, maskId);
-      function bit(i){ return (bits >>> i) & 1; }
-
-      const coords1 = [
-        [8,0],[8,1],[8,2],[8,3],[8,4],[8,5],[8,7],[8,8],
-        [7,8],[5,8],[4,8],[3,8],[2,8],[1,8],[0,8]
-      ];
-      for(let i=0;i<15;i++){
-        const [x,y] = coords1[i];
-        m[y][x] = bit(14-i);
-      }
-
-      const coords2 = [];
-      for(let i=0;i<8;i++) coords2.push([n-1-i,8]);
-      for(let i=0;i<7;i++) coords2.push([8,n-7+i]);
-      for(let i=0;i<15;i++){
-        const [x,y] = coords2[i];
-        m[y][x] = bit(14-i);
-      }
-
-      m[8][6] = 1;
-    }
-
-    function encode(text, ecLevel){
-      ecLevel = ecLevel || "M";
-      const bytes = new TextEncoder().encode(text);
-      const v = chooseVersion(bytes.length);
-      const n = 21 + (v-1)*4;
-
-      const total = TOTAL_CODEWORDS[v];
-      const ecLen = EC_M[v];
-      const dataLen = total - ecLen;
-
-      const bits = [];
-      bitBufferPush(bits, 0b0100, 4);
-      const lenBits = (v <= 9) ? 8 : 16;
-      bitBufferPush(bits, bytes.length, lenBits);
-      for(const b of bytes) bitBufferPush(bits, b, 8);
-
-      const maxBits = dataLen * 8;
-      const remaining = maxBits - bits.length;
-      bitBufferPush(bits, 0, Math.min(4, Math.max(0, remaining)));
-      while(bits.length % 8) bits.push(0);
-
-      let data = bitsToBytes(bits);
-
-      const PAD0 = 0xec, PAD1 = 0x11;
-      let padToggle = false;
-      while(data.length < dataLen){
-        data.push(padToggle ? PAD1 : PAD0);
-        padToggle = !padToggle;
-      }
-
-      const ec = reedSolomonRemainder(data, ecLen);
-      const codewords = data.concat(ec);
-
-      const cwBits = [];
-      for(const cw of codewords){
-        for(let i=7;i>=0;i--) cwBits.push((cw>>>i)&1);
-      }
-
-      const m = makeMatrix(n);
-      setFinder(m, 0, 0);
-      setFinder(m, n-7, 0);
-      setFinder(m, 0, n-7);
-      setTiming(m);
-
-      for(let i=0;i<9;i++){
-        if(m[8][i]===null) m[8][i] = 0;
-        if(m[i][8]===null) m[i][8] = 0;
-      }
-      for(let i=n-8;i<n;i++){
-        if(m[8][i]===null) m[8][i] = 0;
-        if(m[i][8]===null) m[i][8] = 0;
-      }
-      for(let i=n-7;i<n;i++){
-        if(m[i][8]===null) m[i][8] = 0;
-      }
-
-      setDarkModule(m, v);
-
-      const locked = new Array(n).fill(0).map(()=>new Array(n).fill(false));
-      for(let y=0;y<n;y++){
-        for(let x=0;x<n;x++){
-          if(m[y][x] !== null) locked[y][x] = true;
-        }
-      }
-
-      placeData(m, cwBits);
-
-      const maskId = 0;
-      for(let y=0;y<n;y++){
-        for(let x=0;x<n;x++){
-          if(locked[y][x]) continue;
-          if(((x + y) & 1) === 0){
-            m[y][x] = m[y][x] ? 0 : 1;
-          }
-        }
-      }
-
-      applyFormat(m, ecLevel, maskId);
-
+  function loadUIState(){
+    try{
+      const raw = localStorage.getItem(LS_UI);
+      if(!raw) return {
+        libOpen:true,
+        infoOpen:true,
+        toolsLayoutOpen:true,
+        toolsViewOpen:true,
+        toolsSelOpen:true
+      };
+      const obj = JSON.parse(raw);
       return {
-        size: n,
-        get: (x,y) => !!m[y][x]
+        libOpen: !!obj.libOpen,
+        infoOpen: !!obj.infoOpen,
+        toolsLayoutOpen: (obj.toolsLayoutOpen !== false),
+        toolsViewOpen: (obj.toolsViewOpen !== false),
+        toolsSelOpen: (obj.toolsSelOpen !== false),
+      };
+    }catch(e){
+      return {
+        libOpen:true,
+        infoOpen:true,
+        toolsLayoutOpen:true,
+        toolsViewOpen:true,
+        toolsSelOpen:true
       };
     }
+  }
+  function saveUIState(ui){
+    localStorage.setItem(LS_UI, JSON.stringify(ui));
+  }
 
-    return { encode };
-  })();
+  function applyAccordions(){
+    const isMobile = window.matchMedia("(max-width: 980px)").matches;
+    const ui = loadUIState();
+    if(!isMobile){
+      els.libAccContent.classList.remove("accHidden");
+      els.infoAccContent.classList.remove("accHidden");
+      els.toolsLayoutAccContent.classList.remove("tAccHidden");
+      els.toolsViewAccContent.classList.remove("tAccHidden");
+      els.toolsSelAccContent.classList.remove("tAccHidden");
+      els.accLibChev.textContent = "▾";
+      els.accInfoChev.textContent = "▾";
+      els.accToolsLayoutChev.textContent = "▾";
+      els.accToolsViewChev.textContent = "▾";
+      els.accToolsSelChev.textContent = "▾";
+      return;
+    }
+    if(ui.libOpen){
+      els.libAccContent.classList.remove("accHidden");
+      els.accLibChev.textContent = "▾";
+    }else{
+      els.libAccContent.classList.add("accHidden");
+      els.accLibChev.textContent = "▸";
+    }
+    if(ui.infoOpen){
+      els.infoAccContent.classList.remove("accHidden");
+      els.accInfoChev.textContent = "▾";
+    }else{
+      els.infoAccContent.classList.add("accHidden");
+      els.accInfoChev.textContent = "▸";
+    }
+    if(ui.toolsLayoutOpen){
+      els.toolsLayoutAccContent.classList.remove("tAccHidden");
+      els.accToolsLayoutChev.textContent = "▾";
+    }else{
+      els.toolsLayoutAccContent.classList.add("tAccHidden");
+      els.accToolsLayoutChev.textContent = "▸";
+    }
+    if(ui.toolsViewOpen){
+      els.toolsViewAccContent.classList.remove("tAccHidden");
+      els.accToolsViewChev.textContent = "▾";
+    }else{
+      els.toolsViewAccContent.classList.add("tAccHidden");
+      els.accToolsViewChev.textContent = "▸";
+    }
+    if(ui.toolsSelOpen){
+      els.toolsSelAccContent.classList.remove("tAccHidden");
+      els.accToolsSelChev.textContent = "▾";
+    }else{
+      els.toolsSelAccContent.classList.add("tAccHidden");
+      els.accToolsSelChev.textContent = "▸";
+    }
+  }
+
+  function toggleLibAccordion(){
+    const ui = loadUIState();
+    ui.libOpen = !ui.libOpen;
+    saveUIState(ui);
+    applyAccordions();
+  }
+  function toggleInfoAccordion(){
+    const ui = loadUIState();
+    ui.infoOpen = !ui.infoOpen;
+    saveUIState(ui);
+    applyAccordions();
+  }
+  function toggleToolsLayoutAccordion(){
+    const ui = loadUIState();
+    ui.toolsLayoutOpen = !ui.toolsLayoutOpen;
+    saveUIState(ui);
+    applyAccordions();
+  }
+  function toggleToolsViewAccordion(){
+    const ui = loadUIState();
+    ui.toolsViewOpen = !ui.toolsViewOpen;
+    saveUIState(ui);
+    applyAccordions();
+  }
+  function toggleToolsSelAccordion(){
+    const ui = loadUIState();
+    ui.toolsSelOpen = !ui.toolsSelOpen;
+    saveUIState(ui);
+    applyAccordions();
+  }
+
+  function openInfoAccordionIfMobile(){
+    const isMobile = window.matchMedia("(max-width: 980px)").matches;
+    if(!isMobile) return;
+    const ui = loadUIState();
+    if(!ui.infoOpen){
+      ui.infoOpen = true;
+      saveUIState(ui);
+      applyAccordions();
+    }
+  }
+
+  function openToolsSelectedIfMobile(){
+    const isMobile = window.matchMedia("(max-width: 980px)").matches;
+    if(!isMobile) return;
+    const ui = loadUIState();
+    if(!ui.toolsSelOpen){
+      ui.toolsSelOpen = true;
+      saveUIState(ui);
+      applyAccordions();
+    }
+  }
+
+  els.stageSquareInner.addEventListener("click", (e) => {
+    if(e.target.closest(".item")) return;
+    clearSelection();
+  });
+
+  document.querySelectorAll('[data-preset]').forEach(btn => {
+    btn.addEventListener("click", () => {
+      const p = btn.getAttribute("data-preset");
+      document.querySelectorAll('[data-preset]').forEach(b => b.classList.remove("on"));
+      btn.classList.add("on");
+      if(p === "small"){ setStageFeet(20, 14); }
+      if(p === "med"){ setStageFeet(24, 16); }
+      if(p === "large"){ setStageFeet(30, 20); }
+      if(p === "custom"){ }
+    });
+  });
+  document.querySelector('[data-preset="med"]').classList.add("on");
+
+  function setStageFeet(wFeet, dFeet){
+    state.stage.w = clamp(wFeet, 4, 200);
+    state.stage.d = clamp(dFeet, 4, 200);
+    updateUnitsUI();
+    render();
+    save();
+  }
+
+  els.stageW.addEventListener("change", () => {
+    const wFeet = displayToFeet(els.stageW.value);
+    document.querySelectorAll('[data-preset]').forEach(b => b.classList.remove("on"));
+    document.querySelector('[data-preset="custom"]').classList.add("on");
+    setStageFeet(wFeet, state.stage.d);
+  });
+  els.stageD.addEventListener("change", () => {
+    const dFeet = displayToFeet(els.stageD.value);
+    document.querySelectorAll('[data-preset]').forEach(b => b.classList.remove("on"));
+    document.querySelector('[data-preset="custom"]').classList.add("on");
+    setStageFeet(state.stage.w, dFeet);
+  });
+
+  els.btnUnits.addEventListener("click", () => {
+    state.units = (state.units === "ft") ? "m" : "ft";
+    updateUnitsUI();
+    updateSelectionUI();
+    save();
+  });
+
+  els.viewZoom.addEventListener("input", () => {
+    state.viewZoom = clamp(Number(els.viewZoom.value)/100, 0.5, 2.0);
+    updateViewUI();
+    render();
+    save();
+  });
+  els.btnResetView.addEventListener("click", () => {
+    state.viewZoom = 1.0;
+    updateViewUI();
+    render();
+    save();
+  });
+
+  els.btnFlip.addEventListener("click", () => {
+    state.view.flip = !state.view.flip;
+    updateViewUI();
+    render();
+    save();
+  });
+
+  els.bandName.addEventListener("input", () => { state.bandName = els.bandName.value; save(); });
+  els.showNotes.addEventListener("input", () => { state.showNotes = els.showNotes.value; save(); });
+
+  els.btnResetStage.addEventListener("click", () => {
+    const ok = confirm("Reset Stage?\nThis clears items, selection, band name, notes, and resets view and stage size.");
+    if(!ok) return;
+    state.units = "ft";
+    state.stage = { w: 24, d: 16 };
+    state.view = { flip:false };
+    state.viewZoom = 1.0;
+    state.printScale = 1;
+    state.isPreparingPrint = false;
+    state.bandName = "";
+    state.showNotes = "";
+    state.items = [];
+    state.selectedIds = [];
+    state.primaryId = null;
+    els.bandName.value = "";
+    els.showNotes.value = "";
+    document.querySelectorAll('[data-preset]').forEach(b => b.classList.remove("on"));
+    document.querySelector('[data-preset="med"]').classList.add("on");
+    updateUnitsUI();
+    updateViewUI();
+    updateSelectionUI();
+    renderLibrary();
+    render();
+    save();
+  });
+
+  function applyItemWHFromDisplay(it, wDisp, hDisp){
+    const wFeet = clamp(displayToFeet(wDisp), 0.5, 200);
+    const hFeet = clamp(displayToFeet(hDisp), 0.5, 200);
+    it.w = wFeet;
+    it.h = hFeet;
+    clampItemInStage(it);
+  }
+  function syncItemWHUI(it){
+    const wDisp = Math.round(feetToDisplay(it.w)*100)/100;
+    const hDisp = Math.round(feetToDisplay(it.h)*100)/100;
+    els.itemW.value = wDisp;
+    els.itemH.value = hDisp;
+    els.uItemW.value = wDisp;
+    els.uItemH.value = hDisp;
+  }
+
+  function prepareForPrintLayout(){
+    const prev = {
+      viewZoom: state.viewZoom,
+      printScale: state.printScale || 1,
+      isPreparingPrint: !!state.isPreparingPrint
+    };
+
+    state.isPreparingPrint = true;
+    state.viewZoom = 1.0;
+    state.printScale = 1.0;
+
+    const innerSizePx = PRINT_TARGET.squarePx - (PRINT_TARGET.insetPx * 2);
+    const usableW = innerSizePx - PRINT_TARGET.gutterPx;
+    const usableH = innerSizePx - PRINT_TARGET.gutterPx;
+
+    const { stagePxW, stagePxH } = computeStagePixels(true);
+
+    const fitScale = Math.min(
+      usableW / stagePxW,
+      usableH / stagePxH
+    );
+
+    state.printScale = Math.min(1, fitScale * 0.98);
+
+    render();
+    return prev;
+  }
+
+  els.itemLabel.addEventListener("input", () => {
+    const it = getPrimary(); if(!it) return;
+    it.label = els.itemLabel.value;
+    els.selLabel.textContent = it.label || "item";
+    els.underSelName.textContent = it.label || "Item";
+    render();
+    save();
+  });
+  els.itemInput.addEventListener("input", () => {
+    const it = getPrimary(); if(!it) return;
+    it.input = els.itemInput.value;
+    render();
+    save();
+  });
+  els.itemMix.addEventListener("input", () => {
+    const it = getPrimary(); if(!it) return;
+    it.mix = els.itemMix.value;
+    render();
+    save();
+  });
+  els.itemNotes.addEventListener("input", () => {
+    const it = getPrimary(); if(!it) return;
+    it.notes = els.itemNotes.value;
+    render();
+    save();
+  });
+
+  els.labelSize.addEventListener("input", () => applyLabelSizeToSelectionPct(els.labelSize.value));
+  els.uLabelSize.addEventListener("input", () => applyLabelSizeToSelectionPct(els.uLabelSize.value));
+
+  els.itemW.addEventListener("change", () => {
+    const it = getPrimary(); if(!it) return;
+    applyItemWHFromDisplay(it, els.itemW.value, els.itemH.value);
+    syncItemWHUI(it);
+    render();
+    save();
+  });
+  els.itemH.addEventListener("change", () => {
+    const it = getPrimary(); if(!it) return;
+    applyItemWHFromDisplay(it, els.itemW.value, els.itemH.value);
+    syncItemWHUI(it);
+    render();
+    save();
+  });
+
+  els.uItemW.addEventListener("change", () => {
+    const it = getPrimary(); if(!it) return;
+    applyItemWHFromDisplay(it, els.uItemW.value, els.uItemH.value);
+    syncItemWHUI(it);
+    render();
+    save();
+  });
+  els.uItemH.addEventListener("change", () => {
+    const it = getPrimary(); if(!it) return;
+    applyItemWHFromDisplay(it, els.uItemW.value, els.uItemH.value);
+    syncItemWHUI(it);
+    render();
+    save();
+  });
+
+  function setPrimaryScalePct(pct){
+    const it = getPrimary(); if(!it) return;
+    it.scale = clamp(Number(pct)/100, 0.5, 2.0);
+    clampItemInStage(it);
+    const p = Math.round(it.scale*100);
+    els.itemScale.value = p;
+    els.itemScalePill.textContent = p + "%";
+    els.uItemScale.value = p;
+    els.uItemScalePill.textContent = p + "%";
+    render();
+    save();
+  }
+  els.itemScale.addEventListener("input", () => setPrimaryScalePct(els.itemScale.value));
+  els.uItemScale.addEventListener("input", () => setPrimaryScalePct(els.uItemScale.value));
+
+  els.itemRot.addEventListener("input", () => {
+    const it = getPrimary(); if(!it) return;
+    it.rot = ((Number(els.itemRot.value)||0) % 360 + 360) % 360;
+    els.itemRotPill.textContent = Math.round(it.rot) + "°";
+    render();
+    save();
+  });
+  els.btnRot0.addEventListener("click", () => {
+    const it = getPrimary(); if(!it) return;
+    it.rot = 0;
+    updateSelectionUI();
+    render();
+    save();
+  });
+
+  els.itemColor.addEventListener("input", () => applyColorToSelection(els.itemColor.value));
+  els.uItemColor.addEventListener("input", () => applyColorToSelection(els.uItemColor.value));
+  els.clearColor.addEventListener("click", () => applyColorToSelection(""));
+  els.uClearColor.addEventListener("click", () => applyColorToSelection(""));
+
+  document.querySelectorAll('[data-shape]').forEach(btn => {
+    btn.addEventListener("click", () => {
+      const shape = btn.getAttribute("data-shape");
+      applyShapeToSelection(shape);
+    });
+  });
+
+  function nudgeBtn(dx, dy){
+    if(!state.selectedIds.length) return;
+    const step = 0.25;
+    const set = new Set(state.selectedIds);
+    state.items.forEach(it => {
+      if(!set.has(it.id)) return;
+      const w = it.w * it.scale;
+      const h = it.h * it.scale;
+      it.x = clamp(it.x + dx*step, 0, Math.max(0, state.stage.w - w));
+      it.y = clamp(it.y + dy*step, 0, Math.max(0, state.stage.d - h));
+    });
+    render();
+    save();
+  }
+  els.nUp.addEventListener("click", () => nudgeBtn(0, -1));
+  els.nDown.addEventListener("click", () => nudgeBtn(0, 1));
+  els.nLeft.addEventListener("click", () => nudgeBtn(-1, 0));
+  els.nRight.addEventListener("click", () => nudgeBtn(1, 0));
+  els.nCenter.addEventListener("click", () => {
+    const it = getPrimary(); if(!it) return;
+    const w = it.w * it.scale;
+    const h = it.h * it.scale;
+    it.x = clamp((state.stage.w - w)/2, 0, Math.max(0, state.stage.w - w));
+    it.y = clamp((state.stage.d - h)/2, 0, Math.max(0, state.stage.d - h));
+    render(); save();
+  });
+
+  els.libSearch.addEventListener("input", renderLibrary);
+  els.libFilter.addEventListener("change", renderLibrary);
+  els.btnMisc1.addEventListener("click", () => addMisc(1));
+  els.btnMisc2.addEventListener("click", () => addMisc(2));
+  els.btnMisc3.addEventListener("click", () => addMisc(3));
+  els.btnDeleteSel.addEventListener("click", deleteSelected);
+  els.btnClearSel.addEventListener("click", clearSelection);
+  els.btnDup.addEventListener("click", duplicateSelected);
+
+  els.btnExport.addEventListener("click", () => {
+    const project = {
+      version: APP_VERSION,
+      exportedAt: new Date().toISOString(),
+      internalUnits: "ft",
+      units: state.units,
+      stage: { w: state.stage.w, d: state.stage.d },
+      view: state.view,
+      viewZoom: state.viewZoom,
+      bandName: state.bandName,
+      showNotes: state.showNotes,
+      items: state.items
+    };
+    const blob = new Blob([JSON.stringify(project, null, 2)], { type:"application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `stageplot-project-${Date.now()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(a.href);
+  });
+
+  els.btnImport.addEventListener("click", () => els.fileImport.click());
+  els.fileImport.addEventListener("change", async () => {
+    const file = els.fileImport.files && els.fileImport.files[0];
+    if(!file) return;
+    try{
+      const text = await file.text();
+      const obj = JSON.parse(text);
+      let imported = obj;
+      if(imported && imported.internalUnits === "ft"){
+        imported = { ...imported, units: "ft" };
+      }
+      const next = migrateProject(imported);
+      if(obj && (obj.units === "ft" || obj.units === "m")){
+        next.units = obj.units;
+      }else{
+        next.units = state.units;
+      }
+      state = next;
+      state.printScale = 1;
+      state.isPreparingPrint = false;
+      state.selectedIds = [];
+      state.primaryId = null;
+      els.bandName.value = state.bandName || "";
+      els.showNotes.value = state.showNotes || "";
+      updateUnitsUI();
+      updateViewUI();
+      updateSelectionUI();
+      renderLibrary();
+      render();
+      save();
+      alert("Imported project successfully.");
+    }catch(e){
+      alert("Import failed. That file does not look like valid StagePlot JSON.");
+    }finally{
+      els.fileImport.value = "";
+    }
+  });
+
+  els.btnPrint.addEventListener("click", () => {
+    const prev = prepareForPrintLayout();
+    updateViewUI();
+
+    let restored = false;
+
+    const restorePrintState = () => {
+      if(restored) return;
+      restored = true;
+
+      state.viewZoom = prev.viewZoom;
+      state.printScale = prev.printScale;
+      state.isPreparingPrint = prev.isPreparingPrint;
+
+      updateViewUI();
+      render();
+      save();
+      window.removeEventListener("afterprint", restorePrintState);
+    };
+
+    window.addEventListener("afterprint", restorePrintState);
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          window.print();
+        }, 150);
+      });
+    });
+
+    setTimeout(restorePrintState, 2500);
+  });
+
+  window.addEventListener("keydown", (e) => {
+    const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : "";
+    const typing = (tag === "input" || tag === "textarea" || tag === "select");
+    if(typing) return;
+    if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "d"){
+      e.preventDefault();
+      duplicateSelected();
+    }
+    if(e.key === "Escape"){
+      clearSelection();
+    }
+    if((e.shiftKey) && ["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)){
+      e.preventDefault();
+      nudgeSelected(e.key);
+    }
+    if(e.key === "Backspace" || e.key === "Delete"){
+      e.preventDefault();
+      deleteSelected();
+    }
+  });
+
+  function nudgeSelected(key){
+    if(!state.selectedIds.length) return;
+    const step = 0.25;
+    const set = new Set(state.selectedIds);
+    state.items.forEach(it => {
+      if(!set.has(it.id)) return;
+      const w = it.w * it.scale;
+      const h = it.h * it.scale;
+      if(key === "ArrowUp") it.y = clamp(it.y - step, 0, Math.max(0, state.stage.d - h));
+      if(key === "ArrowDown") it.y = clamp(it.y + step, 0, Math.max(0, state.stage.d - h));
+      if(key === "ArrowLeft") it.x = clamp(it.x - step, 0, Math.max(0, state.stage.w - w));
+      if(key === "ArrowRight") it.x = clamp(it.x + step, 0, Math.max(0, state.stage.w - w));
+    });
+    render();
+    save();
+  }
+
+  els.accLibBtn.addEventListener("click", toggleLibAccordion);
+  els.accInfoBtn.addEventListener("click", toggleInfoAccordion);
+  els.accToolsLayoutBtn.addEventListener("click", toggleToolsLayoutAccordion);
+  els.accToolsViewBtn.addEventListener("click", toggleToolsViewAccordion);
+  els.accToolsSelBtn.addEventListener("click", toggleToolsSelAccordion);
+
+  window.addEventListener("resize", () => {
+    applyAccordions();
+    render();
+  });
+
+  load();
+  els.bandName.value = state.bandName || "";
+  els.showNotes.value = state.showNotes || "";
+  updateUnitsUI();
+  updateViewUI();
+  updateSelectionUI();
+  renderLibrary();
+  applyAccordions();
+  render();
+
 })();
 </script>
 </body>
