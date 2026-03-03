@@ -8,12 +8,10 @@
   // iOS/Safari: prevent double-tap to zoom on stage area only
   (() => {
     let lastTouchEnd = 0;
-    // Wait for DOM to load, then attach to stage element
     window.addEventListener('DOMContentLoaded', () => {
       const stageArea = document.getElementById('stageSquare');
       if(stageArea){
         stageArea.addEventListener('touchend', (e) => {
-          // Only prevent if target is not an interactive control
           const isInteractive = e.target.closest('input, textarea, select, button, a, [role="button"]');
           if(!isInteractive){
             const now = Date.now();
@@ -26,7 +24,7 @@
       }
     });
   })();
-</script>
+  </script>
   <meta name="theme-color" content="#0b0d12" />
   <title>StagePlot v2 - v1.7.5 (Triangle Selection Fix)</title>
 
@@ -273,7 +271,6 @@
       color: var(--muted);
     }
 
-    /* Stage panel */
     .stageWrap{
       display:flex;
       flex-direction:column;
@@ -337,7 +334,6 @@
     .upLabel{ left:10px; top:10px; }
     .downLabel{ right:10px; bottom:10px; opacity:.95; }
 
-    /* Items */
     .item{
       position:absolute;
       border-radius: 10px;
@@ -356,11 +352,10 @@
     .item[data-kind="gear"]{ background: rgba(255,255,255,.06); }
     .item[data-kind="power"]{ background: rgba(255,90,106,.08); border-color: rgba(255,90,106,.28); }
 
-    /* Shape variants */
     .item[data-shape="circle"]{
       border-radius: 50%;
-      padding: 0; /* Prevent padding from distorting the circle */
-      justify-content: center; /* Keep label centered with no padding */
+      padding: 0;
+      justify-content: center;
     }
     .item[data-shape="diamond"]{
       border-radius: 4px;
@@ -387,7 +382,6 @@
       outline: 2px solid rgba(74,163,255,.85);
       outline-offset: 2px;
     }
-    /* Triangle selection: outline doesn't work with clip-path, use box-shadow glow */
     .item.selected[data-shape="triangle"]{
       outline: none;
       box-shadow: 0 0 0 3px rgba(74,163,255,.85);
@@ -396,17 +390,14 @@
       outline: 2px solid rgba(64,217,138,.75);
       outline-offset: 2px;
     }
-    /* Triangle multi-select: use box-shadow for clip-path compatibility */
     .item.multi[data-shape="triangle"]{
       outline: none;
       box-shadow: 0 0 0 3px rgba(64,217,138,.75);
     }
-    /* Triangle with both selected and multi (primary in multi-select) */
     .item.selected.multi[data-shape="triangle"]{
       box-shadow: 0 0 0 3px rgba(74,163,255,.85);
     }
 
-    /* Under-stage selected tools */
     .toolsCard{
       border: 1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.02);
@@ -443,7 +434,6 @@
     }
     .nudgeSpacer{ visibility:hidden; }
 
-    /* Library list */
     .libTop{
       display:flex;
       gap:8px;
@@ -496,7 +486,6 @@
     }
     .libBtn .txt{ display:flex; flex-direction:column; }
 
-    /* Lists */
     .table{
       width:100%;
       border-collapse: collapse;
@@ -530,7 +519,6 @@
       margin: 10px 0;
     }
 
-    /* Mobile accordion */
     .accBtn{
       display:none;
       width:100%;
@@ -575,184 +563,183 @@
       #infoCard{ order: 3; }
     }
 
-    /* Print */
-@media print{
-  @page {
-    size: auto;
-    margin: 0.5in;
-  }
+    @media print{
+      @page {
+        size: auto;
+        margin: 0.5in;
+      }
 
-  html, body{
-    background:#fff !important;
-    color:#000 !important;
-    height:auto !important;
-    overflow:visible !important;
-  }
+      html, body{
+        background:#fff !important;
+        color:#000 !important;
+        height:auto !important;
+        overflow:visible !important;
+      }
 
-  body *{
-    visibility:hidden !important;
-  }
+      body *{
+        visibility:hidden !important;
+      }
 
-  #stageCard, #stageCard *,
-  #infoCard, #infoCard *{
-    visibility:visible !important;
-  }
+      #stageCard, #stageCard *,
+      #infoCard, #infoCard *{
+        visibility:visible !important;
+      }
 
-  header,
-  #libCard,
-  #toolsCard,
-  .actions,
-  .pill,
-  .accBtn,
-  .tAccBtn,
-  #btnDup,
-  #btnPrint,
-  #btnExport,
-  #btnImport,
-  #btnDeleteSel,
-  #btnClearSel,
-  #btnResetStage,
-  #btnResetView,
-  #btnUnits,
-  #btnFlip,
-  #btnRot0,
-  #clearColor,
-  #uClearColor{
-    display:none !important;
-  }
+      header,
+      #libCard,
+      #toolsCard,
+      .actions,
+      .pill,
+      .accBtn,
+      .tAccBtn,
+      #btnDup,
+      #btnPrint,
+      #btnExport,
+      #btnImport,
+      #btnDeleteSel,
+      #btnClearSel,
+      #btnResetStage,
+      #btnResetView,
+      #btnUnits,
+      #btnFlip,
+      #btnRot0,
+      #clearColor,
+      #uClearColor{
+        display:none !important;
+      }
 
-  body{
-    margin:0 !important;
-    padding:0 !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
+      body{
+        margin:0 !important;
+        padding:0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
 
-  main{
-    display:block !important;
-    max-width: 8in !important;
-    margin: 0 auto !important;
-    padding: 0 !important;
-    gap: 0 !important;
-  }
+      main{
+        display:block !important;
+        max-width: 8in !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+        gap: 0 !important;
+      }
 
-  #stageCard,
-  #infoCard{
-    display:block !important;
-    width:100% !important;
-    margin:0 0 12px 0 !important;
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
-    box-shadow:none !important;
-    background:#fff !important;
-    border:1px solid #ddd !important;
-    overflow:visible !important;
-  }
+      #stageCard,
+      #infoCard{
+        display:block !important;
+        width:100% !important;
+        margin:0 0 12px 0 !important;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+        box-shadow:none !important;
+        background:#fff !important;
+        border:1px solid #ddd !important;
+        overflow:visible !important;
+      }
 
-  #stageCard .hd,
-  #infoCard .hd{
-    border-bottom:1px solid #ddd !important;
-    background:#fff !important;
-  }
+      #stageCard .hd,
+      #infoCard .hd{
+        border-bottom:1px solid #ddd !important;
+        background:#fff !important;
+      }
 
-  #stageCard .bd,
-  #infoCard .bd{
-    padding:10px !important;
-    overflow:visible !important;
-  }
+      #stageCard .bd,
+      #infoCard .bd{
+        padding:10px !important;
+        overflow:visible !important;
+      }
 
-  .card{
-    box-shadow:none !important;
-    background:#fff !important;
-    border:1px solid #ddd !important;
-  }
+      .card{
+        box-shadow:none !important;
+        background:#fff !important;
+        border:1px solid #ddd !important;
+      }
 
-  .stageWrap{
-    overflow:visible !important;
-  }
+      .stageWrap{
+        overflow:visible !important;
+      }
 
-  .stageSquare{
-    width: 6.9in !important;
-    height: 6.9in !important;
-    aspect-ratio: auto !important;
-    margin: 0 auto !important;
-    border:1px solid #ddd !important;
-    border-radius: 12px !important;
-    overflow:hidden !important;
-    background:#fff !important;
-    position:relative !important;
-  }
+      .stageSquare{
+        width: 6.9in !important;
+        height: 6.9in !important;
+        aspect-ratio: auto !important;
+        margin: 0 auto !important;
+        border:1px solid #ddd !important;
+        border-radius: 12px !important;
+        overflow:hidden !important;
+        background:#fff !important;
+        position:relative !important;
+      }
 
-  .stageSquareInner{
-    position:absolute !important;
-    inset: 14px !important;
-    border:1px solid #ddd !important;
-    border-radius: 10px !important;
-    overflow:hidden !important;
-    background:#fff !important;
-  }
+      .stageSquareInner{
+        position:absolute !important;
+        inset: 14px !important;
+        border:1px solid #ddd !important;
+        border-radius: 10px !important;
+        overflow:hidden !important;
+        background:#fff !important;
+      }
 
-  .stageCanvas{
-  position:absolute !important;
-  left:50% !important;
-  top:50% !important;
-  transform-origin:center center !important;
-  will-change:auto !important;
-}
-  .stageRect{
-    border-color:#111 !important;
-    background:
-      linear-gradient(to right, rgba(0,0,0,.08) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(0,0,0,.08) 1px, transparent 1px) !important;
-    background-size: 10% 10% !important;
-  }
+      .stageCanvas{
+        position:absolute !important;
+        left:50% !important;
+        top:50% !important;
+        transform-origin:center center !important;
+        will-change:auto !important;
+      }
 
-  .upLabel,
-  .downLabel{
-    color:#000 !important;
-    background:rgba(255,255,255,.9) !important;
-    border:1px solid #bbb !important;
-    text-shadow:none !important;
-  }
+      .stageRect{
+        border-color:#111 !important;
+        background:
+          linear-gradient(to right, rgba(0,0,0,.08) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(0,0,0,.08) 1px, transparent 1px) !important;
+        background-size: 10% 10% !important;
+      }
 
-  .item{
-    box-shadow:none !important;
-    border-color:#111 !important;
-    background:#fff !important;
-  }
+      .upLabel,
+      .downLabel{
+        color:#000 !important;
+        background:rgba(255,255,255,.9) !important;
+        border:1px solid #bbb !important;
+        text-shadow:none !important;
+      }
 
-  .item .lbl{
-    color:#000 !important;
-    text-shadow:none !important;
-  }
+      .item{
+        box-shadow:none !important;
+        border-color:#111 !important;
+        background:#fff !important;
+      }
 
-  input, textarea, select, button{
-    border:1px solid #ccc !important;
-    color:#000 !important;
-    background:#fff !important;
-  }
+      .item .lbl{
+        color:#000 !important;
+        text-shadow:none !important;
+      }
 
-  .table{
-    border:1px solid #ccc !important;
-    background:#fff !important;
-  }
+      input, textarea, select, button{
+        border:1px solid #ccc !important;
+        color:#000 !important;
+        background:#fff !important;
+      }
 
-  .table th, .table td{
-    border-bottom:1px solid #ddd !important;
-    color:#000 !important;
-    background:#fff !important;
-  }
+      .table{
+        border:1px solid #ccc !important;
+        background:#fff !important;
+      }
 
-  .table th{
-    font-weight:800 !important;
-  }
+      .table th, .table td{
+        border-bottom:1px solid #ddd !important;
+        color:#000 !important;
+        background:#fff !important;
+      }
 
-  a{
-    color:#000 !important;
-    text-decoration:none !important;
-  }
-}
-    
+      .table th{
+        font-weight:800 !important;
+      }
+
+      a{
+        color:#000 !important;
+        text-decoration:none !important;
+      }
+    }
   </style>
 </head>
 
@@ -780,7 +767,6 @@
 </header>
 
 <main>
-  <!-- LIBRARY -->
   <section class="card" id="libCard">
     <div class="hd">
       <h2>Item Library</h2>
@@ -821,10 +807,7 @@
     </div>
   </section>
 
-  <!-- MIDDLE COLUMN: STAGE THEN TOOLING -->
   <div class="midCol" id="midCol">
-
-    <!-- STAGE -->
     <section class="card" id="stageCard">
       <div class="hd">
         <h2>Stage</h2>
@@ -856,7 +839,6 @@
       </div>
     </section>
 
-    <!-- TOOLING -->
     <section class="card" id="toolsCard">
       <div class="hd">
         <h2>Tooling</h2>
@@ -864,13 +846,10 @@
       </div>
 
       <div class="bd" style="display:flex; flex-direction:column; gap:12px;">
-
-        <!-- Layout accordion header -->
         <button class="tAccBtn" id="accToolsLayoutBtn" type="button">
           <span>Layout</span><span class="chev" id="accToolsLayoutChev">▾</span>
         </button>
 
-        <!-- Layout content -->
         <div id="toolsLayoutAccContent">
           <div class="card" style="box-shadow:none;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.02);">
             <div class="hd" style="border-bottom: 1px solid rgba(255,255,255,.08);">
@@ -911,12 +890,10 @@
           </div>
         </div>
 
-        <!-- View accordion header -->
         <button class="tAccBtn" id="accToolsViewBtn" type="button">
           <span>View</span><span class="chev" id="accToolsViewChev">▾</span>
         </button>
 
-        <!-- View content -->
         <div id="toolsViewAccContent">
           <div class="card" style="box-shadow:none;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.02);">
             <div class="hd" style="border-bottom: 1px solid rgba(255,255,255,.08);">
@@ -945,12 +922,10 @@
           </div>
         </div>
 
-        <!-- Selected tools accordion header -->
         <button class="tAccBtn" id="accToolsSelBtn" type="button">
           <span>Selected item tools</span><span class="chev" id="accToolsSelChev">▾</span>
         </button>
 
-        <!-- Selected tools content -->
         <div id="toolsSelAccContent">
           <div class="toolsCard" id="underStageTools" style="display:none;">
             <div class="toolsTitle">
@@ -1040,13 +1015,10 @@
         <div class="miniHelp">
           Note: Width/Depth set the base footprint. Scale multiplies that footprint. View Zoom only changes your view.
         </div>
-
       </div>
     </section>
-
   </div>
 
-  <!-- INFO -->
   <section class="card" id="infoCard">
     <div class="hd">
       <h2>One-Page Info</h2>
@@ -1211,6 +1183,9 @@
     libCount: document.getElementById("libCount"),
     stageSquareInner: document.getElementById("stageSquareInner"),
     stageCanvas: document.getElementById("stageCanvas"),
+    stageRect: document.getElementById("stageRect"),
+    upLabel: document.getElementById("upLabel"),
+    downLabel: document.getElementById("downLabel"),
     stageW: document.getElementById("stageW"),
     stageD: document.getElementById("stageD"),
     stageMetaText: document.getElementById("stageMetaText"),
@@ -1316,6 +1291,7 @@
     view: { flip:false },
     viewZoom: 1.0,
     printScale: 1,
+    printBleed: 0,
     bandName: "",
     showNotes: "",
     items: [],
@@ -1330,6 +1306,7 @@
     if(state.units === "m") return ft / FT_PER_M;
     return ft;
   }
+
   function displayToFeet(v){
     const n = Number(v);
     if(!isFinite(n)) return 0;
@@ -1368,6 +1345,7 @@
       view: { flip:false },
       viewZoom: 1.0,
       printScale: 1,
+      printBleed: 0,
       bandName: "",
       showNotes: "",
       items: [],
@@ -1422,8 +1400,10 @@
           };
 
           if(obj.units === "m"){
-            out.x *= FT_PER_M; out.y *= FT_PER_M;
-            out.w *= FT_PER_M; out.h *= FT_PER_M;
+            out.x *= FT_PER_M;
+            out.y *= FT_PER_M;
+            out.w *= FT_PER_M;
+            out.h *= FT_PER_M;
           }
 
           out.scale = clamp(out.scale, 0.5, 2.0);
@@ -1478,11 +1458,15 @@
     const px = e.clientX - canvasRect.left;
     const py = e.clientY - canvasRect.top;
     const { pxPerFoot } = computeStagePixels();
-    const z = state.viewZoom;
-    const basePx = px / z;
-    const basePy = py / z;
+    const z = state.viewZoom * (state.printScale || 1);
+    const bleedPx = (state.printBleed || 0) * pxPerFoot;
+
+    const basePx = (px / z) - bleedPx;
+    const basePy = (py / z) - bleedPx;
+
     let fx = basePx / pxPerFoot;
     let fy = basePy / pxPerFoot;
+
     if(state.view.flip){
       fx = state.stage.w - fx;
       fy = state.stage.d - fy;
@@ -1600,8 +1584,6 @@
   }
 
   function enforceCircleSquare(item){
-    // When shape is circle, ensure width and height are equal
-    // Use max to avoid unexpected shrinking
     const w = Number(item.w) || 2;
     const h = Number(item.h) || 2;
     const size = Math.max(w, h);
@@ -1614,16 +1596,11 @@
     const set = new Set(state.selectedIds);
     state.items.forEach(it => {
       if(!set.has(it.id)) return;
-      
-      // Enforce square dimensions for circles to prevent ovals
       if(shape === "circle"){
         enforceCircleSquare(it);
       }
-      
       it.shape = shape;
     });
-    
-    // Update UI to reflect any dimension changes
     updateSelectionUI();
     updateShapeButtons();
     render();
@@ -1659,8 +1636,8 @@
     els.viewZoomPill.textContent = Math.round(state.viewZoom*100) + "%";
     els.viewZoomPillInner.textContent = Math.round(state.viewZoom*100) + "%";
     els.btnFlip.textContent = state.view.flip ? "Audience View" : "Stage View";
-    document.getElementById("upLabel").textContent = state.view.flip ? "AUDIENCE" : "UPSTAGE";
-    document.getElementById("downLabel").textContent = state.view.flip ? "UPSTAGE" : "AUDIENCE";
+    els.upLabel.textContent = state.view.flip ? "AUDIENCE" : "UPSTAGE";
+    els.downLabel.textContent = state.view.flip ? "UPSTAGE" : "AUDIENCE";
   }
 
   function clampItemInStage(it){
@@ -1690,6 +1667,7 @@
       els.itemColor, els.clearColor, els.uItemColor, els.uClearColor
     ].forEach(el => el.disabled = disabled);
     document.querySelectorAll('[data-shape]').forEach(btn => btn.disabled = disabled);
+
     const cs = selectionColorStatus();
     if(!cs.count){
       els.colorPill.textContent = "none";
@@ -1712,6 +1690,7 @@
       els.itemColor.value = cs.color || "#4aa3ff";
       els.uItemColor.value = cs.color || "#4aa3ff";
     }
+
     const ls = selectionLabelSizeStatus();
     if(!ls.count){
       els.labelSize.value = 100;
@@ -1725,7 +1704,9 @@
       els.uLabelSize.value = p;
       els.uLabelSizePill.textContent = (ls.mode === "mixed") ? `mixed (${ls.count})` : (p + "%");
     }
+
     updateShapeButtons();
+
     if(!primary){
       els.itemLabel.value = "";
       els.itemInput.value = "";
@@ -1743,6 +1724,7 @@
       els.uItemScalePill.textContent = "100%";
       return;
     }
+
     els.itemLabel.value = primary.label || "";
     els.itemInput.value = primary.input || "";
     els.itemMix.value = primary.mix || "";
@@ -1790,11 +1772,27 @@
 
   function render(){
     const { pxPerFoot, stagePxW, stagePxH } = computeStagePixels();
-    els.stageCanvas.style.width = stagePxW + "px";
-    els.stageCanvas.style.height = stagePxH + "px";
+    const bleedPx = (state.printBleed || 0) * pxPerFoot;
+
+    els.stageCanvas.style.width = (stagePxW + bleedPx * 2) + "px";
+    els.stageCanvas.style.height = (stagePxH + bleedPx * 2) + "px";
+
     const finalScale = state.viewZoom * (state.printScale || 1);
-els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
+    els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
+
+    els.stageRect.style.inset = "auto";
+    els.stageRect.style.left = bleedPx + "px";
+    els.stageRect.style.top = bleedPx + "px";
+    els.stageRect.style.width = stagePxW + "px";
+    els.stageRect.style.height = stagePxH + "px";
+
+    els.upLabel.style.left = (bleedPx + 10) + "px";
+    els.upLabel.style.top = (bleedPx + 10) + "px";
+    els.downLabel.style.right = (bleedPx + 10) + "px";
+    els.downLabel.style.bottom = (bleedPx + 10) + "px";
+
     Array.from(els.stageCanvas.querySelectorAll(".item")).forEach(n => n.remove());
+
     for(const it of state.items){
       const d = itemDrawPos(it);
       const el = document.createElement("div");
@@ -1802,61 +1800,53 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
       el.dataset.id = it.id;
       el.dataset.kind = it.kind || inferKind(it.type);
       el.dataset.shape = it.shape || "rectangle";
+
       const isSel = state.selectedIds.includes(it.id);
       if(isSel) el.classList.add("multi");
       if(state.primaryId === it.id) el.classList.add("selected");
+
       if(it.color){
         el.style.background = `color-mix(in srgb, ${it.color} 18%, rgba(255,255,255,.06))`;
         el.style.borderColor = `color-mix(in srgb, ${it.color} 42%, rgba(255,255,255,.14))`;
       }
-      el.style.left = (d.x * pxPerFoot) + "px";
-      el.style.top  = (d.y * pxPerFoot) + "px";
+
+      el.style.left = (bleedPx + d.x * pxPerFoot) + "px";
+      el.style.top  = (bleedPx + d.y * pxPerFoot) + "px";
       el.style.width  = (d.w * pxPerFoot) + "px";
       el.style.height = (d.h * pxPerFoot) + "px";
-      
-      // Handle rotation based on shape
+
       if(it.shape === "diamond"){
         el.style.transform = `rotate(${d.rot + 45}deg)`;
       } else {
         el.style.transform = `rotate(${d.rot}deg)`;
       }
-      
+
       const lbl = document.createElement("div");
       lbl.className = "lbl";
       lbl.textContent = it.label || "Item";
       const ls = clamp(Number(it.labelScale || 1.0), 0.6, 1.6);
       lbl.style.fontSize = (12 * ls) + "px";
-      
-      // Counter-rotate label for diamond so text stays upright
+
       if(it.shape === "diamond"){
         lbl.style.transform = `rotate(-45deg)`;
       }
-      // Triangle labels stay with the shape rotation (no counter-rotation)
-      
+
       el.appendChild(lbl);
       el.addEventListener("pointerdown", onItemPointerDown);
       el.addEventListener("click", (ev) => {
-        // IMPORTANT: Selection happens here for modifier-based multi-select
-        // Non-modifier selection already happened in pointerdown (for immediate drag)
-        
-        // Don't change selection if we just finished dragging or pinching
-        // Check the gesture-specific hasMoved flags
         if((drag && drag.hasMoved) || (pinch.hasMoved)){
           return;
         }
-        
+
         ev.stopPropagation();
-        // Don't preventDefault - it can cause issues on mobile
-        
+
         const mod = ev.shiftKey || ev.metaKey || ev.ctrlKey;
         if(!mod){
-          // Simple click was already handled in pointerdown for immediate drag
-          // But we still open mobile panels in case pointerdown didn't fire
           openInfoAccordionIfMobile();
           openToolsSelectedIfMobile();
           return;
         }
-        // Multi-select: toggle this item in the selection
+
         const set = new Set(state.selectedIds);
         if(set.has(it.id)) set.delete(it.id); else set.add(it.id);
         const arr = Array.from(set);
@@ -1864,8 +1854,10 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
         openInfoAccordionIfMobile();
         openToolsSelectedIfMobile();
       });
+
       els.stageCanvas.appendChild(el);
     }
+
     renderTables();
     els.stageMetaText.textContent =
       `${(Math.round(feetToDisplay(state.stage.w)*100)/100)} x ${(Math.round(feetToDisplay(state.stage.d)*100)/100)} ${state.units}`;
@@ -1876,11 +1868,13 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
       .filter(it => (it.input || "").trim() || (it.label || "").trim())
       .map(it => ({ input: (it.input||"").trim(), label: (it.label||"").trim(), notes:(it.notes||"").trim() }))
       .sort((a,b) => (a.input||"").localeCompare(b.input||"", undefined, { numeric:true, sensitivity:"base" }));
+
     els.inputsTable.innerHTML = "";
     els.inputsTable.insertAdjacentHTML("beforeend", `
       <thead><tr><th style="width:28%;">Input</th><th>Source</th></tr></thead>
       <tbody></tbody>
     `);
+
     const tb = els.inputsTable.querySelector("tbody");
     if(!rows.length){
       tb.innerHTML = `<tr><td colspan="2" style="color: rgba(169,180,204,.95);">No inputs yet - add items and fill in Input.</td></tr>`;
@@ -1894,6 +1888,7 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
         `);
       });
     }
+
     const mixMap = new Map();
     state.items.forEach(it => {
       const m = (it.mix||"").trim();
@@ -1901,12 +1896,14 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
       if(!mixMap.has(m)) mixMap.set(m, []);
       mixMap.get(m).push(it);
     });
+
     const mixes = Array.from(mixMap.entries()).sort((a,b) => a[0].localeCompare(b[0], undefined, { numeric:true, sensitivity:"base" }));
     els.mixesTable.innerHTML = "";
     els.mixesTable.insertAdjacentHTML("beforeend", `
       <thead><tr><th style="width:20%;">Mix</th><th>Members</th></tr></thead>
       <tbody></tbody>
     `);
+
     const mb = els.mixesTable.querySelector("tbody");
     if(!mixes.length){
       mb.innerHTML = `<tr><td colspan="2" style="color: rgba(169,180,204,.95);">No mixes yet - fill in Mix on items (M1, IEM, Wedge...).</td></tr>`;
@@ -1999,7 +1996,7 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
     pointers: new Map(),
     startDist: 0,
     startScale: 1.0,
-    hasMoved: false  // Track movement per pinch gesture
+    hasMoved: false
   };
 
   function dist(a,b){
@@ -2011,22 +2008,19 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
   function onItemPointerDown(e){
     const id = e.currentTarget.dataset.id;
     const mod = e.shiftKey || e.metaKey || e.ctrlKey;
-    
-    // Setup for pinch gesture detection (works for any item, not just primary)
+
     pinch.pointers.set(e.pointerId, { x:e.clientX, y:e.clientY, itemId:id });
     if(pinch.pointers.size === 2){
-      // Check if both pointers are on the same item
       const pointerItems = Array.from(pinch.pointers.values()).map(p => p.itemId);
       if(pointerItems[0] === pointerItems[1]){
         e.preventDefault();
         e.stopPropagation();
         drag = null;
-        
-        // Select the item if not already selected (for pinch to work)
+
         if(!state.selectedIds.includes(id)){
           setSelection([id], id);
         }
-        
+
         const pts = Array.from(pinch.pointers.values());
         pinch.active = true;
         pinch.itemId = id;
@@ -2041,13 +2035,11 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
         return;
       }
     }
-    
-    // Auto-select unselected item when no modifiers (enables immediate drag)
+
     if(!state.selectedIds.includes(id) && !mod){
       setSelection([id], id);
     }
-    
-    // Setup for drag
+
     const start = stagePointFromPointer(e);
     const selectedSet = new Set(state.selectedIds);
     const offsets = {};
@@ -2061,7 +2053,7 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
       selectedSet,
       startX: e.clientX,
       startY: e.clientY,
-      hasMoved: false  // Track movement per drag gesture
+      hasMoved: false
     };
     try{ e.currentTarget.setPointerCapture(e.pointerId); }catch(_){}
     window.addEventListener("pointermove", onDragMove, { passive:false });
@@ -2073,14 +2065,13 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
     if(!drag) return;
     if(pinch.active) return;
     e.preventDefault();
-    
-    // Check if we've actually moved (more than 3px threshold to avoid accidental drags)
+
     const dx = Math.abs(e.clientX - drag.startX);
     const dy = Math.abs(e.clientY - drag.startY);
     if(dx > 3 || dy > 3){
       drag.hasMoved = true;
     }
-    
+
     const p = stagePointFromPointer(e);
     state.items.forEach(it => {
       if(!drag.selectedSet.has(it.id)) return;
@@ -2095,18 +2086,15 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
   }
 
   function onDragUp(){
-    const didMove = drag && drag.hasMoved;
     drag = null;
     window.removeEventListener("pointermove", onDragMove);
-    // Return whether we moved so click handler can check
-    return didMove;
   }
 
   function onPinchMove(e){
     if(!pinch.active) return;
     if(!pinch.pointers.has(e.pointerId)) return;
     e.preventDefault();
-    pinch.hasMoved = true; // Mark this pinch gesture as having moved
+    pinch.hasMoved = true;
     pinch.pointers.set(e.pointerId, { x:e.clientX, y:e.clientY, itemId:pinch.itemId });
     if(pinch.pointers.size !== 2) return;
     const primary = getPrimary();
@@ -2130,7 +2118,6 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
   function onPinchUp(e){
     if(pinch.pointers.has(e.pointerId)) pinch.pointers.delete(e.pointerId);
     if(pinch.pointers.size < 2){
-      const didMove = pinch.hasMoved;
       pinch.active = false;
       pinch.itemId = null;
       pinch.startDist = 0;
@@ -2140,7 +2127,6 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
       window.removeEventListener("pointermove", onPinchMove);
       window.removeEventListener("pointerup", onPinchUp);
       window.removeEventListener("pointercancel", onPinchUp);
-      return didMove;
     }
   }
 
@@ -2172,6 +2158,7 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
       };
     }
   }
+
   function saveUIState(ui){
     localStorage.setItem(LS_UI, JSON.stringify(ui));
   }
@@ -2295,7 +2282,7 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
       if(p === "small"){ setStageFeet(20, 14); }
       if(p === "med"){ setStageFeet(24, 16); }
       if(p === "large"){ setStageFeet(30, 20); }
-      if(p === "custom"){ /* user edits */ }
+      if(p === "custom"){ }
     });
   });
   document.querySelector('[data-preset="med"]').classList.add("on");
@@ -2314,6 +2301,7 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
     document.querySelector('[data-preset="custom"]').classList.add("on");
     setStageFeet(wFeet, state.stage.d);
   });
+
   els.stageD.addEventListener("change", () => {
     const dFeet = displayToFeet(els.stageD.value);
     document.querySelectorAll('[data-preset]').forEach(b => b.classList.remove("on"));
@@ -2334,6 +2322,7 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
     render();
     save();
   });
+
   els.btnResetView.addEventListener("click", () => {
     state.viewZoom = 1.0;
     updateViewUI();
@@ -2359,6 +2348,7 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
     state.view = { flip:false };
     state.viewZoom = 1.0;
     state.printScale = 1;
+    state.printBleed = 0;
     state.bandName = "";
     state.showNotes = "";
     state.items = [];
@@ -2383,6 +2373,7 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
     it.h = hFeet;
     clampItemInStage(it);
   }
+
   function syncItemWHUI(it){
     const wDisp = Math.round(feetToDisplay(it.w)*100)/100;
     const hDisp = Math.round(feetToDisplay(it.h)*100)/100;
@@ -2392,34 +2383,36 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
     els.uItemH.value = hDisp;
   }
 
- function prepareForPrintLayout(){
-  const prev = {
-    viewZoom: state.viewZoom,
-    printScale: state.printScale || 1
-  };
+  function prepareForPrintLayout(){
+    const prev = {
+      viewZoom: state.viewZoom,
+      printScale: state.printScale || 1,
+      printBleed: state.printBleed || 0
+    };
 
-  state.viewZoom = 1.0;
-  state.printScale = 0.92;
-  render();
+    state.viewZoom = 1.0;
+    state.printBleed = 1.0;
+    state.printScale = 1;
+    render();
 
-  const innerRect = els.stageSquareInner.getBoundingClientRect();
-  const canvasRect = els.stageCanvas.getBoundingClientRect();
+    const innerRect = els.stageSquareInner.getBoundingClientRect();
+    const canvasRect = els.stageCanvas.getBoundingClientRect();
 
-  const gutter = 20; // extra safety inside print square
-  const usableW = Math.max(40, innerRect.width - gutter);
-  const usableH = Math.max(40, innerRect.height - gutter);
+    const gutter = 20;
+    const usableW = Math.max(40, innerRect.width - gutter);
+    const usableH = Math.max(40, innerRect.height - gutter);
 
-  const fitScale = Math.min(
-    usableW / canvasRect.width,
-    usableH / canvasRect.height
-  );
+    const fitScale = Math.min(
+      usableW / canvasRect.width,
+      usableH / canvasRect.height
+    );
 
-  state.printScale = Math.min(1, fitScale * 0.98);
-  render();
+    state.printScale = Math.min(1, fitScale * 0.98);
+    render();
 
-  return prev;
-}
-  
+    return prev;
+  }
+
   els.itemLabel.addEventListener("input", () => {
     const it = getPrimary(); if(!it) return;
     it.label = els.itemLabel.value;
@@ -2428,18 +2421,21 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
     render();
     save();
   });
+
   els.itemInput.addEventListener("input", () => {
     const it = getPrimary(); if(!it) return;
     it.input = els.itemInput.value;
     render();
     save();
   });
+
   els.itemMix.addEventListener("input", () => {
     const it = getPrimary(); if(!it) return;
     it.mix = els.itemMix.value;
     render();
     save();
   });
+
   els.itemNotes.addEventListener("input", () => {
     const it = getPrimary(); if(!it) return;
     it.notes = els.itemNotes.value;
@@ -2457,6 +2453,7 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
     render();
     save();
   });
+
   els.itemH.addEventListener("change", () => {
     const it = getPrimary(); if(!it) return;
     applyItemWHFromDisplay(it, els.itemW.value, els.itemH.value);
@@ -2472,6 +2469,7 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
     render();
     save();
   });
+
   els.uItemH.addEventListener("change", () => {
     const it = getPrimary(); if(!it) return;
     applyItemWHFromDisplay(it, els.uItemW.value, els.uItemH.value);
@@ -2492,6 +2490,7 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
     render();
     save();
   }
+
   els.itemScale.addEventListener("input", () => setPrimaryScalePct(els.itemScale.value));
   els.uItemScale.addEventListener("input", () => setPrimaryScalePct(els.uItemScale.value));
 
@@ -2502,6 +2501,7 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
     render();
     save();
   });
+
   els.btnRot0.addEventListener("click", () => {
     const it = getPrimary(); if(!it) return;
     it.rot = 0;
@@ -2536,6 +2536,7 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
     render();
     save();
   }
+
   els.nUp.addEventListener("click", () => nudgeBtn(0, -1));
   els.nDown.addEventListener("click", () => nudgeBtn(0, 1));
   els.nLeft.addEventListener("click", () => nudgeBtn(-1, 0));
@@ -2546,7 +2547,8 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
     const h = it.h * it.scale;
     it.x = clamp((state.stage.w - w)/2, 0, Math.max(0, state.stage.w - w));
     it.y = clamp((state.stage.d - h)/2, 0, Math.max(0, state.stage.d - h));
-    render(); save();
+    render();
+    save();
   });
 
   els.libSearch.addEventListener("input", renderLibrary);
@@ -2600,6 +2602,7 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
       }
       state = next;
       state.printScale = 1;
+      state.printBleed = 0;
       state.selectedIds = [];
       state.primaryId = null;
       els.bandName.value = state.bandName || "";
@@ -2618,35 +2621,36 @@ els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
     }
   });
 
-els.btnPrint.addEventListener("click", () => {
-  const prev = prepareForPrintLayout();
-  updateViewUI();
-
-  let restored = false;
-
-  const restorePrintState = () => {
-    if(restored) return;
-    restored = true;
-    state.viewZoom = prev.viewZoom;
-    state.printScale = prev.printScale;
+  els.btnPrint.addEventListener("click", () => {
+    const prev = prepareForPrintLayout();
     updateViewUI();
-    render();
-    save();
-    window.removeEventListener("afterprint", restorePrintState);
-  };
 
-  window.addEventListener("afterprint", restorePrintState);
+    let restored = false;
 
-  requestAnimationFrame(() => {
+    const restorePrintState = () => {
+      if(restored) return;
+      restored = true;
+      state.viewZoom = prev.viewZoom;
+      state.printScale = prev.printScale;
+      state.printBleed = prev.printBleed;
+      updateViewUI();
+      render();
+      save();
+      window.removeEventListener("afterprint", restorePrintState);
+    };
+
+    window.addEventListener("afterprint", restorePrintState);
+
     requestAnimationFrame(() => {
-      setTimeout(() => {
-        window.print();
-      }, 150);
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          window.print();
+        }, 150);
+      });
     });
-  });
 
-  setTimeout(restorePrintState, 2500);
-});
+    setTimeout(restorePrintState, 2500);
+  });
 
   window.addEventListener("keydown", (e) => {
     const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : "";
@@ -2706,7 +2710,6 @@ els.btnPrint.addEventListener("click", () => {
   renderLibrary();
   applyAccordions();
   render();
-
 })();
 </script>
 </body>
