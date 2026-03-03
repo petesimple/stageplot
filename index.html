@@ -24,7 +24,7 @@
       }
     });
   })();
-  </script>
+</script>
   <meta name="theme-color" content="#0b0d12" />
   <title>StagePlot v2 - v1.7.5 (Triangle Selection Fix)</title>
 
@@ -271,6 +271,7 @@
       color: var(--muted);
     }
 
+    /* Stage panel */
     .stageWrap{
       display:flex;
       flex-direction:column;
@@ -334,6 +335,7 @@
     .upLabel{ left:10px; top:10px; }
     .downLabel{ right:10px; bottom:10px; opacity:.95; }
 
+    /* Items */
     .item{
       position:absolute;
       border-radius: 10px;
@@ -352,6 +354,7 @@
     .item[data-kind="gear"]{ background: rgba(255,255,255,.06); }
     .item[data-kind="power"]{ background: rgba(255,90,106,.08); border-color: rgba(255,90,106,.28); }
 
+    /* Shape variants */
     .item[data-shape="circle"]{
       border-radius: 50%;
       padding: 0;
@@ -563,6 +566,7 @@
       #infoCard{ order: 3; }
     }
 
+    /* Print */
     @media print{
       @page {
         size: auto;
@@ -808,6 +812,7 @@
   </section>
 
   <div class="midCol" id="midCol">
+
     <section class="card" id="stageCard">
       <div class="hd">
         <h2>Stage</h2>
@@ -846,6 +851,7 @@
       </div>
 
       <div class="bd" style="display:flex; flex-direction:column; gap:12px;">
+
         <button class="tAccBtn" id="accToolsLayoutBtn" type="button">
           <span>Layout</span><span class="chev" id="accToolsLayoutChev">▾</span>
         </button>
@@ -1015,8 +1021,10 @@
         <div class="miniHelp">
           Note: Width/Depth set the base footprint. Scale multiplies that footprint. View Zoom only changes your view.
         </div>
+
       </div>
     </section>
+
   </div>
 
   <section class="card" id="infoCard">
@@ -1176,6 +1184,12 @@
   const APP_VERSION = "1.7.5 (Triangle Selection Fix)";
   const FT_PER_M = 3.280839895;
 
+  const PRINT_TARGET = {
+    squarePx: 662,
+    insetPx: 14,
+    gutterPx: 20
+  };
+
   const els = {
     libGrid: document.getElementById("libGrid"),
     libSearch: document.getElementById("libSearch"),
@@ -1183,9 +1197,6 @@
     libCount: document.getElementById("libCount"),
     stageSquareInner: document.getElementById("stageSquareInner"),
     stageCanvas: document.getElementById("stageCanvas"),
-    stageRect: document.getElementById("stageRect"),
-    upLabel: document.getElementById("upLabel"),
-    downLabel: document.getElementById("downLabel"),
     stageW: document.getElementById("stageW"),
     stageD: document.getElementById("stageD"),
     stageMetaText: document.getElementById("stageMetaText"),
@@ -1291,7 +1302,7 @@
     view: { flip:false },
     viewZoom: 1.0,
     printScale: 1,
-    printBleed: 0,
+    isPreparingPrint: false,
     bandName: "",
     showNotes: "",
     items: [],
@@ -1306,7 +1317,6 @@
     if(state.units === "m") return ft / FT_PER_M;
     return ft;
   }
-
   function displayToFeet(v){
     const n = Number(v);
     if(!isFinite(n)) return 0;
@@ -1345,7 +1355,7 @@
       view: { flip:false },
       viewZoom: 1.0,
       printScale: 1,
-      printBleed: 0,
+      isPreparingPrint: false,
       bandName: "",
       showNotes: "",
       items: [],
@@ -1400,10 +1410,8 @@
           };
 
           if(obj.units === "m"){
-            out.x *= FT_PER_M;
-            out.y *= FT_PER_M;
-            out.w *= FT_PER_M;
-            out.h *= FT_PER_M;
+            out.x *= FT_PER_M; out.y *= FT_PER_M;
+            out.w *= FT_PER_M; out.h *= FT_PER_M;
           }
 
           out.scale = clamp(out.scale, 0.5, 2.0);
@@ -1442,14 +1450,23 @@
     return { w: r.width, h: r.height };
   }
 
-  function computeStagePixels(){
-    const inner = getSquareInnerSizePx();
+  function computeStagePixels(useFixedPrintTarget = false){
+    let inner;
+
+    if(useFixedPrintTarget){
+      const innerSize = PRINT_TARGET.squarePx - (PRINT_TARGET.insetPx * 2);
+      inner = { w: innerSize, h: innerSize };
+    }else{
+      inner = getSquareInnerSizePx();
+    }
+
     const maxSize = Math.min(inner.w, inner.h);
     const safety = 2;
     const avail = Math.max(20, maxSize - safety);
     const pxPerFoot = Math.min(avail / state.stage.w, avail / state.stage.d);
     const stagePxW = state.stage.w * pxPerFoot;
     const stagePxH = state.stage.d * pxPerFoot;
+
     return { pxPerFoot, stagePxW, stagePxH };
   }
 
@@ -1458,15 +1475,11 @@
     const px = e.clientX - canvasRect.left;
     const py = e.clientY - canvasRect.top;
     const { pxPerFoot } = computeStagePixels();
-    const z = state.viewZoom * (state.printScale || 1);
-    const bleedPx = (state.printBleed || 0) * pxPerFoot;
-
-    const basePx = (px / z) - bleedPx;
-    const basePy = (py / z) - bleedPx;
-
+    const z = state.viewZoom;
+    const basePx = px / z;
+    const basePy = py / z;
     let fx = basePx / pxPerFoot;
     let fy = basePy / pxPerFoot;
-
     if(state.view.flip){
       fx = state.stage.w - fx;
       fy = state.stage.d - fy;
@@ -1601,6 +1614,7 @@
       }
       it.shape = shape;
     });
+
     updateSelectionUI();
     updateShapeButtons();
     render();
@@ -1636,8 +1650,8 @@
     els.viewZoomPill.textContent = Math.round(state.viewZoom*100) + "%";
     els.viewZoomPillInner.textContent = Math.round(state.viewZoom*100) + "%";
     els.btnFlip.textContent = state.view.flip ? "Audience View" : "Stage View";
-    els.upLabel.textContent = state.view.flip ? "AUDIENCE" : "UPSTAGE";
-    els.downLabel.textContent = state.view.flip ? "UPSTAGE" : "AUDIENCE";
+    document.getElementById("upLabel").textContent = state.view.flip ? "AUDIENCE" : "UPSTAGE";
+    document.getElementById("downLabel").textContent = state.view.flip ? "UPSTAGE" : "AUDIENCE";
   }
 
   function clampItemInStage(it){
@@ -1771,25 +1785,14 @@
   }
 
   function render(){
-    const { pxPerFoot, stagePxW, stagePxH } = computeStagePixels();
-    const bleedPx = (state.printBleed || 0) * pxPerFoot;
+    const useFixedPrintTarget = !!state.isPreparingPrint;
+    const { pxPerFoot, stagePxW, stagePxH } = computeStagePixels(useFixedPrintTarget);
 
-    els.stageCanvas.style.width = (stagePxW + bleedPx * 2) + "px";
-    els.stageCanvas.style.height = (stagePxH + bleedPx * 2) + "px";
+    els.stageCanvas.style.width = stagePxW + "px";
+    els.stageCanvas.style.height = stagePxH + "px";
 
     const finalScale = state.viewZoom * (state.printScale || 1);
     els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
-
-    els.stageRect.style.inset = "auto";
-    els.stageRect.style.left = bleedPx + "px";
-    els.stageRect.style.top = bleedPx + "px";
-    els.stageRect.style.width = stagePxW + "px";
-    els.stageRect.style.height = stagePxH + "px";
-
-    els.upLabel.style.left = (bleedPx + 10) + "px";
-    els.upLabel.style.top = (bleedPx + 10) + "px";
-    els.downLabel.style.right = (bleedPx + 10) + "px";
-    els.downLabel.style.bottom = (bleedPx + 10) + "px";
 
     Array.from(els.stageCanvas.querySelectorAll(".item")).forEach(n => n.remove());
 
@@ -1810,8 +1813,8 @@
         el.style.borderColor = `color-mix(in srgb, ${it.color} 42%, rgba(255,255,255,.14))`;
       }
 
-      el.style.left = (bleedPx + d.x * pxPerFoot) + "px";
-      el.style.top  = (bleedPx + d.y * pxPerFoot) + "px";
+      el.style.left = (d.x * pxPerFoot) + "px";
+      el.style.top  = (d.y * pxPerFoot) + "px";
       el.style.width  = (d.w * pxPerFoot) + "px";
       el.style.height = (d.h * pxPerFoot) + "px";
 
@@ -1854,7 +1857,6 @@
         openInfoAccordionIfMobile();
         openToolsSelectedIfMobile();
       });
-
       els.stageCanvas.appendChild(el);
     }
 
@@ -1874,7 +1876,6 @@
       <thead><tr><th style="width:28%;">Input</th><th>Source</th></tr></thead>
       <tbody></tbody>
     `);
-
     const tb = els.inputsTable.querySelector("tbody");
     if(!rows.length){
       tb.innerHTML = `<tr><td colspan="2" style="color: rgba(169,180,204,.95);">No inputs yet - add items and fill in Input.</td></tr>`;
@@ -1896,14 +1897,12 @@
       if(!mixMap.has(m)) mixMap.set(m, []);
       mixMap.get(m).push(it);
     });
-
     const mixes = Array.from(mixMap.entries()).sort((a,b) => a[0].localeCompare(b[0], undefined, { numeric:true, sensitivity:"base" }));
     els.mixesTable.innerHTML = "";
     els.mixesTable.insertAdjacentHTML("beforeend", `
       <thead><tr><th style="width:20%;">Mix</th><th>Members</th></tr></thead>
       <tbody></tbody>
     `);
-
     const mb = els.mixesTable.querySelector("tbody");
     if(!mixes.length){
       mb.innerHTML = `<tr><td colspan="2" style="color: rgba(169,180,204,.95);">No mixes yet - fill in Mix on items (M1, IEM, Wedge...).</td></tr>`;
@@ -2158,7 +2157,6 @@
       };
     }
   }
-
   function saveUIState(ui){
     localStorage.setItem(LS_UI, JSON.stringify(ui));
   }
@@ -2301,7 +2299,6 @@
     document.querySelector('[data-preset="custom"]').classList.add("on");
     setStageFeet(wFeet, state.stage.d);
   });
-
   els.stageD.addEventListener("change", () => {
     const dFeet = displayToFeet(els.stageD.value);
     document.querySelectorAll('[data-preset]').forEach(b => b.classList.remove("on"));
@@ -2322,7 +2319,6 @@
     render();
     save();
   });
-
   els.btnResetView.addEventListener("click", () => {
     state.viewZoom = 1.0;
     updateViewUI();
@@ -2348,7 +2344,7 @@
     state.view = { flip:false };
     state.viewZoom = 1.0;
     state.printScale = 1;
-    state.printBleed = 0;
+    state.isPreparingPrint = false;
     state.bandName = "";
     state.showNotes = "";
     state.items = [];
@@ -2373,7 +2369,6 @@
     it.h = hFeet;
     clampItemInStage(it);
   }
-
   function syncItemWHUI(it){
     const wDisp = Math.round(feetToDisplay(it.w)*100)/100;
     const hDisp = Math.round(feetToDisplay(it.h)*100)/100;
@@ -2387,29 +2382,27 @@
     const prev = {
       viewZoom: state.viewZoom,
       printScale: state.printScale || 1,
-      printBleed: state.printBleed || 0
+      isPreparingPrint: !!state.isPreparingPrint
     };
 
+    state.isPreparingPrint = true;
     state.viewZoom = 1.0;
-    state.printBleed = 1.0;
-    state.printScale = 1;
-    render();
+    state.printScale = 1.0;
 
-    const innerRect = els.stageSquareInner.getBoundingClientRect();
-    const canvasRect = els.stageCanvas.getBoundingClientRect();
+    const innerSizePx = PRINT_TARGET.squarePx - (PRINT_TARGET.insetPx * 2);
+    const usableW = innerSizePx - PRINT_TARGET.gutterPx;
+    const usableH = innerSizePx - PRINT_TARGET.gutterPx;
 
-    const gutter = 20;
-    const usableW = Math.max(40, innerRect.width - gutter);
-    const usableH = Math.max(40, innerRect.height - gutter);
+    const { stagePxW, stagePxH } = computeStagePixels(true);
 
     const fitScale = Math.min(
-      usableW / canvasRect.width,
-      usableH / canvasRect.height
+      usableW / stagePxW,
+      usableH / stagePxH
     );
 
     state.printScale = Math.min(1, fitScale * 0.98);
-    render();
 
+    render();
     return prev;
   }
 
@@ -2421,21 +2414,18 @@
     render();
     save();
   });
-
   els.itemInput.addEventListener("input", () => {
     const it = getPrimary(); if(!it) return;
     it.input = els.itemInput.value;
     render();
     save();
   });
-
   els.itemMix.addEventListener("input", () => {
     const it = getPrimary(); if(!it) return;
     it.mix = els.itemMix.value;
     render();
     save();
   });
-
   els.itemNotes.addEventListener("input", () => {
     const it = getPrimary(); if(!it) return;
     it.notes = els.itemNotes.value;
@@ -2453,7 +2443,6 @@
     render();
     save();
   });
-
   els.itemH.addEventListener("change", () => {
     const it = getPrimary(); if(!it) return;
     applyItemWHFromDisplay(it, els.itemW.value, els.itemH.value);
@@ -2469,7 +2458,6 @@
     render();
     save();
   });
-
   els.uItemH.addEventListener("change", () => {
     const it = getPrimary(); if(!it) return;
     applyItemWHFromDisplay(it, els.uItemW.value, els.uItemH.value);
@@ -2490,7 +2478,6 @@
     render();
     save();
   }
-
   els.itemScale.addEventListener("input", () => setPrimaryScalePct(els.itemScale.value));
   els.uItemScale.addEventListener("input", () => setPrimaryScalePct(els.uItemScale.value));
 
@@ -2501,7 +2488,6 @@
     render();
     save();
   });
-
   els.btnRot0.addEventListener("click", () => {
     const it = getPrimary(); if(!it) return;
     it.rot = 0;
@@ -2536,7 +2522,6 @@
     render();
     save();
   }
-
   els.nUp.addEventListener("click", () => nudgeBtn(0, -1));
   els.nDown.addEventListener("click", () => nudgeBtn(0, 1));
   els.nLeft.addEventListener("click", () => nudgeBtn(-1, 0));
@@ -2547,8 +2532,7 @@
     const h = it.h * it.scale;
     it.x = clamp((state.stage.w - w)/2, 0, Math.max(0, state.stage.w - w));
     it.y = clamp((state.stage.d - h)/2, 0, Math.max(0, state.stage.d - h));
-    render();
-    save();
+    render(); save();
   });
 
   els.libSearch.addEventListener("input", renderLibrary);
@@ -2602,7 +2586,7 @@
       }
       state = next;
       state.printScale = 1;
-      state.printBleed = 0;
+      state.isPreparingPrint = false;
       state.selectedIds = [];
       state.primaryId = null;
       els.bandName.value = state.bandName || "";
@@ -2630,9 +2614,11 @@
     const restorePrintState = () => {
       if(restored) return;
       restored = true;
+
       state.viewZoom = prev.viewZoom;
       state.printScale = prev.printScale;
-      state.printBleed = prev.printBleed;
+      state.isPreparingPrint = prev.isPreparingPrint;
+
       updateViewUI();
       render();
       save();
@@ -2710,6 +2696,7 @@
   renderLibrary();
   applyAccordions();
   render();
+
 })();
 </script>
 </body>
