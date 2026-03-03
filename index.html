@@ -2386,6 +2386,15 @@
     els.uItemH.value = hDisp;
   }
 
+  function prepareForPrintLayout(){
+  const primary = getPrimary();
+  state.viewZoom = 1.0;
+  if(primary){
+    clampItemInStage(primary);
+  }
+  render();
+}
+
   els.itemLabel.addEventListener("input", () => {
     const it = getPrimary(); if(!it) return;
     it.label = els.itemLabel.value;
