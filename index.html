@@ -2623,9 +2623,10 @@
     }
   });
 
-  els.btnPrint.addEventListener("click", () => {
+   els.btnPrint.addEventListener("click", () => {
     const prev = prepareForPrintLayout();
     updateViewUI();
+    expandPrintTextareas();
 
     let restored = false;
 
@@ -2636,6 +2637,9 @@
       state.viewZoom = prev.viewZoom;
       state.printScale = prev.printScale;
       state.isPreparingPrint = prev.isPreparingPrint;
+
+      if(els.showNotes) els.showNotes.style.height = "";
+      if(els.itemNotes) els.itemNotes.style.height = "";
 
       updateViewUI();
       render();
