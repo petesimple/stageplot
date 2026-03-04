@@ -2387,6 +2387,15 @@
     els.uItemH.value = hDisp;
   }
 
+  function expandPrintTextareas(){
+    const areas = [els.showNotes, els.itemNotes];
+    areas.forEach(ta => {
+      if(!ta) return;
+      ta.style.height = "auto";
+      ta.style.height = ta.scrollHeight + "px";
+    });
+  }
+  
   function prepareForPrintLayout(){
     const prev = {
       viewZoom: state.viewZoom,
