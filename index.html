@@ -5,7 +5,6 @@
   <meta name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
   <script>
-  // iOS/Safari: prevent double-tap to zoom on stage area only
   (() => {
     let lastTouchEnd = 0;
     window.addEventListener('DOMContentLoaded', () => {
@@ -22,9 +21,9 @@
       }
     });
   })();
-</script>
+  </script>
   <meta name="theme-color" content="#0b0d12" />
-  <title>StagePlot v2 - v1.7.5 (Triangle Selection Fix)</title>
+  <title>StagePlot v2 - v1.7.6 (Stable Print Fit)</title>
 
   <style>
     :root{
@@ -559,14 +558,13 @@
       #infoCard{ order: 3; }
     }
 
-    /* PRINT */
     @media print{
-      @page {
-        size: auto;
-        margin: 0.5in;
+      @page{
+        size:auto;
+        margin:0.5in;
       }
 
-      html, body{
+      html,body{
         background:#fff !important;
         color:#000 !important;
         height:auto !important;
@@ -614,33 +612,34 @@
 
       main{
         display:block !important;
-        max-width: 8in !important;
-        margin: 0 auto !important;
-        padding: 0 !important;
-        gap: 0 !important;
+        max-width:8in !important;
+        margin:0 auto !important;
+        padding:0 !important;
+        gap:0 !important;
       }
 
-      #stageCard,
-      #infoCard{
+      #stageCard{
         display:block !important;
         width:100% !important;
         margin:0 0 12px 0 !important;
+        break-inside:avoid !important;
+        page-break-inside:avoid !important;
         box-shadow:none !important;
         background:#fff !important;
         border:1px solid #ddd !important;
         overflow:visible !important;
       }
 
-      #stageCard{
-        break-after: page !important;
-        page-break-after: always !important;
-        break-inside: avoid !important;
-        page-break-inside: avoid !important;
-      }
-
       #infoCard{
-        break-inside: auto !important;
-        page-break-inside: auto !important;
+        display:block !important;
+        width:100% !important;
+        margin:0 !important;
+        break-inside:auto !important;
+        page-break-inside:auto !important;
+        box-shadow:none !important;
+        background:#fff !important;
+        border:1px solid #ddd !important;
+        overflow:visible !important;
       }
 
       #stageCard .hd,
@@ -653,7 +652,6 @@
       #infoCard .bd{
         padding:10px !important;
         overflow:visible !important;
-        max-height:none !important;
       }
 
       .card{
@@ -667,12 +665,12 @@
       }
 
       .stageSquare{
-        width: 6.9in !important;
-        height: 6.9in !important;
-        aspect-ratio: auto !important;
-        margin: 0 auto !important;
+        width:6.9in !important;
+        height:6.9in !important;
+        aspect-ratio:auto !important;
+        margin:0 auto !important;
         border:1px solid #ddd !important;
-        border-radius: 12px !important;
+        border-radius:12px !important;
         overflow:hidden !important;
         background:#fff !important;
         position:relative !important;
@@ -680,9 +678,9 @@
 
       .stageSquareInner{
         position:absolute !important;
-        inset: 14px !important;
+        inset:14px !important;
         border:1px solid #ddd !important;
-        border-radius: 10px !important;
+        border-radius:10px !important;
         overflow:hidden !important;
         background:#fff !important;
       }
@@ -700,11 +698,10 @@
         background:
           linear-gradient(to right, rgba(0,0,0,.08) 1px, transparent 1px),
           linear-gradient(to bottom, rgba(0,0,0,.08) 1px, transparent 1px) !important;
-        background-size: 10% 10% !important;
+        background-size:10% 10% !important;
       }
 
-      .upLabel,
-      .downLabel{
+      .upLabel,.downLabel{
         color:#000 !important;
         background:rgba(255,255,255,.9) !important;
         border:1px solid #bbb !important;
@@ -722,53 +719,37 @@
         text-shadow:none !important;
       }
 
-      #infoCard .field,
-      #infoCard .table,
-      #infoCard .hr{
-        break-inside: avoid-page !important;
-        page-break-inside: avoid !important;
-      }
-
-      #infoCard textarea,
-      #infoCard input,
-      #infoCard select{
+      input, textarea, select, button{
         border:1px solid #ccc !important;
         color:#000 !important;
         background:#fff !important;
-        overflow:visible !important;
-        box-shadow:none !important;
       }
 
-      #infoCard textarea{
-        min-height: unset !important;
-        height: auto !important;
-        resize: none !important;
-        white-space: pre-wrap !important;
-      }
-
-      #infoCard .table{
+      .table{
         border:1px solid #ccc !important;
         background:#fff !important;
-        border-collapse: collapse !important;
       }
 
-      #infoCard .table thead{
-        display: table-header-group !important;
-      }
-
-      #infoCard .table tr{
-        break-inside: avoid !important;
-        page-break-inside: avoid !important;
-      }
-
-      #infoCard .table th, #infoCard .table td{
+      .table th, .table td{
         border-bottom:1px solid #ddd !important;
         color:#000 !important;
         background:#fff !important;
       }
 
-      #infoCard .table th{
+      .table th{
         font-weight:800 !important;
+      }
+
+      .field,
+      .table,
+      .row,
+      .hr{
+        break-inside:avoid-page !important;
+        page-break-inside:avoid !important;
+      }
+
+      textarea{
+        min-height:90px !important;
       }
 
       a{
@@ -787,7 +768,7 @@
         <div class="logo" aria-hidden="true">SP</div>
         <div>
           <h1>StagePlot v2</h1>
-          <div class="sub">v1.7.5 (Triangle Selection Fix) - triangle selection now visible via box-shadow glow</div>
+          <div class="sub">v1.7.6 (Stable Print Fit) - print output now ignores live window size</div>
         </div>
       </div>
 
@@ -1209,8 +1190,10 @@
 
 <script>
 (() => {
-  const APP_VERSION = "1.7.5 (Triangle Selection Fix)";
+  const APP_VERSION = "1.7.6 (Stable Print Fit)";
   const FT_PER_M = 3.280839895;
+  const PRINT_BOX_PX = 960;
+  const PRINT_INSET_PX = 20;
 
   const els = {
     libGrid: document.getElementById("libGrid"),
@@ -1324,6 +1307,7 @@
     view: { flip:false },
     viewZoom: 1.0,
     printScale: 1,
+    printMode: false,
     bandName: "",
     showNotes: "",
     items: [],
@@ -1331,20 +1315,17 @@
     primaryId: null
   };
 
-  let printRestoreFields = [];
-
   const uid = () => Math.random().toString(16).slice(2) + "-" + Date.now().toString(16);
   const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
 
   function feetToDisplay(ft){
-    if(state.units === "m") return ft / FT_PER_M;
-    return ft;
+    return state.units === "m" ? ft / FT_PER_M : ft;
   }
+
   function displayToFeet(v){
     const n = Number(v);
     if(!isFinite(n)) return 0;
-    if(state.units === "m") return n * FT_PER_M;
-    return n;
+    return state.units === "m" ? n * FT_PER_M : n;
   }
 
   function save(){
@@ -1378,6 +1359,7 @@
       view: { flip:false },
       viewZoom: 1.0,
       printScale: 1,
+      printMode: false,
       bandName: "",
       showNotes: "",
       items: [],
@@ -1468,6 +1450,10 @@
   }
 
   function getSquareInnerSizePx(){
+    if(state.printMode){
+      const inner = PRINT_BOX_PX - (PRINT_INSET_PX * 2);
+      return { w: inner, h: inner };
+    }
     const r = els.stageSquareInner.getBoundingClientRect();
     return { w: r.width, h: r.height };
   }
@@ -1475,7 +1461,7 @@
   function computeStagePixels(){
     const inner = getSquareInnerSizePx();
     const maxSize = Math.min(inner.w, inner.h);
-    const safety = 2;
+    const safety = state.printMode ? 0 : 2;
     const avail = Math.max(20, maxSize - safety);
     const pxPerFoot = Math.min(avail / state.stage.w, avail / state.stage.d);
     const stagePxW = state.stage.w * pxPerFoot;
@@ -1513,9 +1499,7 @@
   }
 
   function getPrimary(){
-    if(state.primaryId){
-      return state.items.find(x => x.id === state.primaryId) || null;
-    }
+    if(state.primaryId) return state.items.find(x => x.id === state.primaryId) || null;
     if(state.selectedIds.length){
       const id = state.selectedIds[0];
       return state.items.find(x => x.id === id) || null;
@@ -1625,7 +1609,6 @@
       if(shape === "circle") enforceCircleSquare(it);
       it.shape = shape;
     });
-
     updateSelectionUI();
     updateShapeButtons();
     render();
@@ -1650,10 +1633,10 @@
     els.unitLabelW.textContent = state.units;
     els.unitLabelD.textContent = state.units;
     unitInlineEls.forEach(x => x.textContent = state.units);
-    els.stageW.value = (Math.round(feetToDisplay(state.stage.w)*100)/100);
-    els.stageD.value = (Math.round(feetToDisplay(state.stage.d)*100)/100);
+    els.stageW.value = Math.round(feetToDisplay(state.stage.w)*100)/100;
+    els.stageD.value = Math.round(feetToDisplay(state.stage.d)*100)/100;
     els.stageMetaText.textContent =
-      `${(Math.round(feetToDisplay(state.stage.w)*100)/100)} x ${(Math.round(feetToDisplay(state.stage.d)*100)/100)} ${state.units}`;
+      `${Math.round(feetToDisplay(state.stage.w)*100)/100} x ${Math.round(feetToDisplay(state.stage.d)*100)/100} ${state.units}`;
   }
 
   function updateViewUI(){
@@ -1692,6 +1675,7 @@
       els.itemColor, els.clearColor, els.uItemColor, els.uClearColor
     ].forEach(el => el.disabled = disabled);
     document.querySelectorAll('[data-shape]').forEach(btn => btn.disabled = disabled);
+
     const cs = selectionColorStatus();
     if(!cs.count){
       els.colorPill.textContent = "none";
@@ -1714,6 +1698,7 @@
       els.itemColor.value = cs.color || "#4aa3ff";
       els.uItemColor.value = cs.color || "#4aa3ff";
     }
+
     const ls = selectionLabelSizeStatus();
     if(!ls.count){
       els.labelSize.value = 100;
@@ -1727,7 +1712,9 @@
       els.uLabelSize.value = p;
       els.uLabelSizePill.textContent = (ls.mode === "mixed") ? `mixed (${ls.count})` : (p + "%");
     }
+
     updateShapeButtons();
+
     if(!primary){
       els.itemLabel.value = "";
       els.itemInput.value = "";
@@ -1745,6 +1732,7 @@
       els.uItemScalePill.textContent = "100%";
       return;
     }
+
     els.itemLabel.value = primary.label || "";
     els.itemInput.value = primary.input || "";
     els.itemMix.value = primary.mix || "";
@@ -1794,7 +1782,8 @@
     const { pxPerFoot, stagePxW, stagePxH } = computeStagePixels();
     els.stageCanvas.style.width = stagePxW + "px";
     els.stageCanvas.style.height = stagePxH + "px";
-    const finalScale = state.viewZoom * (state.printScale || 1);
+
+    const finalScale = state.printMode ? 1 : (state.viewZoom * (state.printScale || 1));
     els.stageCanvas.style.transform = `translate(-50%,-50%) scale(${finalScale})`;
 
     Array.from(els.stageCanvas.querySelectorAll(".item")).forEach(n => n.remove());
@@ -1806,45 +1795,44 @@
       el.dataset.id = it.id;
       el.dataset.kind = it.kind || inferKind(it.type);
       el.dataset.shape = it.shape || "rectangle";
+
       const isSel = state.selectedIds.includes(it.id);
       if(isSel) el.classList.add("multi");
       if(state.primaryId === it.id) el.classList.add("selected");
+
       if(it.color){
         el.style.background = `color-mix(in srgb, ${it.color} 18%, rgba(255,255,255,.06))`;
         el.style.borderColor = `color-mix(in srgb, ${it.color} 42%, rgba(255,255,255,.14))`;
       }
+
       el.style.left = (d.x * pxPerFoot) + "px";
       el.style.top  = (d.y * pxPerFoot) + "px";
       el.style.width  = (d.w * pxPerFoot) + "px";
       el.style.height = (d.h * pxPerFoot) + "px";
-
-      if(it.shape === "diamond"){
-        el.style.transform = `rotate(${d.rot + 45}deg)`;
-      } else {
-        el.style.transform = `rotate(${d.rot}deg)`;
-      }
+      el.style.transform = it.shape === "diamond"
+        ? `rotate(${d.rot + 45}deg)`
+        : `rotate(${d.rot}deg)`;
 
       const lbl = document.createElement("div");
       lbl.className = "lbl";
       lbl.textContent = it.label || "Item";
       const ls = clamp(Number(it.labelScale || 1.0), 0.6, 1.6);
       lbl.style.fontSize = (12 * ls) + "px";
-
-      if(it.shape === "diamond"){
-        lbl.style.transform = `rotate(-45deg)`;
-      }
+      if(it.shape === "diamond") lbl.style.transform = `rotate(-45deg)`;
 
       el.appendChild(lbl);
       el.addEventListener("pointerdown", onItemPointerDown);
       el.addEventListener("click", (ev) => {
-        if((drag && drag.hasMoved) || (pinch.hasMoved)) return;
+        if((drag && drag.hasMoved) || pinch.hasMoved) return;
         ev.stopPropagation();
+
         const mod = ev.shiftKey || ev.metaKey || ev.ctrlKey;
         if(!mod){
           openInfoAccordionIfMobile();
           openToolsSelectedIfMobile();
           return;
         }
+
         const set = new Set(state.selectedIds);
         if(set.has(it.id)) set.delete(it.id); else set.add(it.id);
         const arr = Array.from(set);
@@ -1852,12 +1840,13 @@
         openInfoAccordionIfMobile();
         openToolsSelectedIfMobile();
       });
+
       els.stageCanvas.appendChild(el);
     }
 
     renderTables();
     els.stageMetaText.textContent =
-      `${(Math.round(feetToDisplay(state.stage.w)*100)/100)} x ${(Math.round(feetToDisplay(state.stage.d)*100)/100)} ${state.units}`;
+      `${Math.round(feetToDisplay(state.stage.w)*100)/100} x ${Math.round(feetToDisplay(state.stage.d)*100)/100} ${state.units}`;
   }
 
   function renderTables(){
@@ -1866,11 +1855,10 @@
       .map(it => ({ input: (it.input||"").trim(), label: (it.label||"").trim(), notes:(it.notes||"").trim() }))
       .sort((a,b) => (a.input||"").localeCompare(b.input||"", undefined, { numeric:true, sensitivity:"base" }));
 
-    els.inputsTable.innerHTML = "";
-    els.inputsTable.insertAdjacentHTML("beforeend", `
+    els.inputsTable.innerHTML = `
       <thead><tr><th style="width:28%;">Input</th><th>Source</th></tr></thead>
       <tbody></tbody>
-    `);
+    `;
     const tb = els.inputsTable.querySelector("tbody");
     if(!rows.length){
       tb.innerHTML = `<tr><td colspan="2" style="color: rgba(169,180,204,.95);">No inputs yet - add items and fill in Input.</td></tr>`;
@@ -1879,7 +1867,7 @@
         tb.insertAdjacentHTML("beforeend", `
           <tr>
             <td class="mono">${escapeHtml(r.input || "-")}</td>
-            <td>${escapeHtml(r.label || "-")}${r.notes ? `<div style="color:rgba(169,180,204,.95); font-size:11px; margin-top:2px;">${escapeHtml(r.notes)}</div>`:""}</td>
+            <td>${escapeHtml(r.label || "-")}${r.notes ? `<div style="color:rgba(169,180,204,.95); font-size:11px; margin-top:2px;">${escapeHtml(r.notes)}</div>` : ""}</td>
           </tr>
         `);
       });
@@ -1893,11 +1881,11 @@
       mixMap.get(m).push(it);
     });
     const mixes = Array.from(mixMap.entries()).sort((a,b) => a[0].localeCompare(b[0], undefined, { numeric:true, sensitivity:"base" }));
-    els.mixesTable.innerHTML = "";
-    els.mixesTable.insertAdjacentHTML("beforeend", `
+
+    els.mixesTable.innerHTML = `
       <thead><tr><th style="width:20%;">Mix</th><th>Members</th></tr></thead>
       <tbody></tbody>
-    `);
+    `;
     const mb = els.mixesTable.querySelector("tbody");
     if(!mixes.length){
       mb.innerHTML = `<tr><td colspan="2" style="color: rgba(169,180,204,.95);">No mixes yet - fill in Mix on items (M1, IEM, Wedge...).</td></tr>`;
@@ -2011,9 +1999,7 @@
         e.stopPropagation();
         drag = null;
 
-        if(!state.selectedIds.includes(id)){
-          setSelection([id], id);
-        }
+        if(!state.selectedIds.includes(id)) setSelection([id], id);
 
         const pts = Array.from(pinch.pointers.values());
         pinch.active = true;
@@ -2056,15 +2042,12 @@
   }
 
   function onDragMove(e){
-    if(!drag) return;
-    if(pinch.active) return;
+    if(!drag || pinch.active) return;
     e.preventDefault();
 
     const dx = Math.abs(e.clientX - drag.startX);
     const dy = Math.abs(e.clientY - drag.startY);
-    if(dx > 3 || dy > 3){
-      drag.hasMoved = true;
-    }
+    if(dx > 3 || dy > 3) drag.hasMoved = true;
 
     const p = stagePointFromPointer(e);
     state.items.forEach(it => {
@@ -2085,8 +2068,7 @@
   }
 
   function onPinchMove(e){
-    if(!pinch.active) return;
-    if(!pinch.pointers.has(e.pointerId)) return;
+    if(!pinch.active || !pinch.pointers.has(e.pointerId)) return;
     e.preventDefault();
     pinch.hasMoved = true;
     pinch.pointers.set(e.pointerId, { x:e.clientX, y:e.clientY, itemId:pinch.itemId });
@@ -2127,13 +2109,7 @@
   function loadUIState(){
     try{
       const raw = localStorage.getItem(LS_UI);
-      if(!raw) return {
-        libOpen:true,
-        infoOpen:true,
-        toolsLayoutOpen:true,
-        toolsViewOpen:true,
-        toolsSelOpen:true
-      };
+      if(!raw) return { libOpen:true, infoOpen:true, toolsLayoutOpen:true, toolsViewOpen:true, toolsSelOpen:true };
       const obj = JSON.parse(raw);
       return {
         libOpen: !!obj.libOpen,
@@ -2143,15 +2119,10 @@
         toolsSelOpen: (obj.toolsSelOpen !== false),
       };
     }catch(e){
-      return {
-        libOpen:true,
-        infoOpen:true,
-        toolsLayoutOpen:true,
-        toolsViewOpen:true,
-        toolsSelOpen:true
-      };
+      return { libOpen:true, infoOpen:true, toolsLayoutOpen:true, toolsViewOpen:true, toolsSelOpen:true };
     }
   }
+
   function saveUIState(ui){
     localStorage.setItem(LS_UI, JSON.stringify(ui));
   }
@@ -2172,73 +2143,23 @@
       els.accToolsSelChev.textContent = "▾";
       return;
     }
-    if(ui.libOpen){
-      els.libAccContent.classList.remove("accHidden");
-      els.accLibChev.textContent = "▾";
-    }else{
-      els.libAccContent.classList.add("accHidden");
-      els.accLibChev.textContent = "▸";
-    }
-    if(ui.infoOpen){
-      els.infoAccContent.classList.remove("accHidden");
-      els.accInfoChev.textContent = "▾";
-    }else{
-      els.infoAccContent.classList.add("accHidden");
-      els.accInfoChev.textContent = "▸";
-    }
-    if(ui.toolsLayoutOpen){
-      els.toolsLayoutAccContent.classList.remove("tAccHidden");
-      els.accToolsLayoutChev.textContent = "▾";
-    }else{
-      els.toolsLayoutAccContent.classList.add("tAccHidden");
-      els.accToolsLayoutChev.textContent = "▸";
-    }
-    if(ui.toolsViewOpen){
-      els.toolsViewAccContent.classList.remove("tAccHidden");
-      els.accToolsViewChev.textContent = "▾";
-    }else{
-      els.toolsViewAccContent.classList.add("tAccHidden");
-      els.accToolsViewChev.textContent = "▸";
-    }
-    if(ui.toolsSelOpen){
-      els.toolsSelAccContent.classList.remove("tAccHidden");
-      els.accToolsSelChev.textContent = "▾";
-    }else{
-      els.toolsSelAccContent.classList.add("tAccHidden");
-      els.accToolsSelChev.textContent = "▸";
-    }
+    els.libAccContent.classList.toggle("accHidden", !ui.libOpen);
+    els.accLibChev.textContent = ui.libOpen ? "▾" : "▸";
+    els.infoAccContent.classList.toggle("accHidden", !ui.infoOpen);
+    els.accInfoChev.textContent = ui.infoOpen ? "▾" : "▸";
+    els.toolsLayoutAccContent.classList.toggle("tAccHidden", !ui.toolsLayoutOpen);
+    els.accToolsLayoutChev.textContent = ui.toolsLayoutOpen ? "▾" : "▸";
+    els.toolsViewAccContent.classList.toggle("tAccHidden", !ui.toolsViewOpen);
+    els.accToolsViewChev.textContent = ui.toolsViewOpen ? "▾" : "▸";
+    els.toolsSelAccContent.classList.toggle("tAccHidden", !ui.toolsSelOpen);
+    els.accToolsSelChev.textContent = ui.toolsSelOpen ? "▾" : "▸";
   }
 
-  function toggleLibAccordion(){
-    const ui = loadUIState();
-    ui.libOpen = !ui.libOpen;
-    saveUIState(ui);
-    applyAccordions();
-  }
-  function toggleInfoAccordion(){
-    const ui = loadUIState();
-    ui.infoOpen = !ui.infoOpen;
-    saveUIState(ui);
-    applyAccordions();
-  }
-  function toggleToolsLayoutAccordion(){
-    const ui = loadUIState();
-    ui.toolsLayoutOpen = !ui.toolsLayoutOpen;
-    saveUIState(ui);
-    applyAccordions();
-  }
-  function toggleToolsViewAccordion(){
-    const ui = loadUIState();
-    ui.toolsViewOpen = !ui.toolsViewOpen;
-    saveUIState(ui);
-    applyAccordions();
-  }
-  function toggleToolsSelAccordion(){
-    const ui = loadUIState();
-    ui.toolsSelOpen = !ui.toolsSelOpen;
-    saveUIState(ui);
-    applyAccordions();
-  }
+  function toggleLibAccordion(){ const ui = loadUIState(); ui.libOpen = !ui.libOpen; saveUIState(ui); applyAccordions(); }
+  function toggleInfoAccordion(){ const ui = loadUIState(); ui.infoOpen = !ui.infoOpen; saveUIState(ui); applyAccordions(); }
+  function toggleToolsLayoutAccordion(){ const ui = loadUIState(); ui.toolsLayoutOpen = !ui.toolsLayoutOpen; saveUIState(ui); applyAccordions(); }
+  function toggleToolsViewAccordion(){ const ui = loadUIState(); ui.toolsViewOpen = !ui.toolsViewOpen; saveUIState(ui); applyAccordions(); }
+  function toggleToolsSelAccordion(){ const ui = loadUIState(); ui.toolsSelOpen = !ui.toolsSelOpen; saveUIState(ui); applyAccordions(); }
 
   function openInfoAccordionIfMobile(){
     const isMobile = window.matchMedia("(max-width: 980px)").matches;
@@ -2262,33 +2183,6 @@
     }
   }
 
-  function prepareFormFieldsForPrint(){
-    restoreFormFieldsFromPrint();
-    const nodes = Array.from(document.querySelectorAll('#infoCard textarea'));
-    printRestoreFields = nodes.map(node => ({
-      node,
-      height: node.style.height,
-      overflow: node.style.overflow,
-      minHeight: node.style.minHeight
-    }));
-    nodes.forEach(node => {
-      node.style.minHeight = '0';
-      node.style.height = 'auto';
-      node.style.overflow = 'visible';
-      node.style.height = Math.max(node.scrollHeight, 40) + 'px';
-    });
-  }
-
-  function restoreFormFieldsFromPrint(){
-    if(!printRestoreFields.length) return;
-    printRestoreFields.forEach(({node, height, overflow, minHeight}) => {
-      node.style.height = height || '';
-      node.style.overflow = overflow || '';
-      node.style.minHeight = minHeight || '';
-    });
-    printRestoreFields = [];
-  }
-
   els.stageSquareInner.addEventListener("click", (e) => {
     if(e.target.closest(".item")) return;
     clearSelection();
@@ -2299,10 +2193,9 @@
       const p = btn.getAttribute("data-preset");
       document.querySelectorAll('[data-preset]').forEach(b => b.classList.remove("on"));
       btn.classList.add("on");
-      if(p === "small"){ setStageFeet(20, 14); }
-      if(p === "med"){ setStageFeet(24, 16); }
-      if(p === "large"){ setStageFeet(30, 20); }
-      if(p === "custom"){ }
+      if(p === "small") setStageFeet(20, 14);
+      if(p === "med") setStageFeet(24, 16);
+      if(p === "large") setStageFeet(30, 20);
     });
   });
   document.querySelector('[data-preset="med"]').classList.add("on");
@@ -2321,6 +2214,7 @@
     document.querySelector('[data-preset="custom"]').classList.add("on");
     setStageFeet(wFeet, state.stage.d);
   });
+
   els.stageD.addEventListener("change", () => {
     const dFeet = displayToFeet(els.stageD.value);
     document.querySelectorAll('[data-preset]').forEach(b => b.classList.remove("on"));
@@ -2341,6 +2235,7 @@
     render();
     save();
   });
+
   els.btnResetView.addEventListener("click", () => {
     state.viewZoom = 1.0;
     updateViewUI();
@@ -2366,6 +2261,7 @@
     state.view = { flip:false };
     state.viewZoom = 1.0;
     state.printScale = 1;
+    state.printMode = false;
     state.bandName = "";
     state.showNotes = "";
     state.items = [];
@@ -2403,11 +2299,14 @@
   function prepareForPrintLayout(){
     const prev = {
       viewZoom: state.viewZoom,
-      printScale: state.printScale || 1
+      printScale: state.printScale || 1,
+      printMode: !!state.printMode
     };
 
     state.viewZoom = 1.0;
-    state.printScale = 0.92;
+    state.printScale = 1;
+    state.printMode = true;
+    document.body.classList.add("print-prep");
     render();
 
     return prev;
@@ -2421,18 +2320,21 @@
     render();
     save();
   });
+
   els.itemInput.addEventListener("input", () => {
     const it = getPrimary(); if(!it) return;
     it.input = els.itemInput.value;
     render();
     save();
   });
+
   els.itemMix.addEventListener("input", () => {
     const it = getPrimary(); if(!it) return;
     it.mix = els.itemMix.value;
     render();
     save();
   });
+
   els.itemNotes.addEventListener("input", () => {
     const it = getPrimary(); if(!it) return;
     it.notes = els.itemNotes.value;
@@ -2450,6 +2352,7 @@
     render();
     save();
   });
+
   els.itemH.addEventListener("change", () => {
     const it = getPrimary(); if(!it) return;
     applyItemWHFromDisplay(it, els.itemW.value, els.itemH.value);
@@ -2465,6 +2368,7 @@
     render();
     save();
   });
+
   els.uItemH.addEventListener("change", () => {
     const it = getPrimary(); if(!it) return;
     applyItemWHFromDisplay(it, els.uItemW.value, els.uItemH.value);
@@ -2485,6 +2389,7 @@
     render();
     save();
   }
+
   els.itemScale.addEventListener("input", () => setPrimaryScalePct(els.itemScale.value));
   els.uItemScale.addEventListener("input", () => setPrimaryScalePct(els.uItemScale.value));
 
@@ -2495,6 +2400,7 @@
     render();
     save();
   });
+
   els.btnRot0.addEventListener("click", () => {
     const it = getPrimary(); if(!it) return;
     it.rot = 0;
@@ -2529,6 +2435,7 @@
     render();
     save();
   }
+
   els.nUp.addEventListener("click", () => nudgeBtn(0, -1));
   els.nDown.addEventListener("click", () => nudgeBtn(0, 1));
   els.nLeft.addEventListener("click", () => nudgeBtn(-1, 0));
@@ -2539,7 +2446,8 @@
     const h = it.h * it.scale;
     it.x = clamp((state.stage.w - w)/2, 0, Math.max(0, state.stage.w - w));
     it.y = clamp((state.stage.d - h)/2, 0, Math.max(0, state.stage.d - h));
-    render(); save();
+    render();
+    save();
   });
 
   els.libSearch.addEventListener("input", renderLibrary);
@@ -2593,6 +2501,7 @@
       }
       state = next;
       state.printScale = 1;
+      state.printMode = false;
       state.selectedIds = [];
       state.primaryId = null;
       els.bandName.value = state.bandName || "";
@@ -2613,17 +2522,16 @@
 
   els.btnPrint.addEventListener("click", () => {
     const prev = prepareForPrintLayout();
-    prepareFormFieldsForPrint();
     updateViewUI();
 
     let restored = false;
-
     const restorePrintState = () => {
       if(restored) return;
       restored = true;
       state.viewZoom = prev.viewZoom;
       state.printScale = prev.printScale;
-      restoreFormFieldsFromPrint();
+      state.printMode = prev.printMode;
+      document.body.classList.remove("print-prep");
       updateViewUI();
       render();
       save();
@@ -2634,9 +2542,7 @@
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        setTimeout(() => {
-          window.print();
-        }, 150);
+        setTimeout(() => window.print(), 150);
       });
     });
 
@@ -2647,14 +2553,13 @@
     const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : "";
     const typing = (tag === "input" || tag === "textarea" || tag === "select");
     if(typing) return;
+
     if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "d"){
       e.preventDefault();
       duplicateSelected();
     }
-    if(e.key === "Escape"){
-      clearSelection();
-    }
-    if((e.shiftKey) && ["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)){
+    if(e.key === "Escape") clearSelection();
+    if(e.shiftKey && ["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)){
       e.preventDefault();
       nudgeSelected(e.key);
     }
@@ -2689,7 +2594,7 @@
 
   window.addEventListener("resize", () => {
     applyAccordions();
-    render();
+    if(!state.printMode) render();
   });
 
   load();
@@ -2701,7 +2606,6 @@
   renderLibrary();
   applyAccordions();
   render();
-
 })();
 </script>
 </body>
