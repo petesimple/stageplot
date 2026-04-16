@@ -5,7 +5,6 @@
   <meta name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
   <script>
-  // iOS/Safari: prevent double-tap to zoom on stage area only
   (() => {
     let lastTouchEnd = 0;
     window.addEventListener('DOMContentLoaded', () => {
@@ -26,7 +25,7 @@
   })();
 </script>
   <meta name="theme-color" content="#0b0d12" />
-  <title>StagePlot v2 - v1.7.5 (Triangle Selection Fix)</title>
+  <title>StagePlot v2 - v1.8.0 (3D Preview)</title>
 
   <style>
     :root{
@@ -271,7 +270,6 @@
       color: var(--muted);
     }
 
-    /* Stage panel */
     .stageWrap{
       display:flex;
       flex-direction:column;
@@ -335,7 +333,6 @@
     .upLabel{ left:10px; top:10px; }
     .downLabel{ right:10px; bottom:10px; opacity:.95; }
 
-    /* Items */
     .item{
       position:absolute;
       border-radius: 10px;
@@ -354,7 +351,6 @@
     .item[data-kind="gear"]{ background: rgba(255,255,255,.06); }
     .item[data-kind="power"]{ background: rgba(255,90,106,.08); border-color: rgba(255,90,106,.28); }
 
-    /* Shape variants */
     .item[data-shape="circle"]{
       border-radius: 50%;
       padding: 0;
@@ -399,6 +395,181 @@
     }
     .item.selected.multi[data-shape="triangle"]{
       box-shadow: 0 0 0 3px rgba(74,163,255,.85);
+    }
+
+    .stage3dWrap{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .stage3dScene{
+      width:100%;
+      height:460px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      overflow:hidden;
+      position:relative;
+      background:
+        radial-gradient(circle at 50% 18%, rgba(74,163,255,.14), transparent 30%),
+        linear-gradient(180deg, #12192a 0%, #090c13 100%);
+      perspective: 1400px;
+      cursor: grab;
+    }
+    .stage3dScene:active{ cursor: grabbing; }
+    .stage3dScene.hidden3d{ display:none; }
+
+    .stage3dScene::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255,255,255,.08), transparent 35%),
+        linear-gradient(180deg, rgba(255,255,255,.03), transparent 38%);
+      pointer-events:none;
+    }
+
+    .stage3dWorld{
+      position:absolute;
+      left:50%;
+      top:58%;
+      width:720px;
+      height:560px;
+      transform-style: preserve-3d;
+      transform: translate(-50%, -50%) rotateX(62deg) rotateZ(0deg);
+      transform-origin:center center;
+      will-change: transform;
+    }
+
+    .stage3dFloor{
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform-style: preserve-3d;
+      transform: translate(-50%, -50%) translateZ(0px);
+      border:1px solid rgba(255,255,255,.14);
+      background:
+        linear-gradient(to right, rgba(255,255,255,.07) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,.07) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      background-size: 10% 10%, 10% 10%, 100% 100%;
+      box-shadow: 0 30px 90px rgba(0,0,0,.50);
+    }
+
+    .stage3dBackWall{
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform-style: preserve-3d;
+      border:1px solid rgba(255,255,255,.10);
+      background:
+        linear-gradient(to right, rgba(255,255,255,.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,.04) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      background-size: 10% 10%, 10% 10%, 100% 100%;
+      box-shadow: 0 0 80px rgba(0,0,0,.25) inset;
+    }
+
+    .stage3dLip{
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform-style: preserve-3d;
+      background: linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.12);
+    }
+
+    .stage3dItems{
+      position:absolute;
+      inset:0;
+      transform-style: preserve-3d;
+    }
+
+    .stage3dObj{
+      position:absolute;
+      transform-style: preserve-3d;
+    }
+
+    .stage3dBox{
+      position:absolute;
+      left:0;
+      top:0;
+      transform-style: preserve-3d;
+    }
+
+    .stage3dFace{
+      position:absolute;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.08);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
+      backface-visibility: hidden;
+    }
+
+    .stage3dTop{
+      transform-origin:center center;
+      overflow:hidden;
+    }
+    .stage3dFront,
+    .stage3dBack,
+    .stage3dLeft,
+    .stage3dRight{
+      transform-origin:center center;
+    }
+
+    .stage3dLabel{
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform: translate(-50%, -50%) translateZ(2px);
+      font-size:12px;
+      font-weight:800;
+      color:rgba(233,238,251,.96);
+      text-shadow:0 1px 4px rgba(0,0,0,.6);
+      white-space:nowrap;
+      pointer-events:none;
+      max-width: 90%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .stage3dShadow{
+      position:absolute;
+      left:0;
+      top:0;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(0,0,0,.28), rgba(0,0,0,0));
+      filter: blur(10px);
+      transform: translateZ(1px);
+      pointer-events:none;
+    }
+
+    .stage3dBadge{
+      position:absolute;
+      right:12px;
+      top:12px;
+      font-size:12px;
+      color: rgba(233,238,251,.88);
+      background: rgba(0,0,0,.34);
+      border:1px solid rgba(255,255,255,.12);
+      padding: 4px 8px;
+      border-radius:999px;
+      pointer-events:none;
+    }
+
+    .stage3dObj[data-kind="person"] .stage3dFace{
+      background: rgba(74,163,255,.16);
+      border-color: rgba(74,163,255,.35);
+    }
+    .stage3dObj[data-kind="instr"] .stage3dFace{
+      background: rgba(255,204,102,.14);
+      border-color: rgba(255,204,102,.30);
+    }
+    .stage3dObj[data-kind="power"] .stage3dFace{
+      background: rgba(255,90,106,.14);
+      border-color: rgba(255,90,106,.30);
+    }
+    .stage3dObj[data-kind="gear"] .stage3dFace{
+      background: rgba(255,255,255,.08);
     }
 
     .toolsCard{
@@ -564,9 +735,10 @@
       #midCol{ order: 1; }
       #libCard{ order: 2; }
       #infoCard{ order: 3; }
+      .stage3dScene{ height: 360px; }
+      .stage3dWorld{ width: 620px; height: 500px; }
     }
 
-    /* Print */
     @media print{
       @page {
         size: auto;
@@ -592,6 +764,7 @@
       header,
       #libCard,
       #toolsCard,
+      #stage3dCard,
       .actions,
       .pill,
       .accBtn,
@@ -764,7 +937,7 @@
         <div class="logo" aria-hidden="true">SP</div>
         <div>
           <h1>StagePlot v2</h1>
-          <div class="sub">v1.7.5 (Triangle Selection Fix) - triangle selection now visible via box-shadow glow</div>
+          <div class="sub">v1.8.0 (3D Preview) - live 2D editor plus realized 3D preview</div>
         </div>
       </div>
 
@@ -849,6 +1022,31 @@
           <div class="miniHelp" id="stageMeta">
             Stage: <span class="mono" id="stageMetaText">24 x 16 ft</span>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="stage3dCard">
+      <div class="hd">
+        <h2>3D Preview</h2>
+        <div class="row tight">
+          <span class="pill" id="cameraPill">Camera: 62°</span>
+          <button class="btn" id="btn3dToggle" type="button">Hide 3D</button>
+          <button class="btn" id="btn3dReset" type="button">Reset Camera</button>
+        </div>
+      </div>
+      <div class="bd">
+        <div class="stage3dWrap">
+          <div class="stage3dScene" id="stage3dScene">
+            <div class="stage3dBadge">Drag to orbit</div>
+            <div class="stage3dWorld" id="stage3dWorld">
+              <div class="stage3dFloor" id="stage3dFloor"></div>
+              <div class="stage3dBackWall" id="stage3dBackWall"></div>
+              <div class="stage3dLip" id="stage3dLip"></div>
+              <div class="stage3dItems" id="stage3dItems"></div>
+            </div>
+          </div>
+          <div class="miniHelp">This preview reads the same stage size and item positions as the 2D editor.</div>
         </div>
       </div>
     </section>
@@ -1190,7 +1388,7 @@
 
 <script>
 (() => {
-  const APP_VERSION = "1.7.5 (Triangle Selection Fix)";
+  const APP_VERSION = "1.8.0 (3D Preview)";
   const FT_PER_M = 3.280839895;
 
   const PRINT_TARGET = {
@@ -1283,6 +1481,15 @@
     nLeft: document.getElementById("nLeft"),
     nRight: document.getElementById("nRight"),
     nCenter: document.getElementById("nCenter"),
+    stage3dScene: document.getElementById("stage3dScene"),
+    stage3dWorld: document.getElementById("stage3dWorld"),
+    stage3dFloor: document.getElementById("stage3dFloor"),
+    stage3dBackWall: document.getElementById("stage3dBackWall"),
+    stage3dLip: document.getElementById("stage3dLip"),
+    stage3dItems: document.getElementById("stage3dItems"),
+    btn3dToggle: document.getElementById("btn3dToggle"),
+    btn3dReset: document.getElementById("btn3dReset"),
+    cameraPill: document.getElementById("cameraPill"),
   };
 
   const unitInlineEls = Array.from(document.querySelectorAll(".unitInline"));
@@ -1303,6 +1510,7 @@
 
   const LS_KEY = "stageplot_v2_state";
   const LS_UI  = "stageplot_v2_ui";
+  const LS_3D  = "stageplot_v2_3d";
 
   let state = {
     version: APP_VERSION,
@@ -1319,8 +1527,29 @@
     primaryId: null
   };
 
+  let view3d = load3DState();
+
   const uid = () => Math.random().toString(16).slice(2) + "-" + Date.now().toString(16);
   const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+
+  function load3DState(){
+    try{
+      const raw = localStorage.getItem(LS_3D);
+      if(!raw) return { rx:62, rz:0, visible:true };
+      const obj = JSON.parse(raw);
+      return {
+        rx: clamp(Number(obj.rx) || 62, 35, 78),
+        rz: Number(obj.rz) || 0,
+        visible: obj.visible !== false
+      };
+    }catch(e){
+      return { rx:62, rz:0, visible:true };
+    }
+  }
+
+  function save3DState(){
+    localStorage.setItem(LS_3D, JSON.stringify(view3d));
+  }
 
   function feetToDisplay(ft){
     if(state.units === "m") return ft / FT_PER_M;
@@ -1663,6 +1892,21 @@
     document.getElementById("downLabel").textContent = state.view.flip ? "UPSTAGE" : "AUDIENCE";
   }
 
+  function update3DUI(){
+    if(els.stage3dScene){
+      els.stage3dScene.classList.toggle("hidden3d", !view3d.visible);
+    }
+    if(els.btn3dToggle){
+      els.btn3dToggle.textContent = view3d.visible ? "Hide 3D" : "Show 3D";
+    }
+    if(els.cameraPill){
+      els.cameraPill.textContent = `Camera: ${Math.round(view3d.rx)}°`;
+    }
+    if(els.stage3dWorld){
+      els.stage3dWorld.style.transform = `translate(-50%, -50%) rotateX(${view3d.rx}deg) rotateZ(${view3d.rz}deg)`;
+    }
+  }
+
   function clampItemInStage(it){
     const w = it.w * it.scale;
     const h = it.h * it.scale;
@@ -1870,6 +2114,7 @@
     }
 
     renderTables();
+    render3D();
     els.stageMetaText.textContent =
       `${(Math.round(feetToDisplay(state.stage.w)*100)/100)} x ${(Math.round(feetToDisplay(state.stage.d)*100)/100)} ${state.units}`;
   }
@@ -1926,6 +2171,170 @@
         `);
       });
     }
+  }
+
+  function get3dPxPerFoot(){
+    const maxFloorW = 520;
+    const maxFloorD = 340;
+    return Math.max(8, Math.min(maxFloorW / state.stage.w, maxFloorD / state.stage.d));
+  }
+
+  function getItemHeight3D(it){
+    const kind = it.kind || inferKind(it.type);
+    const label = (it.label || "").toLowerCase();
+    const type = (it.type || "").toLowerCase();
+
+    if(kind === "person") return 5.7;
+    if(kind === "power") return 0.35;
+    if(type.includes("wedge")) return 1.0;
+    if(type.includes("di")) return 0.3;
+    if(type.includes("mic")) return 3.8;
+    if(type.includes("amp")) return 2.6;
+    if(type.includes("riser")) return 0.75;
+    if(type.includes("drums") || label.includes("drum")) return 3.0;
+    if(type.includes("keys") || label.includes("keys")) return 2.8;
+    if(kind === "instr") return 3.2;
+    return 1.8;
+  }
+
+  function faceColor(base, amount){
+    return `color-mix(in srgb, ${base} ${amount}%, rgba(255,255,255,.08))`;
+  }
+
+  function build3DBox(opts){
+    const { x, y, w, d, h, rot, label, kind, color } = opts;
+    const pxPerFoot = get3dPxPerFoot();
+    const W = Math.max(8, w * pxPerFoot);
+    const D = Math.max(8, d * pxPerFoot);
+    const H = Math.max(6, h * pxPerFoot * 0.58);
+
+    const obj = document.createElement("div");
+    obj.className = "stage3dObj";
+    obj.dataset.kind = kind || "gear";
+    obj.style.left = (x * pxPerFoot) + "px";
+    obj.style.top = (y * pxPerFoot) + "px";
+    obj.style.width = W + "px";
+    obj.style.height = D + "px";
+    obj.style.transform = `translateZ(0px) rotateZ(${rot}deg)`;
+
+    const shadow = document.createElement("div");
+    shadow.className = "stage3dShadow";
+    shadow.style.width = Math.max(14, W * 0.92) + "px";
+    shadow.style.height = Math.max(12, D * 0.92) + "px";
+    shadow.style.left = ((W - Math.max(14, W * 0.92)) / 2) + "px";
+    shadow.style.top = ((D - Math.max(12, D * 0.92)) / 2) + "px";
+
+    const box = document.createElement("div");
+    box.className = "stage3dBox";
+    box.style.width = W + "px";
+    box.style.height = D + "px";
+
+    const top = document.createElement("div");
+    top.className = "stage3dFace stage3dTop";
+    top.style.width = W + "px";
+    top.style.height = D + "px";
+    top.style.transform = `translateZ(${H}px)`;
+
+    const front = document.createElement("div");
+    front.className = "stage3dFace stage3dFront";
+    front.style.width = W + "px";
+    front.style.height = H + "px";
+    front.style.transform = `translateY(${D}px) rotateX(-90deg)`;
+    front.style.transformOrigin = "top center";
+
+    const back = document.createElement("div");
+    back.className = "stage3dFace stage3dBack";
+    back.style.width = W + "px";
+    back.style.height = H + "px";
+    back.style.transform = `translateY(0px) rotateX(-90deg)`;
+    back.style.transformOrigin = "top center";
+
+    const left = document.createElement("div");
+    left.className = "stage3dFace stage3dLeft";
+    left.style.width = D + "px";
+    left.style.height = H + "px";
+    left.style.transform = `translateX(0px) rotateY(90deg) rotateZ(90deg)`;
+    left.style.transformOrigin = "left top";
+
+    const right = document.createElement("div");
+    right.className = "stage3dFace stage3dRight";
+    right.style.width = D + "px";
+    right.style.height = H + "px";
+    right.style.transform = `translateX(${W}px) rotateY(90deg) rotateZ(90deg)`;
+    right.style.transformOrigin = "left top";
+
+    const lbl = document.createElement("div");
+    lbl.className = "stage3dLabel";
+    lbl.textContent = label || "Item";
+    top.appendChild(lbl);
+
+    if(color){
+      top.style.background = faceColor(color, 28);
+      front.style.background = faceColor(color, 20);
+      back.style.background = faceColor(color, 14);
+      left.style.background = faceColor(color, 17);
+      right.style.background = faceColor(color, 11);
+      [top, front, back, left, right].forEach(face => {
+        face.style.borderColor = `color-mix(in srgb, ${color} 45%, rgba(255,255,255,.14))`;
+      });
+    }
+
+    box.appendChild(top);
+    box.appendChild(front);
+    box.appendChild(back);
+    box.appendChild(left);
+    box.appendChild(right);
+    obj.appendChild(shadow);
+    obj.appendChild(box);
+    return obj;
+  }
+
+  function render3D(){
+    if(!els.stage3dItems || !els.stage3dFloor || !els.stage3dBackWall || !els.stage3dLip) return;
+
+    const pxPerFoot = get3dPxPerFoot();
+    const floorW = state.stage.w * pxPerFoot;
+    const floorD = state.stage.d * pxPerFoot;
+    const wallH = Math.max(150, floorD * 0.68);
+
+    els.stage3dFloor.style.width = floorW + "px";
+    els.stage3dFloor.style.height = floorD + "px";
+
+    els.stage3dBackWall.style.width = floorW + "px";
+    els.stage3dBackWall.style.height = wallH + "px";
+    els.stage3dBackWall.style.transform =
+      `translate(-50%, calc(-50% - ${floorD / 2}px)) rotateX(-90deg) translateY(-${wallH}px)`;
+
+    els.stage3dLip.style.width = floorW + "px";
+    els.stage3dLip.style.height = "10px";
+    els.stage3dLip.style.transform =
+      `translate(-50%, calc(-50% + ${floorD / 2}px)) translateZ(0px) rotateX(90deg)`;
+
+    els.stage3dItems.innerHTML = "";
+
+    const itemsSorted = [...state.items].sort((a, b) => {
+      const ay = a.y + (a.h * a.scale);
+      const by = b.y + (b.h * b.scale);
+      return ay - by;
+    });
+
+    itemsSorted.forEach(it => {
+      const draw = itemDrawPos(it);
+      const obj = build3DBox({
+        x: draw.x,
+        y: draw.y,
+        w: draw.w,
+        d: draw.h,
+        h: getItemHeight3D(it),
+        rot: draw.rot,
+        label: it.label,
+        kind: it.kind || inferKind(it.type),
+        color: it.color || ""
+      });
+      els.stage3dItems.appendChild(obj);
+    });
+
+    update3DUI();
   }
 
   function escapeHtml(s){
@@ -2006,6 +2415,7 @@
     startScale: 1.0,
     hasMoved: false
   };
+  let scene3dDrag = null;
 
   function dist(a,b){
     const dx = a.x - b.x;
@@ -2136,6 +2546,47 @@
       window.removeEventListener("pointerup", onPinchUp);
       window.removeEventListener("pointercancel", onPinchUp);
     }
+  }
+
+  function init3DControls(){
+    if(!els.stage3dScene) return;
+
+    els.stage3dScene.addEventListener("pointerdown", (e) => {
+      if(!view3d.visible) return;
+      scene3dDrag = {
+        x: e.clientX,
+        y: e.clientY,
+        rx: view3d.rx,
+        rz: view3d.rz
+      };
+    });
+
+    window.addEventListener("pointermove", (e) => {
+      if(!scene3dDrag) return;
+      const dx = e.clientX - scene3dDrag.x;
+      const dy = e.clientY - scene3dDrag.y;
+      view3d.rz = scene3dDrag.rz + dx * 0.20;
+      view3d.rx = clamp(scene3dDrag.rx - dy * 0.12, 35, 78);
+      update3DUI();
+      save3DState();
+    });
+
+    window.addEventListener("pointerup", () => {
+      scene3dDrag = null;
+    });
+
+    els.btn3dReset?.addEventListener("click", () => {
+      view3d.rx = 62;
+      view3d.rz = 0;
+      update3DUI();
+      save3DState();
+    });
+
+    els.btn3dToggle?.addEventListener("click", () => {
+      view3d.visible = !view3d.visible;
+      update3DUI();
+      save3DState();
+    });
   }
 
   function loadUIState(){
@@ -2395,7 +2846,7 @@
       ta.style.height = ta.scrollHeight + "px";
     });
   }
-  
+
   function prepareForPrintLayout(){
     const prev = {
       viewZoom: state.viewZoom,
@@ -2623,7 +3074,7 @@
     }
   });
 
-   els.btnPrint.addEventListener("click", () => {
+  els.btnPrint.addEventListener("click", () => {
     const prev = prepareForPrintLayout();
     updateViewUI();
     expandPrintTextareas();
@@ -2717,6 +3168,8 @@
   updateSelectionUI();
   renderLibrary();
   applyAccordions();
+  init3DControls();
+  update3DUI();
   render();
 
 })();
