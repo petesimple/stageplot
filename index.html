@@ -509,9 +509,12 @@
     }
 
     .stage3dTop{
-      transform-origin:center center;
-      overflow:hidden;
-    }
+  left:0;
+  top:0;
+  transform-origin:center center;
+  overflow:hidden;
+}
+    
     .stage3dFront,
     .stage3dBack,
     .stage3dLeft,
@@ -2183,7 +2186,7 @@ function build3DBox(opts){
 
   const W = Math.max(8, w * pxPerFoot);
   const D = Math.max(8, d * pxPerFoot);
-  const H = Math.max(6, h * pxPerFoot * 0.5);
+  const H = Math.max(6, h * pxPerFoot * 0.42);
 
   const obj = document.createElement("div");
   obj.className = "stage3dObj";
@@ -2193,11 +2196,7 @@ function build3DBox(opts){
   obj.style.top = (y * pxPerFoot) + "px";
   obj.style.width = W + "px";
   obj.style.height = D + "px";
-
-  obj.style.transform = `
-    translate3d(0, 0, 2px)
-    rotateZ(${rot}deg)
-  `;
+  obj.style.transform = `translateZ(2px) rotateZ(${rot}deg)`;
 
   const shadow = document.createElement("div");
   shadow.className = "stage3dShadow";
@@ -2213,45 +2212,47 @@ function build3DBox(opts){
 
   const top = document.createElement("div");
   top.className = "stage3dFace stage3dTop";
+  top.style.left = "0px";
+  top.style.top = "0px";
   top.style.width = W + "px";
   top.style.height = D + "px";
   top.style.transform = `translateZ(${H}px)`;
 
   const front = document.createElement("div");
   front.className = "stage3dFace stage3dFront";
-  front.style.width = W + "px";
-  front.style.height = H + "px";
   front.style.left = "0px";
   front.style.top = D + "px";
+  front.style.width = W + "px";
+  front.style.height = H + "px";
   front.style.transformOrigin = "top center";
-  front.style.transform = `rotateX(-90deg)`;
+  front.style.transform = `rotateX(90deg)`;
 
   const back = document.createElement("div");
   back.className = "stage3dFace stage3dBack";
-  back.style.width = W + "px";
-  back.style.height = H + "px";
   back.style.left = "0px";
   back.style.top = "0px";
+  back.style.width = W + "px";
+  back.style.height = H + "px";
   back.style.transformOrigin = "top center";
-  back.style.transform = `rotateX(-90deg)`;
+  back.style.transform = `rotateX(90deg)`;
 
   const left = document.createElement("div");
   left.className = "stage3dFace stage3dLeft";
-  left.style.width = D + "px";
-  left.style.height = H + "px";
   left.style.left = "0px";
   left.style.top = "0px";
+  left.style.width = D + "px";
+  left.style.height = H + "px";
   left.style.transformOrigin = "top left";
-  left.style.transform = `rotateZ(90deg) rotateX(-90deg)`;
+  left.style.transform = `rotateZ(90deg) rotateX(90deg)`;
 
   const right = document.createElement("div");
   right.className = "stage3dFace stage3dRight";
-  right.style.width = D + "px";
-  right.style.height = H + "px";
   right.style.left = W + "px";
   right.style.top = "0px";
+  right.style.width = D + "px";
+  right.style.height = H + "px";
   right.style.transformOrigin = "top left";
-  right.style.transform = `rotateZ(90deg) rotateX(-90deg)`;
+  right.style.transform = `rotateZ(90deg) rotateX(90deg)`;
 
   const lbl = document.createElement("div");
   lbl.className = "stage3dLabel";
@@ -2270,11 +2271,11 @@ function build3DBox(opts){
     });
   }
 
-  box.appendChild(top);
-  box.appendChild(front);
   box.appendChild(back);
   box.appendChild(left);
   box.appendChild(right);
+  box.appendChild(front);
+  box.appendChild(top);
 
   obj.appendChild(shadow);
   obj.appendChild(box);
