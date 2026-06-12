@@ -456,20 +456,22 @@
       box-shadow: 0 30px 90px rgba(0,0,0,.50);
     }
 
-        .stage3dBackWall{
-      position:absolute;
-      left:50%;
-      top:50%;
-      transform-style: preserve-3d;
-      border:1px solid rgba(255,255,255,.10);
-      opacity: .55;
-      background:
-        linear-gradient(to right, rgba(255,255,255,.04) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255,255,255,.035) 1px, transparent 1px),
-        linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.01));
-      background-size: 10% 10%, 10% 10%, 100% 100%;
-      box-shadow: 0 0 60px rgba(0,0,0,.22) inset;
-    }
+      .stage3dBackWall{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform-style: preserve-3d;
+  transform-origin: bottom center;
+  border:1px solid rgba(255,255,255,.10);
+  opacity: .48;
+  background:
+    linear-gradient(to right, rgba(255,255,255,.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.01));
+  background-size: 10% 10%, 10% 10%, 100% 100%;
+  box-shadow: 0 0 60px rgba(0,0,0,.22) inset;
+  pointer-events:none;
+}
 
     .stage3dLip{
       position:absolute;
@@ -2338,9 +2340,15 @@ function get3dPxPerFoot(){
 
     els.stage3dBackWall.style.width = floorW + "px";
 els.stage3dBackWall.style.height = wallH + "px";
+
+/*
+  Put the wall's bottom edge on the upstage/back edge of the floor.
+  Then rotate the wall upright from that bottom edge.
+*/
+els.stage3dBackWall.style.left = "50%";
+els.stage3dBackWall.style.top = `calc(50% - ${floorD / 2}px - ${wallH}px)`;
 els.stage3dBackWall.style.transformOrigin = "bottom center";
-els.stage3dBackWall.style.transform =
-  `translate(-50%, -100%) translateY(${-floorD / 2}px) rotateX(90deg)`;
+els.stage3dBackWall.style.transform = `translateX(-50%) rotateX(-90deg)`;
 
   els.stage3dLip.style.width = floorW + "px";
   els.stage3dLip.style.height = "10px";
