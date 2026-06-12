@@ -2324,7 +2324,7 @@ function get3dPxPerFoot(){
 
   const floorW = state.stage.w * pxPerFoot;
   const floorD = state.stage.d * pxPerFoot;
-  const wallH = Math.max(80, floorD * 0.42);
+  const wallH = Math.max(110, floorD * 0.55);
 
   els.stage3dFloor.style.width = floorW + "px";
   els.stage3dFloor.style.height = floorD + "px";
@@ -2337,10 +2337,10 @@ function get3dPxPerFoot(){
     `translate(-50%, -50%) translateZ(2px)`;
 
     els.stage3dBackWall.style.width = floorW + "px";
-  els.stage3dBackWall.style.height = wallH + "px";
-  els.stage3dBackWall.style.transformOrigin = "bottom center";
-  els.stage3dBackWall.style.transform =
-    `translate(-50%, -50%) translateY(${-floorD / 2}px) translateZ(0px) rotateX(-78deg)`;
+els.stage3dBackWall.style.height = wallH + "px";
+els.stage3dBackWall.style.transformOrigin = "bottom center";
+els.stage3dBackWall.style.transform =
+  `translate(-50%, -100%) translateY(${-floorD / 2}px) rotateX(90deg)`;
 
   els.stage3dLip.style.width = floorW + "px";
   els.stage3dLip.style.height = "10px";
