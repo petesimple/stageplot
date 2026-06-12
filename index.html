@@ -487,39 +487,6 @@
   pointer-events:none;
 }
 
-.stage3dObj{
-  position:absolute;
-  transform-style: preserve-3d;
-}
-
-.stage3dBox{
-  position:absolute;
-  left:0;
-  top:0;
-  transform-style: preserve-3d;
-}
-
-.stage3dFace{
-  position:absolute;
-  border:1px solid rgba(255,255,255,.14);
-  background: rgba(255,255,255,.08);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
-  backface-visibility: visible;
-}
-
-.stage3dTop{
-  left:0;
-  top:0;
-  transform-origin:center center;
-  overflow:hidden;
-}
-
-.stage3dFront,
-.stage3dBack,
-.stage3dLeft,
-.stage3dRight{
-  transform-origin:center center;
-}
 
     .stage3dObj{
       position:absolute;
@@ -538,7 +505,7 @@
       border:1px solid rgba(255,255,255,.14);
       background: rgba(255,255,255,.08);
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
-      backface-visibility: hidden;
+      backface-visibility: visible;
     }
 
     .stage3dTop{
@@ -1563,10 +1530,10 @@
     primaryId: null
   };
 
-  let view3d = load3DState();
-
   const uid = () => Math.random().toString(16).slice(2) + "-" + Date.now().toString(16);
-  const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+
+let view3d = load3DState();
 
   function load3DState(){
     try{
@@ -2315,6 +2282,16 @@ function build3DBox(opts){
   return obj;
 }
 
+function get3dPxPerFoot(){
+  const scene = els.stage3dScene?.getBoundingClientRect();
+  const sceneW = scene?.width || 640;
+
+  const maxFloorW = Math.max(280, sceneW * 0.78);
+  const maxFloorD = Math.max(190, sceneW * 0.52);
+
+  return Math.max(8, Math.min(maxFloorW / state.stage.w, maxFloorD / state.stage.d));
+}
+
   function getItemHeight3D(it){
     const kind = it.kind || inferKind(it.type);
     const label = (it.label || "").toLowerCase();
@@ -2337,93 +2314,6 @@ function build3DBox(opts){
     return `color-mix(in srgb, ${base} ${amount}%, rgba(255,255,255,.08))`;
   }
 
-  function build3DBox(opts){
-    const { x, y, w, d, h, rot, label, kind, color } = opts;
-    const pxPerFoot = get3dPxPerFoot();
-    const W = Math.max(8, w * pxPerFoot);
-    const D = Math.max(8, d * pxPerFoot);
-    const H = Math.max(6, h * pxPerFoot * 0.58);
-
-    const obj = document.createElement("div");
-    obj.className = "stage3dObj";
-    obj.dataset.kind = kind || "gear";
-    obj.style.left = (x * pxPerFoot) + "px";
-    obj.style.top = (y * pxPerFoot) + "px";
-    obj.style.width = W + "px";
-    obj.style.height = D + "px";
-    obj.style.transform = `translateZ(0px) rotateZ(${rot}deg)`;
-
-    const shadow = document.createElement("div");
-    shadow.className = "stage3dShadow";
-    shadow.style.width = Math.max(14, W * 0.92) + "px";
-    shadow.style.height = Math.max(12, D * 0.92) + "px";
-    shadow.style.left = ((W - Math.max(14, W * 0.92)) / 2) + "px";
-    shadow.style.top = ((D - Math.max(12, D * 0.92)) / 2) + "px";
-
-    const box = document.createElement("div");
-    box.className = "stage3dBox";
-    box.style.width = W + "px";
-    box.style.height = D + "px";
-
-    const top = document.createElement("div");
-    top.className = "stage3dFace stage3dTop";
-    top.style.width = W + "px";
-    top.style.height = D + "px";
-    top.style.transform = `translateZ(${H}px)`;
-
-    const front = document.createElement("div");
-    front.className = "stage3dFace stage3dFront";
-    front.style.width = W + "px";
-    front.style.height = H + "px";
-    front.style.transform = `translateY(${D}px) rotateX(-90deg)`;
-    front.style.transformOrigin = "top center";
-
-    const back = document.createElement("div");
-    back.className = "stage3dFace stage3dBack";
-    back.style.width = W + "px";
-    back.style.height = H + "px";
-    back.style.transform = `translateY(0px) rotateX(-90deg)`;
-    back.style.transformOrigin = "top center";
-
-    const left = document.createElement("div");
-    left.className = "stage3dFace stage3dLeft";
-    left.style.width = D + "px";
-    left.style.height = H + "px";
-    left.style.transform = `translateX(0px) rotateY(90deg) rotateZ(90deg)`;
-    left.style.transformOrigin = "left top";
-
-    const right = document.createElement("div");
-    right.className = "stage3dFace stage3dRight";
-    right.style.width = D + "px";
-    right.style.height = H + "px";
-    right.style.transform = `translateX(${W}px) rotateY(90deg) rotateZ(90deg)`;
-    right.style.transformOrigin = "left top";
-
-    const lbl = document.createElement("div");
-    lbl.className = "stage3dLabel";
-    lbl.textContent = label || "Item";
-    top.appendChild(lbl);
-
-    if(color){
-      top.style.background = faceColor(color, 28);
-      front.style.background = faceColor(color, 20);
-      back.style.background = faceColor(color, 14);
-      left.style.background = faceColor(color, 17);
-      right.style.background = faceColor(color, 11);
-      [top, front, back, left, right].forEach(face => {
-        face.style.borderColor = `color-mix(in srgb, ${color} 45%, rgba(255,255,255,.14))`;
-      });
-    }
-
-    box.appendChild(top);
-    box.appendChild(front);
-    box.appendChild(back);
-    box.appendChild(left);
-    box.appendChild(right);
-    obj.appendChild(shadow);
-    obj.appendChild(box);
-    return obj;
-  }
 
   function render3D(){
   if(!els.stage3dItems || !els.stage3dFloor || !els.stage3dBackWall || !els.stage3dLip) return;
