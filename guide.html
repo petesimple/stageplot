@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0b0d12" />
-  <title>StagePlot v2 - Guide (v1.7.5)</title>
+  <title>StagePlot v2 Guide v1.8.1</title>
   <style>
     :root{
       --bg:#0b0d12;
@@ -41,11 +41,13 @@
       background: rgba(10,12,18,.78);
       backdrop-filter: blur(10px);
     }
+
     .wrap{
       max-width: 980px;
       margin: 0 auto;
       padding: 12px 14px;
     }
+
     .top{
       display:flex;
       align-items:center;
@@ -53,28 +55,35 @@
       gap:12px;
       flex-wrap:wrap;
     }
+
     .title{
       display:flex;
       align-items:center;
       gap:10px;
       min-width: 240px;
     }
+
     .logo{
-      width:32px; height:32px;
+      width:32px;
+      height:32px;
       border-radius:10px;
       background: rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.12);
-      display:flex; align-items:center; justify-content:center;
+      display:flex;
+      align-items:center;
+      justify-content:center;
       color: var(--accent);
       font-weight: 900;
       user-select:none;
     }
+
     h1{
       font-size: 15px;
       margin:0;
       letter-spacing:.2px;
       line-height:1.2;
     }
+
     .sub{
       color: var(--muted);
       font-size: 12px;
@@ -97,16 +106,20 @@
       user-select:none;
       white-space:nowrap;
     }
+
     a.button:hover, button:hover, .btn:hover{ border-color: rgba(74,163,255,.8); }
     a.button:active, button:active, .btn:active{ transform: translateY(1px); }
+
     .primary{
       background: rgba(74,163,255,.14);
       border-color: rgba(74,163,255,.55);
     }
+
     .danger{
       background: rgba(255,90,106,.10);
       border-color: rgba(255,90,106,.35);
     }
+
     .ok{
       background: rgba(64,217,138,.10);
       border-color: rgba(64,217,138,.40);
@@ -129,6 +142,7 @@
       overflow:hidden;
       min-width: 0;
     }
+
     .card .hd{
       padding: 12px 12px;
       border-bottom: 1px solid rgba(255,255,255,.08);
@@ -138,6 +152,7 @@
       gap:10px;
       flex-wrap:wrap;
     }
+
     .card .hd h2{
       margin:0;
       font-size: 12px;
@@ -146,6 +161,7 @@
       letter-spacing: .35px;
       font-weight: 900;
     }
+
     .card .bd{ padding: 12px 12px 14px 12px; }
 
     .pill{
@@ -161,12 +177,14 @@
       user-select:none;
       white-space:nowrap;
     }
+
     .row{
       display:flex;
       gap:10px;
       flex-wrap:wrap;
       align-items:center;
     }
+
     .row.tight{ gap:8px; }
 
     .grid2{
@@ -174,14 +192,26 @@
       grid-template-columns: 1fr 1fr;
       gap:12px;
     }
+
     @media (max-width: 860px){
       .grid2{ grid-template-columns: 1fr; }
     }
 
-    .miniHelp{ color: var(--muted); font-size: 12px; }
-    .hr{ height:1px; background: rgba(255,255,255,.08); margin: 10px 0; }
+    .miniHelp{
+      color: var(--muted);
+      font-size: 12px;
+    }
 
-    code, .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    .hr{
+      height:1px;
+      background: rgba(255,255,255,.08);
+      margin: 10px 0;
+    }
+
+    code, .mono{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
     code{
       background: rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.10);
@@ -189,7 +219,11 @@
       border-radius: 8px;
     }
 
-    ul{ margin: 8px 0 0 18px; padding:0; }
+    ul{
+      margin: 8px 0 0 18px;
+      padding:0;
+    }
+
     li{ margin: 6px 0; }
 
     .linkList{
@@ -198,21 +232,29 @@
       gap:10px;
       margin-top: 10px;
     }
+
     @media (max-width: 620px){
       .linkList{ grid-template-columns: 1fr; }
     }
+
     .linkTile{
       border: 1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.03);
       border-radius: 16px;
       padding: 10px;
     }
+
     .linkTile .t{
       font-weight: 900;
       font-size: 13px;
       margin-bottom: 4px;
     }
-    .linkTile .d{ color: var(--muted); font-size: 12px; }
+
+    .linkTile .d{
+      color: var(--muted);
+      font-size: 12px;
+    }
+
     .linkTile .row{ margin-top: 10px; }
 
     .callout{
@@ -221,6 +263,7 @@
       border-radius: 16px;
       padding: 12px;
     }
+
     .callout .t{
       font-weight: 900;
       font-size: 13px;
@@ -228,7 +271,37 @@
       color: #ffe29a;
     }
 
-    /* QR Modal */
+    .heroList{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:10px;
+      margin-top: 12px;
+    }
+
+    @media (max-width: 860px){
+      .heroList{ grid-template-columns: 1fr; }
+    }
+
+    .heroTile{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.035);
+      border-radius:16px;
+      padding:12px;
+    }
+
+    .heroTile .big{
+      font-size:18px;
+      font-weight:900;
+      color:var(--text);
+      line-height:1.15;
+    }
+
+    .heroTile .small{
+      margin-top:5px;
+      color:var(--muted);
+      font-size:12px;
+    }
+
     .modal{
       position: fixed;
       inset: 0;
@@ -239,7 +312,9 @@
       padding: 16px;
       z-index: 999;
     }
+
     .modal.on{ display:flex; }
+
     .modalCard{
       width:min(520px, 100%);
       border-radius: 18px;
@@ -248,6 +323,7 @@
       box-shadow: 0 18px 50px rgba(0,0,0,.55);
       overflow:hidden;
     }
+
     .modalHd{
       padding: 12px 12px;
       border-bottom: 1px solid rgba(255,255,255,.08);
@@ -256,6 +332,7 @@
       justify-content:space-between;
       gap:10px;
     }
+
     .modalHd .t{
       font-size: 12px;
       color: var(--muted);
@@ -263,7 +340,11 @@
       letter-spacing: .35px;
       font-weight: 900;
     }
-    .modalBd{ padding: 14px 12px 14px 12px; }
+
+    .modalBd{
+      padding: 14px 12px 14px 12px;
+    }
+
     .qrBox{
       display:flex;
       align-items:center;
@@ -274,12 +355,14 @@
       padding: 14px;
       overflow:auto;
     }
+
     .qrCaption{
       margin-top: 10px;
       color: var(--muted);
       font-size: 12px;
       word-break: break-word;
     }
+
     .toast{
       position: fixed;
       left: 50%;
@@ -295,6 +378,7 @@
       display:none;
       z-index: 1000;
     }
+
     .toast.on{ display:block; }
 
     @media print{
@@ -369,6 +453,7 @@
       }
 
       .linkTile,
+      .heroTile,
       .callout{
         background:#fff !important;
         border:1px solid #ddd !important;
@@ -389,11 +474,12 @@
         <div class="logo" aria-hidden="true">SP</div>
         <div>
           <h1>StagePlot v2 Guide</h1>
-          <div class="sub">How to use it, how to share it, and how to keep the triangle from hiding in plain sight</div>
+          <div class="sub">Build the plot, check the 3D view, print the handoff, avoid load-in goblin mode</div>
         </div>
       </div>
+
       <div class="row tight">
-        <span class="pill">Guide v1.7.5</span>
+        <span class="pill">Guide v1.8.1</span>
         <a class="button primary" id="btnOpenApp" href="./index.html">Open the app</a>
         <button class="btn" id="btnShare">Share + QR</button>
         <a class="button ok" id="btnDonateTop" href="https://www.paypal.com/donate/?hosted_button_id=4BP339J2UAL46" target="_blank" rel="noopener">Donate</a>
@@ -405,40 +491,49 @@
 <main>
   <section class="card">
     <div class="hd">
-      <h2>Whats New in v1.7.5</h2>
-      <span class="pill">Shapes + print stability</span>
+      <h2>Whats New in v1.8.1</h2>
+      <span class="pill">3D Preview polish</span>
     </div>
     <div class="bd">
+      <div class="miniHelp">
+        StagePlot now includes a practical 3D Preview so you can sanity check your stage layout from a visual angle after building it in the normal top down editor.
+      </div>
+
+      <div class="heroList">
+        <div class="heroTile">
+          <div class="big">3D Preview</div>
+          <div class="small">Flip from top down planning into a quick visual stage view.</div>
+        </div>
+
+        <div class="heroTile">
+          <div class="big">Better depth feel</div>
+          <div class="small">The stage floor, back wall, and gear now read more naturally in the preview.</div>
+        </div>
+
+        <div class="heroTile">
+          <div class="big">Still simple</div>
+          <div class="small">This is not CAD. It is a fast way to explain the gig before load-in eats everyone.</div>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
       <div class="grid2">
         <div>
-          <div class="miniHelp"><b>Triangle shape (with visible selection)</b></div>
+          <div class="miniHelp"><b>3D Preview added</b></div>
           <ul>
-            <li>Triangle is available in the item shape control.</li>
-            <li>Triangles use <code>clip-path</code>, so selection shows via glow highlight instead of outline.</li>
-          </ul>
-
-          <div class="hr"></div>
-
-          <div class="miniHelp"><b>Circle mode stays round</b></div>
-          <ul>
-            <li>Circle enforces equal width and height so circles do not become ovals.</li>
-            <li>If an older project has stretched circles, toggle shape off and back to circle to normalize.</li>
+            <li>Use the 3D Preview to see your plot as a stage scene.</li>
+            <li>The editor remains the main place to drag, resize, label, and build the plot.</li>
+            <li>3D is a visual check, not a replacement for the printed one-page handoff.</li>
           </ul>
         </div>
 
         <div>
-          <div class="miniHelp"><b>Better multi select visibility</b></div>
+          <div class="miniHelp"><b>Layout readability improved</b></div>
           <ul>
-            <li>Selected items are easier to spot, including triangles.</li>
-            <li>Multi select triangles glow too, so your selection is not a guessing game.</li>
-          </ul>
-
-          <div class="hr"></div>
-
-          <div class="miniHelp"><b>Print behavior is more predictable</b></div>
-          <ul>
-            <li>Recent print fixes aim to make stage output less dependent on browser window size.</li>
-            <li>Long notes still print, but may flow to page 2 if you write a full novel to FOH.</li>
+            <li>Items render as stage objects instead of confusing floating lid creatures.</li>
+            <li>The back wall and stage floor are tuned so the scene makes more spatial sense.</li>
+            <li>Print output still focuses on the clean top down plot, inputs, monitor mixes, and notes.</li>
           </ul>
         </div>
       </div>
@@ -452,7 +547,7 @@
     </div>
     <div class="bd">
       <div class="miniHelp">
-        If you are in a hurry, this is the "get in, get it done, get paid" section.
+        If you are in a hurry, this is the get in, get it done, get paid section.
       </div>
 
       <div class="linkList">
@@ -466,17 +561,17 @@
 
         <div class="linkTile">
           <div class="t">Share + QR Code</div>
-          <div class="d">Send your plot to bandmates or the venue</div>
+          <div class="d">Send StagePlot to bandmates, sound crew, or venue humans</div>
           <div class="row">
             <button class="btn" id="btnShare2">Open Share panel</button>
           </div>
         </div>
 
         <div class="linkTile">
-          <div class="t">Donate</div>
-          <div class="d">Fuel the feature gremlins (they run on snacks)</div>
+          <div class="t">3D Preview</div>
+          <div class="d">Open the app, build your plot, then use the 3D Preview control</div>
           <div class="row">
-            <a class="button ok" href="https://www.paypal.com/donate/?hosted_button_id=4BP339J2UAL46" target="_blank" rel="noopener">PayPal Donate</a>
+            <span class="pill">In app: 3D Preview</span>
           </div>
         </div>
 
@@ -485,6 +580,22 @@
           <div class="d">One page handoff for FOH or the stage manager</div>
           <div class="row">
             <span class="pill">In app: Print button</span>
+          </div>
+        </div>
+
+        <div class="linkTile">
+          <div class="t">Donate</div>
+          <div class="d">Fuel the feature gremlins. They are tiny but demanding.</div>
+          <div class="row">
+            <a class="button ok" href="https://www.paypal.com/donate/?hosted_button_id=4BP339J2UAL46" target="_blank" rel="noopener">PayPal Donate</a>
+          </div>
+        </div>
+
+        <div class="linkTile">
+          <div class="t">Save a Copy</div>
+          <div class="d">Export your project JSON so future you does not have to rebuild everything</div>
+          <div class="row">
+            <span class="pill">In app: Export Project JSON</span>
           </div>
         </div>
       </div>
@@ -504,15 +615,15 @@
             <li>Open the <b>Layout</b> section.</li>
             <li>Pick a preset: Small, Medium, Large.</li>
             <li>Or choose Custom and type <code>Width</code> and <code>Depth</code>.</li>
-            <li>Toggle <code>ft/m</code> whenever you feel like living dangerously.</li>
+            <li>Toggle <code>ft/m</code> when needed.</li>
           </ul>
 
           <div class="hr"></div>
 
           <div class="miniHelp">2) Add items</div>
           <ul>
-            <li>Use the Item Library to add Vocal, Guitar, Keys, Drums, wedges, power, etc.</li>
-            <li>Items appear centered, ready to drag.</li>
+            <li>Use the Item Library to add vocals, guitar, bass, keys, drums, wedges, power, risers, and other stage suspects.</li>
+            <li>Items appear centered, ready to drag into place.</li>
           </ul>
         </div>
 
@@ -521,7 +632,7 @@
           <ul>
             <li>Drag an item to move it.</li>
             <li>Shift, Cmd, or Ctrl click to multi select.</li>
-            <li>All the on-canvas tools are below the stage (nudge, center, resize, and friends).</li>
+            <li>Use the on-canvas tools below the stage for nudging, centering, resizing, and cleanup.</li>
           </ul>
 
           <div class="hr"></div>
@@ -530,7 +641,61 @@
           <ul>
             <li>Select an item and fill out <code>Input</code> and <code>Mix</code>.</li>
             <li>The Inputs and Monitor Mix lists auto-build from your items.</li>
+            <li>Add show notes for anything FOH needs to know before chaos enters the room.</li>
           </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="hd">
+      <h2>Using 3D Preview</h2>
+      <span class="pill">New in v1.8.1</span>
+    </div>
+    <div class="bd">
+      <div class="grid2">
+        <div>
+          <div class="miniHelp"><b>What it is for</b></div>
+          <ul>
+            <li>Use 3D Preview to quickly understand the stage shape and item positions.</li>
+            <li>It helps spot obvious layout weirdness before you print or send the plot.</li>
+            <li>It is especially useful when a top down plot technically works but visually feels suspicious.</li>
+          </ul>
+
+          <div class="hr"></div>
+
+          <div class="miniHelp"><b>How to use it</b></div>
+          <ul>
+            <li>Build your layout in the normal top down editor.</li>
+            <li>Open the 3D Preview control in the app.</li>
+            <li>Review the stage, back wall, item positions, and general flow.</li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="miniHelp"><b>What it is not for</b></div>
+          <ul>
+            <li>It is not a replacement for your input list.</li>
+            <li>It is not a lighting plot, CAD package, or console file generator.</li>
+            <li>It will not stop the drummer from adding one more thing from the van.</li>
+          </ul>
+
+          <div class="hr"></div>
+
+          <div class="miniHelp"><b>Best practice</b></div>
+          <ul>
+            <li>Use top down view for accuracy.</li>
+            <li>Use 3D Preview for visual sanity checks.</li>
+            <li>Use Print or Save as PDF for the actual venue handoff.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout" style="margin-top:12px;">
+        <div class="t">Plain English version</div>
+        <div class="miniHelp" style="color:inherit;">
+          Top down is where you build the plan. 3D Preview is where you ask, “Does this look like a stage or did I accidentally invent a haunted furniture warehouse?”
         </div>
       </div>
     </div>
@@ -547,7 +712,7 @@
           <div class="miniHelp"><b>Circle</b></div>
           <ul>
             <li>Circle mode forces width and height to match so circles do not become ovals.</li>
-            <li>Best for wedges, stools, mic stands, and the occasional mysterious “perc island”.</li>
+            <li>Best for wedges, stools, mic stands, and the occasional mysterious percussion island.</li>
           </ul>
 
           <div class="hr"></div>
@@ -566,10 +731,18 @@
             <li>Triangles use <code>clip-path</code>, so selection uses a glow highlight, not an outline.</li>
           </ul>
 
-          <div class="miniHelp" style="margin-top:10px;">
-            Nerd note: <code>outline</code> is not reliable with <code>clip-path</code> in some browsers, so glow is the safer selection indicator.
-          </div>
+          <div class="hr"></div>
+
+          <div class="miniHelp"><b>Diamond</b></div>
+          <ul>
+            <li>Useful for special markers, shared zones, or things that need to stand out.</li>
+            <li>Use labels clearly so nobody has to decode your sacred geometry during soundcheck.</li>
+          </ul>
         </div>
+      </div>
+
+      <div class="miniHelp" style="margin-top:10px;">
+        Nerd note: <code>outline</code> is not reliable with <code>clip-path</code> in some browsers, so glow is the safer selection indicator for clipped shapes.
       </div>
     </div>
   </section>
@@ -619,7 +792,42 @@
       </div>
 
       <div class="miniHelp" style="margin-top:10px;">
-        Nerdy detail: View Zoom only changes what you see. It does not change the stage size or item sizes.
+        Nerdy detail: View Zoom only changes what you see. It does not change the stage size, item sizes, or printed plot scale.
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="hd">
+      <h2>Inputs and Monitor Mixes</h2>
+      <span class="pill">Make FOH happy-ish</span>
+    </div>
+    <div class="bd">
+      <div class="grid2">
+        <div>
+          <div class="miniHelp"><b>Inputs</b></div>
+          <ul>
+            <li>Select an item and add input details.</li>
+            <li>Use short, readable names like <code>Vox 1</code>, <code>Kick</code>, <code>Bass DI</code>, or <code>Acoustic DI</code>.</li>
+            <li>The input list builds itself from the stage items.</li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="miniHelp"><b>Monitor mixes</b></div>
+          <ul>
+            <li>Add mix notes to items that need wedges or specific monitoring.</li>
+            <li>Keep monitor requests clear and realistic.</li>
+            <li>“More me” is a lifestyle, not a useful mix note.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout" style="margin-top:12px;">
+        <div class="t">Tip</div>
+        <div class="miniHelp" style="color:inherit;">
+          The best stage plot is boring in a useful way. Clear labels, clean input names, and short notes beat mysterious poetry every time.
+        </div>
       </div>
     </div>
   </section>
@@ -636,13 +844,16 @@
           <ul>
             <li>Your work is saved to your browser automatically as you edit.</li>
             <li>If you refresh, it should come back like a loyal dog.</li>
+            <li>Browser storage is local to that device and browser.</li>
           </ul>
         </div>
+
         <div>
           <div class="miniHelp">Export and Import Project JSON</div>
           <ul>
             <li>Use <code>Export Project JSON</code> to save a file you can share or archive.</li>
             <li>Use <code>Import Project JSON</code> to load it later on any device.</li>
+            <li>This is the best way to keep a real backup outside the browser.</li>
           </ul>
         </div>
       </div>
@@ -659,12 +870,13 @@
         <li>Hit <code>Print</code> in the header.</li>
         <li>StagePlot temporarily normalizes print scaling so output is more consistent.</li>
         <li>Save as PDF if you want to email it to a venue or keep it in your band folder.</li>
+        <li>The print handoff focuses on the top down plot, inputs, monitor mixes, and notes.</li>
       </ul>
 
       <div class="callout" style="margin-top:12px;">
         <div class="t">Important real-world note</div>
         <div class="miniHelp" style="color:inherit;">
-          If your <b>Show Notes</b> are long, they may still continue onto page 2. That is normal. The stage plot stays the hero on page 1, and extra notes can flow after it. If something is mission critical, keep it short, high priority, and near the top of your notes.
+          If your <b>Show Notes</b> are long, they may continue onto page 2. That is normal. The stage plot stays the hero on page 1, and extra notes can flow after it. If something is mission critical, keep it short, high priority, and near the top of your notes.
         </div>
       </div>
     </div>
@@ -708,11 +920,11 @@
   <section class="card">
     <div class="hd">
       <h2>Share and QR Code</h2>
-      <span class="pill">Send the plot link in style</span>
+      <span class="pill">Send the app link in style</span>
     </div>
     <div class="bd">
       <div class="miniHelp">
-        This guide page can generate a QR code for your StagePlot link.
+        This guide page can generate a QR code for the StagePlot app link.
       </div>
 
       <div class="row" style="margin-top:12px;">
@@ -751,18 +963,20 @@
     </div>
     <div class="bd">
       <ul>
-        <li><b>I cannot find Layout</b> - On mobile it is first. On desktop it is at the top of the middle panel section.</li>
-        <li><b>I cannot find the tools</b> - Scroll under the stage. All tooling sits below the stage area.</li>
-        <li><b>My items look huge</b> - Check <code>View Zoom</code> and reset it to 100% in the app.</li>
-        <li><b>Triangle is selected but I cannot tell</b> - Look for the glow highlight. Triangles do not use outline selection.</li>
-        <li><b>My notes went to page 2</b> - That usually means the notes are longer than the remaining printable space. Keep the critical stuff at the top and trim fluff where possible.</li>
-        <li><b>The PDF looks different between windows</b> - Use the latest app build. Recent fixes reduce browser window size from affecting final print scale.</li>
+        <li><b>I cannot find Layout</b> On mobile it is first. On desktop it is near the top of the main controls.</li>
+        <li><b>I cannot find the tools</b> Scroll under the stage. All tooling sits below the stage area.</li>
+        <li><b>My items look huge</b> Check <code>View Zoom</code> and reset it to 100% in the app.</li>
+        <li><b>Triangle is selected but I cannot tell</b> Look for the glow highlight. Triangles do not use outline selection.</li>
+        <li><b>My notes went to page 2</b> That usually means the notes are longer than the remaining printable space. Keep the critical stuff at the top and trim fluff where possible.</li>
+        <li><b>The PDF looks different between windows</b> Use the latest app build. Recent fixes reduce browser window size from affecting final print scale.</li>
+        <li><b>The 3D Preview looks different than print</b> That is expected. 3D Preview is for visual sanity checking. Print uses the top down handoff layout.</li>
+        <li><b>The 3D Preview feels visually weird</b> Go back to top down view and check item size, depth, rotation, and position. 3D makes accidental giant gear much more obvious.</li>
+        <li><b>The app is offline</b> The app is built to work offline after loading, but sharing, donating, and first-time loading still need internet.</li>
       </ul>
     </div>
   </section>
 </main>
 
-<!-- Share/QR Modal -->
 <div class="modal" id="qrModal" role="dialog" aria-modal="true" aria-label="Share and QR">
   <div class="modalCard">
     <div class="modalHd">
@@ -841,6 +1055,7 @@
       ta.style.left = "-9999px";
       document.body.appendChild(ta);
       ta.select();
+
       try{
         document.execCommand("copy");
         toast("Copied");
@@ -862,6 +1077,7 @@
     elQrBox.appendChild(makeQrSvg(url, 6));
     elModal.classList.add("on");
   }
+
   function closeModal(){
     elModal.classList.remove("on");
   }
@@ -881,9 +1097,14 @@
 
   btnNativeShare.addEventListener("click", async () => {
     const url = getAppUrl();
+
     if(navigator.share){
       try{
-        await navigator.share({ title: "StagePlot v2", text: "StagePlot link", url });
+        await navigator.share({
+          title: "StagePlot v2",
+          text: "StagePlot link",
+          url
+        });
       }catch(e){}
     }else{
       copyText(url);
@@ -894,7 +1115,7 @@
     const qr = QRCode.encode(text, "M");
     const n = qr.size;
     const quiet = 4;
-    const dim = (n + quiet*2);
+    const dim = (n + quiet * 2);
 
     const s = scale || 6;
     const w = dim * s;
@@ -908,8 +1129,10 @@
     svg.style.height = "auto";
 
     const bg = document.createElementNS(svg.namespaceURI, "rect");
-    bg.setAttribute("x","0"); bg.setAttribute("y","0");
-    bg.setAttribute("width", dim); bg.setAttribute("height", dim);
+    bg.setAttribute("x", "0");
+    bg.setAttribute("y", "0");
+    bg.setAttribute("width", dim);
+    bg.setAttribute("height", dim);
     bg.setAttribute("fill", "#ffffff");
     svg.appendChild(bg);
 
@@ -918,15 +1141,17 @@
     svg.appendChild(g);
 
     let d = "";
-    for(let y=0;y<n;y++){
-      for(let x=0;x<n;x++){
-        if(qr.get(x,y)){
+
+    for(let y = 0; y < n; y++){
+      for(let x = 0; x < n; x++){
+        if(qr.get(x, y)){
           const xx = x + quiet;
           const yy = y + quiet;
           d += `M${xx} ${yy}h1v1h-1z `;
         }
       }
     }
+
     const path = document.createElementNS(svg.namespaceURI, "path");
     path.setAttribute("d", d.trim());
     g.appendChild(path);
@@ -937,37 +1162,46 @@
   const QRCode = (function(){
     const EXP = new Array(512);
     const LOG = new Array(256);
+
     (function initGF(){
       let x = 1;
-      for(let i=0;i<255;i++){
+
+      for(let i = 0; i < 255; i++){
         EXP[i] = x;
         LOG[x] = i;
         x <<= 1;
         if(x & 0x100) x ^= 0x11d;
       }
-      for(let i=255;i<512;i++) EXP[i] = EXP[i-255];
+
+      for(let i = 255; i < 512; i++){
+        EXP[i] = EXP[i - 255];
+      }
     })();
 
-    function gfMul(a,b){
-      if(a===0 || b===0) return 0;
+    function gfMul(a, b){
+      if(a === 0 || b === 0) return 0;
       return EXP[LOG[a] + LOG[b]];
     }
 
-    function polyMul(p,q){
+    function polyMul(p, q){
       const r = new Array(p.length + q.length - 1).fill(0);
-      for(let i=0;i<p.length;i++){
-        for(let j=0;j<q.length;j++){
-          r[i+j] ^= gfMul(p[i], q[j]);
+
+      for(let i = 0; i < p.length; i++){
+        for(let j = 0; j < q.length; j++){
+          r[i + j] ^= gfMul(p[i], q[j]);
         }
       }
+
       return r;
     }
 
     function reedSolomonGen(deg){
       let g = [1];
-      for(let i=0;i<deg;i++){
+
+      for(let i = 0; i < deg; i++){
         g = polyMul(g, [1, EXP[i]]);
       }
+
       return g;
     }
 
@@ -975,61 +1209,84 @@
       const gen = reedSolomonGen(ecLen);
       const msg = data.slice();
       msg.push(...new Array(ecLen).fill(0));
-      for(let i=0;i<data.length;i++){
+
+      for(let i = 0; i < data.length; i++){
         const coef = msg[i];
+
         if(coef !== 0){
-          for(let j=0;j<gen.length;j++){
-            msg[i+j] ^= gfMul(gen[j], coef);
+          for(let j = 0; j < gen.length; j++){
+            msg[i + j] ^= gfMul(gen[j], coef);
           }
         }
       }
+
       return msg.slice(msg.length - ecLen);
     }
 
-    const CAP_M_BYTE = [0,14,26,42,62,84,106,122,152,180,213];
-    const EC_M = [0,10,16,26,36,48,64,72,88,110,130];
-    const TOTAL_CODEWORDS = [0,26,44,70,100,134,172,196,242,292,346];
+    const CAP_M_BYTE = [0, 14, 26, 42, 62, 84, 106, 122, 152, 180, 213];
+    const EC_M = [0, 10, 16, 26, 36, 48, 64, 72, 88, 110, 130];
+    const TOTAL_CODEWORDS = [0, 26, 44, 70, 100, 134, 172, 196, 242, 292, 346];
 
     function chooseVersion(byteLen){
-      for(let v=1; v<=10; v++){
+      for(let v = 1; v <= 10; v++){
         if(byteLen <= CAP_M_BYTE[v]) return v;
       }
+
       return 10;
     }
 
     function bitBufferPush(bits, val, len){
-      for(let i=len-1;i>=0;i--){
+      for(let i = len - 1; i >= 0; i--){
         bits.push((val >>> i) & 1);
       }
     }
 
     function bitsToBytes(bits){
       const out = [];
-      for(let i=0;i<bits.length;i+=8){
-        let b=0;
-        for(let j=0;j<8;j++){
-          b = (b<<1) | (bits[i+j] || 0);
+
+      for(let i = 0; i < bits.length; i += 8){
+        let b = 0;
+
+        for(let j = 0; j < 8; j++){
+          b = (b << 1) | (bits[i + j] || 0);
         }
+
         out.push(b);
       }
+
       return out;
     }
 
     function makeMatrix(n){
       const m = new Array(n);
-      for(let y=0;y<n;y++) m[y] = new Array(n).fill(null);
+
+      for(let y = 0; y < n; y++){
+        m[y] = new Array(n).fill(null);
+      }
+
       return m;
     }
 
     function setFinder(m, x, y){
       const n = m.length;
-      for(let dy=-1; dy<=7; dy++){
-        for(let dx=-1; dx<=7; dx++){
-          const xx = x+dx, yy = y+dy;
-          if(xx<0||yy<0||xx>=n||yy>=n) continue;
+
+      for(let dy = -1; dy <= 7; dy++){
+        for(let dx = -1; dx <= 7; dx++){
+          const xx = x + dx;
+          const yy = y + dy;
+
+          if(xx < 0 || yy < 0 || xx >= n || yy >= n) continue;
+
           const on =
-            (dx>=0&&dx<=6&&dy>=0&&dy<=6) &&
-            (dx===0||dx===6||dy===0||dy===6|| (dx>=2&&dx<=4&&dy>=2&&dy<=4));
+            (dx >= 0 && dx <= 6 && dy >= 0 && dy <= 6) &&
+            (
+              dx === 0 ||
+              dx === 6 ||
+              dy === 0 ||
+              dy === 6 ||
+              (dx >= 2 && dx <= 4 && dy >= 2 && dy <= 4)
+            );
+
           m[yy][xx] = on ? 1 : 0;
         }
       }
@@ -1037,44 +1294,53 @@
 
     function setTiming(m){
       const n = m.length;
-      for(let i=8;i<n-8;i++){
-        if(m[6][i]===null) m[6][i] = (i%2===0)?1:0;
-        if(m[i][6]===null) m[i][6] = (i%2===0)?1:0;
+
+      for(let i = 8; i < n - 8; i++){
+        if(m[6][i] === null) m[6][i] = (i % 2 === 0) ? 1 : 0;
+        if(m[i][6] === null) m[i][6] = (i % 2 === 0) ? 1 : 0;
       }
     }
 
     function setDarkModule(m, v){
-      m[4*v + 9][8] = 1;
+      m[4 * v + 9][8] = 1;
     }
 
     function placeData(m, dataBits){
       const n = m.length;
       let i = 0;
       let dirUp = true;
-      for(let x=n-1; x>0; x-=2){
-        if(x===6) x--;
-        for(let y0=0; y0<n; y0++){
-          const y = dirUp ? (n-1-y0) : y0;
-          for(let dx=0; dx<2; dx++){
-            const xx = x-dx;
+
+      for(let x = n - 1; x > 0; x -= 2){
+        if(x === 6) x--;
+
+        for(let y0 = 0; y0 < n; y0++){
+          const y = dirUp ? (n - 1 - y0) : y0;
+
+          for(let dx = 0; dx < 2; dx++){
+            const xx = x - dx;
+
             if(m[y][xx] !== null) continue;
+
             const bit = dataBits[i++] || 0;
             m[y][xx] = bit;
           }
         }
+
         dirUp = !dirUp;
       }
     }
 
     function formatBits(ecLevel, maskId){
-      const ecBits = (ecLevel==="M") ? 0 : (ecLevel==="L") ? 1 : (ecLevel==="H") ? 2 : 3;
+      const ecBits = (ecLevel === "M") ? 0 : (ecLevel === "L") ? 1 : (ecLevel === "H") ? 2 : 3;
       let data = (ecBits << 3) | maskId;
 
       let d = data << 10;
       const poly = 0x537;
-      for(let i=14;i>=10;i--){
-        if((d >>> i) & 1) d ^= poly << (i-10);
+
+      for(let i = 14; i >= 10; i--){
+        if((d >>> i) & 1) d ^= poly << (i - 10);
       }
+
       const bits = ((data << 10) | d) ^ 0x5412;
       return bits & 0x7fff;
     }
@@ -1082,23 +1348,34 @@
     function applyFormat(m, ecLevel, maskId){
       const n = m.length;
       const bits = formatBits(ecLevel, maskId);
-      function bit(i){ return (bits >>> i) & 1; }
+
+      function bit(i){
+        return (bits >>> i) & 1;
+      }
 
       const coords1 = [
         [8,0],[8,1],[8,2],[8,3],[8,4],[8,5],[8,7],[8,8],
         [7,8],[5,8],[4,8],[3,8],[2,8],[1,8],[0,8]
       ];
-      for(let i=0;i<15;i++){
-        const [x,y] = coords1[i];
-        m[y][x] = bit(14-i);
+
+      for(let i = 0; i < 15; i++){
+        const pos = coords1[i];
+        m[pos[1]][pos[0]] = bit(14 - i);
       }
 
       const coords2 = [];
-      for(let i=0;i<8;i++) coords2.push([n-1-i,8]);
-      for(let i=0;i<7;i++) coords2.push([8,n-7+i]);
-      for(let i=0;i<15;i++){
-        const [x,y] = coords2[i];
-        m[y][x] = bit(14-i);
+
+      for(let i = 0; i < 8; i++){
+        coords2.push([n - 1 - i, 8]);
+      }
+
+      for(let i = 0; i < 7; i++){
+        coords2.push([8, n - 7 + i]);
+      }
+
+      for(let i = 0; i < 15; i++){
+        const pos = coords2[i];
+        m[pos[1]][pos[0]] = bit(14 - i);
       }
 
       m[8][6] = 1;
@@ -1106,9 +1383,10 @@
 
     function encode(text, ecLevel){
       ecLevel = ecLevel || "M";
+
       const bytes = new TextEncoder().encode(text);
       const v = chooseVersion(bytes.length);
-      const n = 21 + (v-1)*4;
+      const n = 21 + (v - 1) * 4;
 
       const total = TOTAL_CODEWORDS[v];
       const ecLen = EC_M[v];
@@ -1116,19 +1394,28 @@
 
       const bits = [];
       bitBufferPush(bits, 0b0100, 4);
+
       const lenBits = (v <= 9) ? 8 : 16;
       bitBufferPush(bits, bytes.length, lenBits);
-      for(const b of bytes) bitBufferPush(bits, b, 8);
+
+      for(const b of bytes){
+        bitBufferPush(bits, b, 8);
+      }
 
       const maxBits = dataLen * 8;
       const remaining = maxBits - bits.length;
       bitBufferPush(bits, 0, Math.min(4, Math.max(0, remaining)));
-      while(bits.length % 8) bits.push(0);
+
+      while(bits.length % 8){
+        bits.push(0);
+      }
 
       let data = bitsToBytes(bits);
 
-      const PAD0 = 0xec, PAD1 = 0x11;
+      const PAD0 = 0xec;
+      const PAD1 = 0x11;
       let padToggle = false;
+
       while(data.length < dataLen){
         data.push(padToggle ? PAD1 : PAD0);
         padToggle = !padToggle;
@@ -1138,33 +1425,40 @@
       const codewords = data.concat(ec);
 
       const cwBits = [];
+
       for(const cw of codewords){
-        for(let i=7;i>=0;i--) cwBits.push((cw>>>i)&1);
+        for(let i = 7; i >= 0; i--){
+          cwBits.push((cw >>> i) & 1);
+        }
       }
 
       const m = makeMatrix(n);
+
       setFinder(m, 0, 0);
-      setFinder(m, n-7, 0);
-      setFinder(m, 0, n-7);
+      setFinder(m, n - 7, 0);
+      setFinder(m, 0, n - 7);
       setTiming(m);
 
-      for(let i=0;i<9;i++){
-        if(m[8][i]===null) m[8][i] = 0;
-        if(m[i][8]===null) m[i][8] = 0;
+      for(let i = 0; i < 9; i++){
+        if(m[8][i] === null) m[8][i] = 0;
+        if(m[i][8] === null) m[i][8] = 0;
       }
-      for(let i=n-8;i<n;i++){
-        if(m[8][i]===null) m[8][i] = 0;
-        if(m[i][8]===null) m[i][8] = 0;
+
+      for(let i = n - 8; i < n; i++){
+        if(m[8][i] === null) m[8][i] = 0;
+        if(m[i][8] === null) m[i][8] = 0;
       }
-      for(let i=n-7;i<n;i++){
-        if(m[i][8]===null) m[i][8] = 0;
+
+      for(let i = n - 7; i < n; i++){
+        if(m[i][8] === null) m[i][8] = 0;
       }
 
       setDarkModule(m, v);
 
-      const locked = new Array(n).fill(0).map(()=>new Array(n).fill(false));
-      for(let y=0;y<n;y++){
-        for(let x=0;x<n;x++){
+      const locked = new Array(n).fill(0).map(() => new Array(n).fill(false));
+
+      for(let y = 0; y < n; y++){
+        for(let x = 0; x < n; x++){
           if(m[y][x] !== null) locked[y][x] = true;
         }
       }
@@ -1172,9 +1466,11 @@
       placeData(m, cwBits);
 
       const maskId = 0;
-      for(let y=0;y<n;y++){
-        for(let x=0;x<n;x++){
+
+      for(let y = 0; y < n; y++){
+        for(let x = 0; x < n; x++){
           if(locked[y][x]) continue;
+
           if(((x + y) & 1) === 0){
             m[y][x] = m[y][x] ? 0 : 1;
           }
@@ -1185,7 +1481,7 @@
 
       return {
         size: n,
-        get: (x,y) => !!m[y][x]
+        get: (x, y) => !!m[y][x]
       };
     }
 
