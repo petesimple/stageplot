@@ -463,6 +463,84 @@
         color:#000 !important;
       }
     }
+
+        .starterPackBanner{
+      display:block;
+      color:var(--text);
+      text-decoration:none;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(74,163,255,.22), transparent 34%),
+        linear-gradient(135deg, rgba(74,163,255,.16), rgba(64,217,138,.10));
+      border-bottom:1px solid rgba(74,163,255,.40);
+    }
+
+    .starterPackBannerInner{
+      max-width:980px;
+      margin:0 auto;
+      padding:12px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+    }
+
+    .starterPackBannerCopy{
+      min-width:0;
+    }
+
+    .starterPackBannerTitle{
+      font-size:14px;
+      font-weight:900;
+      color:var(--text);
+    }
+
+    .starterPackBannerDescription{
+      margin-top:3px;
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .starterPackBannerButton{
+      flex:0 0 auto;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:8px 12px;
+      border-radius:12px;
+      border:1px solid rgba(64,217,138,.50);
+      background:rgba(64,217,138,.13);
+      color:var(--text);
+      font-size:12px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    .starterPackBanner:hover{
+      border-bottom-color:rgba(74,163,255,.85);
+    }
+
+    .starterPackBanner:hover .starterPackBannerButton{
+      background:rgba(64,217,138,.20);
+      border-color:rgba(64,217,138,.85);
+    }
+
+    @media (max-width:620px){
+      .starterPackBannerInner{
+        align-items:flex-start;
+        flex-direction:column;
+      }
+
+      .starterPackBannerButton{
+        width:100%;
+      }
+    }
+
+    @media print{
+      .starterPackBanner{
+        display:none !important;
+      }
+    }
+    
   </style>
 </head>
 
@@ -488,6 +566,30 @@
   </div>
 </header>
 
+<a
+  class="starterPackBanner"
+  href="https://ko-fi.com/s/cb2efc534c"
+  target="_blank"
+  rel="noopener"
+  aria-label="Get StagePlot Starter Pack 1 from Ko-fi"
+>
+  <div class="starterPackBannerInner">
+    <div class="starterPackBannerCopy">
+      <div class="starterPackBannerTitle">
+        StagePlot Starter Pack 1 is now available
+      </div>
+
+      <div class="starterPackBannerDescription">
+        Get three editable layouts for Power Trio, Solo Acoustic, and Acoustic Duo. Import them into StagePlot and customize them for your next show.
+      </div>
+    </div>
+
+    <span class="starterPackBannerButton">
+      Get the pack for $9
+    </span>
+  </div>
+</a>
+  
 <main>
   <section class="card">
     <div class="hd">
