@@ -464,82 +464,108 @@
       }
     }
 
-        .starterPackBanner{
-      display:block;
-      color:var(--text);
-      text-decoration:none;
-      background:
-        radial-gradient(circle at 15% 20%, rgba(74,163,255,.22), transparent 34%),
-        linear-gradient(135deg, rgba(74,163,255,.16), rgba(64,217,138,.10));
-      border-bottom:1px solid rgba(74,163,255,.40);
-    }
+       .starterPackBanner{
+  display:block;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 15% 20%, rgba(74,163,255,.22), transparent 34%),
+    linear-gradient(135deg, rgba(74,163,255,.16), rgba(64,217,138,.10));
+  border-bottom:1px solid rgba(74,163,255,.40);
+}
 
-    .starterPackBannerInner{
-      max-width:980px;
-      margin:0 auto;
-      padding:12px 14px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:14px;
-    }
+.starterPackBannerInner{
+  max-width:980px;
+  margin:0 auto;
+  padding:12px 14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+}
 
-    .starterPackBannerCopy{
-      min-width:0;
-    }
+.starterPackBannerCopy{
+  min-width:0;
+  flex:1 1 320px;
+}
 
-    .starterPackBannerTitle{
-      font-size:14px;
-      font-weight:900;
-      color:var(--text);
-    }
+.starterPackBannerTitle{
+  font-size:14px;
+  font-weight:900;
+  color:var(--text);
+}
 
-    .starterPackBannerDescription{
-      margin-top:3px;
-      color:var(--muted);
-      font-size:12px;
-    }
+.starterPackBannerDescription{
+  margin-top:3px;
+  color:var(--muted);
+  font-size:12px;
+}
 
-    .starterPackBannerButton{
-      flex:0 0 auto;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      padding:8px 12px;
-      border-radius:12px;
-      border:1px solid rgba(64,217,138,.50);
-      background:rgba(64,217,138,.13);
-      color:var(--text);
-      font-size:12px;
-      font-weight:900;
-      white-space:nowrap;
-    }
+.starterPackBannerActions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  flex-wrap:wrap;
+  flex:0 0 auto;
+}
 
-    .starterPackBanner:hover{
-      border-bottom-color:rgba(74,163,255,.85);
-    }
+.starterPackBannerButton{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:8px 12px;
+  border-radius:12px;
+  border:1px solid rgba(64,217,138,.50);
+  background:rgba(64,217,138,.13);
+  color:var(--text);
+  font-size:12px;
+  font-weight:900;
+  line-height:1.25;
+  text-decoration:none;
+  white-space:nowrap;
+  transition:
+    transform .05s ease,
+    background .15s ease,
+    border-color .15s ease;
+}
 
-    .starterPackBanner:hover .starterPackBannerButton{
-      background:rgba(64,217,138,.20);
-      border-color:rgba(64,217,138,.85);
-    }
+.starterPackBannerButton:hover{
+  background:rgba(64,217,138,.22);
+  border-color:rgba(64,217,138,.85);
+}
 
-    @media (max-width:620px){
-      .starterPackBannerInner{
-        align-items:flex-start;
-        flex-direction:column;
-      }
+.starterPackBannerButton:active{
+  transform:translateY(1px);
+}
 
-      .starterPackBannerButton{
-        width:100%;
-      }
-    }
+@media (max-width:760px){
+  .starterPackBannerInner{
+    align-items:flex-start;
+    flex-direction:column;
+  }
 
-    @media print{
-      .starterPackBanner{
-        display:none !important;
-      }
-    }
+  .starterPackBannerActions{
+    width:100%;
+    justify-content:flex-start;
+  }
+
+  .starterPackBannerButton{
+    flex:1 1 220px;
+  }
+}
+
+@media (max-width:520px){
+  .starterPackBannerButton{
+    flex:1 1 100%;
+    width:100%;
+  }
+}
+
+@media print{
+  .starterPackBanner{
+    display:none !important;
+  }
+}
     
   </style>
 </head>
@@ -566,29 +592,41 @@
   </div>
 </header>
 
-<a
-  class="starterPackBanner"
-  href="https://ko-fi.com/s/cb2efc534c"
-  target="_blank"
-  rel="noopener"
-  aria-label="Get StagePlot Starter Pack 1 from Ko-fi"
->
+<div class="starterPackBanner">
   <div class="starterPackBannerInner">
     <div class="starterPackBannerCopy">
       <div class="starterPackBannerTitle">
-        StagePlot Starter Pack 1 is now available
+        StagePlot Starter Packs
       </div>
 
       <div class="starterPackBannerDescription">
-        Get three editable layouts for Power Trio, Solo Acoustic, and Acoustic Duo. Import them into StagePlot and customize them for your next show.
+        Start faster with editable layouts for small bands and festival DJ setups. Import a template, customize it, and get your stage plan ready without beginning from an empty plot.
       </div>
     </div>
 
-    <span class="starterPackBannerButton">
-      Get the pack for $9
-    </span>
+    <div class="starterPackBannerActions">
+      <a
+        class="starterPackBannerButton"
+        href="https://ko-fi.com/s/cb2efc534c"
+        target="_blank"
+        rel="noopener"
+        aria-label="Get StagePlot Starter Pack 1 Essential Small Band Layouts from Ko-fi"
+      >
+        Pack 1: Small Bands · $9
+      </a>
+
+      <a
+        class="starterPackBannerButton"
+        href="https://ko-fi.com/s/4ca3cb2df4"
+        target="_blank"
+        rel="noopener"
+        aria-label="Get StagePlot Starter Pack 2 Festival DJ Layouts from Ko-fi"
+      >
+        Pack 2: Festival DJs · $9
+      </a>
+    </div>
   </div>
-</a>
+</div>
   
 <main>
   <section class="card">
