@@ -25,7 +25,7 @@
   })();
 </script>
   <meta name="theme-color" content="#0b0d12" />
-  <title>StagePlot v2 - v1.8.1 (3D Preview)</title>
+  <title>StagePlot v2 - v1.9.0 (3D Heights)</title>
 
   <style>
     :root{
@@ -946,7 +946,7 @@
         <div class="logo" aria-hidden="true">SP</div>
         <div>
           <h1>StagePlot v2</h1>
-          <div class="sub">v1.8.1 (3D Preview) - live 2D editor plus realized 3D preview</div>
+          <div class="sub">v1.9.0 (3D Heights) · live 2D editor plus adjustable stage and item heights</div>
         </div>
       </div>
 
@@ -1055,7 +1055,9 @@
               <div class="stage3dItems" id="stage3dItems"></div>
             </div>
           </div>
-          <div class="miniHelp">This preview reads the same stage size and item positions as the 2D editor.</div>
+          <div class="miniHelp">
+  The preview reads the same stage size and item positions as the 2D editor. Stage Height raises the deck. Item 3D Height overrides automatic object height.
+</div>
         </div>
       </div>
     </section>
@@ -1094,20 +1096,33 @@
                 </div>
 
                 <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
-                  <div class="field" style="width: 140px; margin:0;">
-                    <label>Width (<span id="unitLabelW">ft</span>)</label>
-                    <input type="number" min="1" step="0.1" id="stageW" />
-                  </div>
-                  <div class="field" style="width: 140px; margin:0;">
-                    <label>Depth (<span id="unitLabelD">ft</span>)</label>
-                    <input type="number" min="1" step="0.1" id="stageD" />
-                  </div>
-                </div>
+  <div class="field" style="width: 140px; margin:0;">
+    <label>Width (<span id="unitLabelW">ft</span>)</label>
+    <input type="number" min="1" step="0.1" id="stageW" />
+  </div>
+
+  <div class="field" style="width: 140px; margin:0;">
+    <label>Depth (<span id="unitLabelD">ft</span>)</label>
+    <input type="number" min="1" step="0.1" id="stageD" />
+  </div>
+
+  <div class="field" style="width: 140px; margin:0;">
+    <label>Stage Height (<span id="unitLabelStageH">ft</span>)</label>
+    <input
+      type="number"
+      min="0"
+      max="30"
+      step="0.1"
+      value="0"
+      id="stageHeight"
+    />
+  </div>
+</div>
               </div>
 
-              <div class="miniHelp" style="margin-top:10px;">
-                The stage always fits in the square at 100%. View Zoom can intentionally zoom in for detail.
-              </div>
+             <div class="miniHelp" style="margin-top:10px;">
+  Width and Depth control the 2D footprint. Stage Height raises the complete deck in the 3D preview.
+</div>
             </div>
           </div>
         </div>
@@ -1202,15 +1217,28 @@
                 <div class="miniHelp" style="margin-bottom:8px;">Size + Scale (pinch on touch screens)</div>
 
                 <div class="row tight" style="align-items:flex-end;">
-                  <div class="field" style="width: 120px; margin:0;">
-                    <label>Width (<span class="unitInline">ft</span>)</label>
-                    <input type="number" id="uItemW" min="0.1" step="0.1" />
-                  </div>
-                  <div class="field" style="width: 120px; margin:0;">
-                    <label>Depth (<span class="unitInline">ft</span>)</label>
-                    <input type="number" id="uItemH" min="0.1" step="0.1" />
-                  </div>
-                </div>
+  <div class="field" style="width: 120px; margin:0;">
+    <label>Width (<span class="unitInline">ft</span>)</label>
+    <input type="number" id="uItemW" min="0.1" step="0.1" />
+  </div>
+
+  <div class="field" style="width: 120px; margin:0;">
+    <label>Depth (<span class="unitInline">ft</span>)</label>
+    <input type="number" id="uItemH" min="0.1" step="0.1" />
+  </div>
+
+  <div class="field" style="width: 120px; margin:0;">
+    <label>3D Height (<span class="unitInline">ft</span>)</label>
+    <input
+      type="number"
+      id="uItemHeight3d"
+      min="0.1"
+      max="50"
+      step="0.1"
+      placeholder="Auto"
+    />
+  </div>
+</div>
 
                 <div class="row tight" style="margin-top:10px;">
                   <div style="flex:1;">
@@ -1227,8 +1255,8 @@
                 </div>
 
                 <div class="miniHelp" style="margin-top:6px;">
-                  Touch tip: put two fingers on the selected item and pinch to scale.
-                </div>
+  Leave 3D Height blank to use the automatic height. Touch tip: put two fingers on the selected item and pinch to scale.
+</div>
               </div>
             </div>
           </div>
@@ -1303,15 +1331,28 @@
         </div>
 
         <div class="row">
-          <div class="field" style="width: 48%; min-width:140px;">
-            <label>Item Width (<span class="unitInline">ft</span>)</label>
-            <input type="number" min="0.1" step="0.1" id="itemW" />
-          </div>
-          <div class="field" style="width: 48%; min-width:140px;">
-            <label>Item Depth (<span class="unitInline">ft</span>)</label>
-            <input type="number" min="0.1" step="0.1" id="itemH" />
-          </div>
-        </div>
+  <div class="field" style="width: 31%; min-width:120px;">
+    <label>Item Width (<span class="unitInline">ft</span>)</label>
+    <input type="number" min="0.1" step="0.1" id="itemW" />
+  </div>
+
+  <div class="field" style="width: 31%; min-width:120px;">
+    <label>Item Depth (<span class="unitInline">ft</span>)</label>
+    <input type="number" min="0.1" step="0.1" id="itemH" />
+  </div>
+
+  <div class="field" style="width: 31%; min-width:120px;">
+    <label>3D Height (<span class="unitInline">ft</span>)</label>
+    <input
+      type="number"
+      min="0.1"
+      max="50"
+      step="0.1"
+      id="itemHeight3d"
+      placeholder="Auto"
+    />
+  </div>
+</div>
 
         <div class="row">
           <div class="field" style="width: 48%; min-width:140px;">
@@ -1397,7 +1438,7 @@
 
 <script>
 (() => {
-  const APP_VERSION = "1.8.0 (3D Preview)";
+  const APP_VERSION = "1.9.0 (3D Heights)";
   const FT_PER_M = 3.280839895;
 
   const PRINT_TARGET = {
@@ -1414,8 +1455,10 @@
     stageSquareInner: document.getElementById("stageSquareInner"),
     stageCanvas: document.getElementById("stageCanvas"),
     stageW: document.getElementById("stageW"),
-    stageD: document.getElementById("stageD"),
-    stageMetaText: document.getElementById("stageMetaText"),
+stageD: document.getElementById("stageD"),
+stageHeight: document.getElementById("stageHeight"),
+unitLabelStageH: document.getElementById("unitLabelStageH"),
+stageMetaText: document.getElementById("stageMetaText"),
     bandName: document.getElementById("bandName"),
     showNotes: document.getElementById("showNotes"),
     selLabel: document.getElementById("selLabel"),
@@ -1428,8 +1471,9 @@
     uLabelSize: document.getElementById("uLabelSize"),
     uLabelSizePill: document.getElementById("uLabelSizePill"),
     itemW: document.getElementById("itemW"),
-    itemH: document.getElementById("itemH"),
-    itemScale: document.getElementById("itemScale"),
+itemH: document.getElementById("itemH"),
+itemHeight3d: document.getElementById("itemHeight3d"),
+itemScale: document.getElementById("itemScale"),
     itemScalePill: document.getElementById("itemScalePill"),
     itemRot: document.getElementById("itemRot"),
     itemRotPill: document.getElementById("itemRotPill"),
@@ -1479,8 +1523,9 @@
     underStageTools: document.getElementById("underStageTools"),
     underSelName: document.getElementById("underSelName"),
     uItemW: document.getElementById("uItemW"),
-    uItemH: document.getElementById("uItemH"),
-    uItemScale: document.getElementById("uItemScale"),
+uItemH: document.getElementById("uItemH"),
+uItemHeight3d: document.getElementById("uItemHeight3d"),
+uItemScale: document.getElementById("uItemScale"),
     uItemScalePill: document.getElementById("uItemScalePill"),
     uItemColor: document.getElementById("uItemColor"),
     uClearColor: document.getElementById("uClearColor"),
@@ -1524,7 +1569,7 @@
   let state = {
     version: APP_VERSION,
     units: "ft",
-    stage: { w: 24, d: 16 },
+    stage: { w: 24, d: 16, height: 0 },
     view: { flip:false },
     viewZoom: 1.0,
     printScale: 1,
@@ -1572,33 +1617,47 @@ let view3d = load3DState();
   }
 
   function save(){
-    const toSave = {
-      version: state.version,
-      units: state.units,
-      stage: state.stage,
-      view: state.view,
-      viewZoom: state.viewZoom,
-      bandName: state.bandName,
-      showNotes: state.showNotes,
-      items: state.items
-    };
-    localStorage.setItem(LS_KEY, JSON.stringify(toSave));
-  }
+  const toSave = {
+    version: state.version,
+    internalUnits: "ft",
+    units: state.units,
+    stage: state.stage,
+    view: state.view,
+    viewZoom: state.viewZoom,
+    bandName: state.bandName,
+    showNotes: state.showNotes,
+    items: state.items
+  };
+
+  localStorage.setItem(LS_KEY, JSON.stringify(toSave));
+}
 
   function load(){
-    try{
-      const raw = localStorage.getItem(LS_KEY);
-      if(!raw) return;
-      const obj = JSON.parse(raw);
-      state = migrateProject(obj);
-    }catch(e){}
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(!raw) return;
+
+    const obj = JSON.parse(raw);
+
+    /*
+      StagePlot localStorage has always stored measurements
+      internally in feet, even when the visible unit is meters.
+    */
+    if(!obj.internalUnits){
+      obj.internalUnits = "ft";
+    }
+
+    state = migrateProject(obj);
+  }catch(e){
+    console.error("Could not load saved StagePlot project:", e);
   }
+}
 
   function migrateProject(obj){
     const migrated = {
       version: APP_VERSION,
       units: (obj && obj.units === "m") ? "m" : "ft",
-      stage: { w: 24, d: 16 },
+      stage: { w: 24, d: 16, height: 0 },
       view: { flip:false },
       viewZoom: 1.0,
       printScale: 1,
@@ -1612,17 +1671,26 @@ let view3d = load3DState();
 
     if(obj){
       if(obj.stage && typeof obj.stage.w === "number" && typeof obj.stage.d === "number"){
-        migrated.stage.w = obj.stage.w;
-        migrated.stage.d = obj.stage.d;
-      }else{
+  migrated.stage.w = obj.stage.w;
+  migrated.stage.d = obj.stage.d;
+
+  if(typeof obj.stage.height === "number"){
+    migrated.stage.height = obj.stage.height;
+  }
+}else{
         if(typeof obj.stageWidth === "number") migrated.stage.w = obj.stageWidth;
         if(typeof obj.stageDepth === "number") migrated.stage.d = obj.stageDepth;
       }
 
-      if(obj.units === "m"){
-        migrated.stage.w *= FT_PER_M;
-        migrated.stage.d *= FT_PER_M;
-      }
+      const needsMetricConversion =
+  obj.units === "m" &&
+  obj.internalUnits !== "ft";
+
+if(needsMetricConversion){
+  migrated.stage.w *= FT_PER_M;
+  migrated.stage.d *= FT_PER_M;
+  migrated.stage.height *= FT_PER_M;
+}
 
       if(obj.view && typeof obj.view.flip === "boolean") migrated.view.flip = obj.view.flip;
 
@@ -1646,7 +1714,11 @@ let view3d = load3DState();
             y: Number(it.y)||0,
             w: Number(it.w)||2,
             h: Number(it.h)||2,
-            rot: Number(it.rot)||0,
+height3d:
+  it.height3d == null || it.height3d === ""
+    ? null
+    : Number(it.height3d),
+rot: Number(it.rot)||0,
             scale: (it.scale==null ? 1.0 : Number(it.scale)) || 1.0,
             labelScale: (it.labelScale == null ? 1.0 : Number(it.labelScale)) || 1.0,
             color: it.color || "",
@@ -1656,14 +1728,29 @@ let view3d = load3DState();
             notes: it.notes || ""
           };
 
-          if(obj.units === "m"){
-            out.x *= FT_PER_M; out.y *= FT_PER_M;
-            out.w *= FT_PER_M; out.h *= FT_PER_M;
-          }
+          if(needsMetricConversion){
+  out.x *= FT_PER_M;
+  out.y *= FT_PER_M;
+  out.w *= FT_PER_M;
+  out.h *= FT_PER_M;
+
+  if(out.height3d != null){
+    out.height3d *= FT_PER_M;
+  }
+}
 
           out.scale = clamp(out.scale, 0.5, 2.0);
           out.labelScale = clamp(out.labelScale, 0.6, 1.6);
           out.rot = ((out.rot % 360) + 360) % 360;
+          if(
+  out.height3d == null ||
+  !isFinite(out.height3d) ||
+  out.height3d <= 0
+){
+  out.height3d = null;
+}else{
+  out.height3d = clamp(out.height3d, 0.1, 50);
+}
           return out;
         });
       }
@@ -1671,6 +1758,12 @@ let view3d = load3DState();
 
     migrated.stage.w = clamp(migrated.stage.w, 4, 200);
     migrated.stage.d = clamp(migrated.stage.d, 4, 200);
+
+	migrated.stage.height = clamp(
+  Number(migrated.stage.height) || 0,
+  0,
+  30
+);
 
     migrated.items.forEach(it => {
       it.w = clamp(it.w, 0.5, 200);
@@ -1882,15 +1975,32 @@ let view3d = load3DState();
   }
 
   function updateUnitsUI(){
-    els.unitsPill.textContent = "Units: " + state.units;
-    els.unitLabelW.textContent = state.units;
-    els.unitLabelD.textContent = state.units;
-    unitInlineEls.forEach(x => x.textContent = state.units);
-    els.stageW.value = (Math.round(feetToDisplay(state.stage.w)*100)/100);
-    els.stageD.value = (Math.round(feetToDisplay(state.stage.d)*100)/100);
-    els.stageMetaText.textContent =
-      `${(Math.round(feetToDisplay(state.stage.w)*100)/100)} x ${(Math.round(feetToDisplay(state.stage.d)*100)/100)} ${state.units}`;
-  }
+  els.unitsPill.textContent = "Units: " + state.units;
+
+  els.unitLabelW.textContent = state.units;
+  els.unitLabelD.textContent = state.units;
+  els.unitLabelStageH.textContent = state.units;
+
+  unitInlineEls.forEach(x => {
+    x.textContent = state.units;
+  });
+
+  const stageWDisplay =
+    Math.round(feetToDisplay(state.stage.w) * 100) / 100;
+
+  const stageDDisplay =
+    Math.round(feetToDisplay(state.stage.d) * 100) / 100;
+
+  const stageHeightDisplay =
+    Math.round(feetToDisplay(state.stage.height || 0) * 100) / 100;
+
+  els.stageW.value = stageWDisplay;
+  els.stageD.value = stageDDisplay;
+  els.stageHeight.value = stageHeightDisplay;
+
+  els.stageMetaText.textContent =
+    `${stageWDisplay} x ${stageDDisplay} ${state.units} · deck height ${stageHeightDisplay} ${state.units}`;
+}
 
   function updateViewUI(){
     els.viewZoom.value = Math.round(state.viewZoom * 100);
@@ -1938,8 +2048,10 @@ let view3d = load3DState();
     [
       els.itemLabel, els.itemInput, els.itemMix, els.itemNotes,
       els.labelSize, els.uLabelSize,
-      els.itemW, els.itemH, els.itemScale, els.itemRot, els.btnRot0,
-      els.btnDup, els.uItemW, els.uItemH, els.uItemScale,
+      els.itemW, els.itemH, els.itemHeight3d,
+els.itemScale, els.itemRot, els.btnRot0,
+els.btnDup, els.uItemW, els.uItemH, els.uItemHeight3d,
+els.uItemScale,
       els.itemColor, els.clearColor, els.uItemColor, els.uClearColor
     ].forEach(el => el.disabled = disabled);
     document.querySelectorAll('[data-shape]').forEach(btn => btn.disabled = disabled);
@@ -1989,14 +2101,16 @@ let view3d = load3DState();
       els.itemMix.value = "";
       els.itemNotes.value = "";
       els.itemW.value = "";
-      els.itemH.value = "";
-      els.itemScale.value = 100;
+els.itemH.value = "";
+els.itemHeight3d.value = "";
+els.itemScale.value = 100;
       els.itemScalePill.textContent = "100%";
       els.itemRot.value = 0;
       els.itemRotPill.textContent = "0°";
       els.uItemW.value = "";
-      els.uItemH.value = "";
-      els.uItemScale.value = 100;
+els.uItemH.value = "";
+els.uItemHeight3d.value = "";
+els.uItemScale.value = 100;
       els.uItemScalePill.textContent = "100%";
       return;
     }
@@ -2009,6 +2123,13 @@ let view3d = load3DState();
     const dispH = Math.round(feetToDisplay(primary.h) * 100) / 100;
     els.itemW.value = dispW;
     els.itemH.value = dispH;
+    const height3dDisplay =
+  primary.height3d == null
+    ? ""
+    : Math.round(feetToDisplay(primary.height3d) * 100) / 100;
+
+els.itemHeight3d.value = height3dDisplay;
+els.uItemHeight3d.value = height3dDisplay;
     els.uItemW.value = dispW;
     els.uItemH.value = dispH;
     const scPct = Math.round((primary.scale || 1)*100);
@@ -2124,8 +2245,17 @@ let view3d = load3DState();
 
     renderTables();
     render3D();
-    els.stageMetaText.textContent =
-      `${(Math.round(feetToDisplay(state.stage.w)*100)/100)} x ${(Math.round(feetToDisplay(state.stage.d)*100)/100)} ${state.units}`;
+    const stageWDisplay =
+  Math.round(feetToDisplay(state.stage.w) * 100) / 100;
+
+const stageDDisplay =
+  Math.round(feetToDisplay(state.stage.d) * 100) / 100;
+
+const stageHeightDisplay =
+  Math.round(feetToDisplay(state.stage.height || 0) * 100) / 100;
+
+els.stageMetaText.textContent =
+  `${stageWDisplay} x ${stageDDisplay} ${state.units} · deck height ${stageHeightDisplay} ${state.units}`;
   }
 
   function renderTables(){
@@ -2189,7 +2319,7 @@ function build3DBox(opts){
 
   const W = Math.max(8, w * pxPerFoot);
   const D = Math.max(8, d * pxPerFoot);
-  const H = Math.max(6, h * pxPerFoot * 0.42);
+  const H = Math.max(2, h * get3dVerticalPxPerFoot());
 
   const obj = document.createElement("div");
   obj.className = "stage3dObj";
@@ -2296,23 +2426,36 @@ function get3dPxPerFoot(){
   return Math.max(8, Math.min(maxFloorW / state.stage.w, maxFloorD / state.stage.d));
 }
 
-  function getItemHeight3D(it){
-    const kind = it.kind || inferKind(it.type);
-    const label = (it.label || "").toLowerCase();
-    const type = (it.type || "").toLowerCase();
+function get3dVerticalPxPerFoot(){
+  return get3dPxPerFoot() * 0.42;
+}
 
-    if(kind === "person") return 5.7;
-    if(kind === "power") return 0.35;
-    if(type.includes("wedge")) return 1.0;
-    if(type.includes("di")) return 0.3;
-    if(type.includes("mic")) return 3.8;
-    if(type.includes("amp")) return 2.6;
-    if(type.includes("riser")) return 0.75;
-    if(type.includes("drums") || label.includes("drum")) return 3.0;
-    if(type.includes("keys") || label.includes("keys")) return 2.8;
-    if(kind === "instr") return 3.2;
-    return 1.8;
+  function getItemHeight3D(it){
+  if(
+    it.height3d != null &&
+    isFinite(Number(it.height3d)) &&
+    Number(it.height3d) > 0
+  ){
+    return clamp(Number(it.height3d), 0.1, 50);
   }
+
+  const kind = it.kind || inferKind(it.type);
+  const label = (it.label || "").toLowerCase();
+  const type = (it.type || "").toLowerCase();
+
+  if(kind === "person") return 5.7;
+  if(kind === "power") return 0.35;
+  if(type.includes("wedge")) return 1.0;
+  if(type.includes("di")) return 0.3;
+  if(type.includes("mic")) return 3.8;
+  if(type.includes("amp")) return 2.6;
+  if(type.includes("riser")) return 0.75;
+  if(type.includes("drums") || label.includes("drum")) return 3.0;
+  if(type.includes("keys") || label.includes("keys")) return 2.8;
+  if(kind === "instr") return 3.2;
+
+  return 1.8;
+}
 
   function faceColor(base, amount){
     return `color-mix(in srgb, ${base} ${amount}%, rgba(255,255,255,.08))`;
@@ -2320,40 +2463,65 @@ function get3dPxPerFoot(){
 
 
   function render3D(){
-  if(!els.stage3dItems || !els.stage3dFloor || !els.stage3dBackWall || !els.stage3dLip) return;
+  if(
+    !els.stage3dItems ||
+    !els.stage3dFloor ||
+    !els.stage3dBackWall ||
+    !els.stage3dLip
+  ){
+    return;
+  }
 
   const pxPerFoot = get3dPxPerFoot();
+  const verticalPxPerFoot = get3dVerticalPxPerFoot();
 
   const floorW = state.stage.w * pxPerFoot;
   const floorD = state.stage.d * pxPerFoot;
+
+  const stageHeightFeet = clamp(
+    Number(state.stage.height) || 0,
+    0,
+    30
+  );
+
+  const stageElevationPx =
+    stageHeightFeet * verticalPxPerFoot;
+
   const wallH = Math.max(110, floorD * 0.55);
 
   els.stage3dFloor.style.width = floorW + "px";
   els.stage3dFloor.style.height = floorD + "px";
   els.stage3dFloor.style.transform =
-    `translate(-50%, -50%) translateZ(0px)`;
+    `translate(-50%, -50%) translateZ(${stageElevationPx}px)`;
 
   els.stage3dItems.style.width = floorW + "px";
   els.stage3dItems.style.height = floorD + "px";
   els.stage3dItems.style.transform =
-    `translate(-50%, -50%) translateZ(2px)`;
+    `translate(-50%, -50%) translateZ(${stageElevationPx + 2}px)`;
 
-    els.stage3dBackWall.style.width = floorW + "px";
-els.stage3dBackWall.style.height = wallH + "px";
+  els.stage3dBackWall.style.width = floorW + "px";
+  els.stage3dBackWall.style.height = wallH + "px";
+  els.stage3dBackWall.style.left = "50%";
+  els.stage3dBackWall.style.top =
+    `calc(50% - ${floorD / 2}px - ${wallH}px)`;
 
-/*
-  Put the wall's bottom edge on the upstage/back edge of the floor.
-  Then rotate the wall upright from that bottom edge.
-*/
-els.stage3dBackWall.style.left = "50%";
-els.stage3dBackWall.style.top = `calc(50% - ${floorD / 2}px - ${wallH}px)`;
-els.stage3dBackWall.style.transformOrigin = "bottom center";
-els.stage3dBackWall.style.transform = `translateX(-50%) rotateX(-90deg)`;
+  els.stage3dBackWall.style.transformOrigin = "bottom center";
+  els.stage3dBackWall.style.transform =
+    `translateX(-50%) translateZ(${stageElevationPx}px) rotateX(-90deg)`;
+
+  els.stage3dLip.style.display =
+    stageElevationPx > 0.5 ? "block" : "none";
 
   els.stage3dLip.style.width = floorW + "px";
-  els.stage3dLip.style.height = "10px";
+  els.stage3dLip.style.height =
+    Math.max(1, stageElevationPx) + "px";
+
+  els.stage3dLip.style.transformOrigin = "top center";
   els.stage3dLip.style.transform =
-    `translate(-50%, -50%) translateY(${floorD / 2}px) translateZ(0px) rotateX(90deg)`;
+    `translate(-50%, -50%) ` +
+    `translateY(${floorD / 2}px) ` +
+    `translateZ(${stageElevationPx}px) ` +
+    `rotateX(90deg)`;
 
   els.stage3dItems.innerHTML = "";
 
@@ -2397,8 +2565,9 @@ els.stage3dBackWall.style.transform = `translateX(-50%) rotateX(-90deg)`;
       x: (state.stage.w/2) - (def.w/2),
       y: (state.stage.d/2) - (def.h/2),
       w: def.w,
-      h: def.h,
-      rot: 0,
+h: def.h,
+height3d: null,
+rot: 0,
       scale: 1.0,
       labelScale: 1.0,
       color: "",
@@ -2812,13 +2981,27 @@ els.stage3dBackWall.style.transform = `translateX(-50%) rotateX(-90deg)`;
     document.querySelector('[data-preset="custom"]').classList.add("on");
     setStageFeet(state.stage.w, dFeet);
   });
+  
+  els.stageHeight.addEventListener("change", () => {
+  state.stage.height = clamp(
+    displayToFeet(els.stageHeight.value),
+    0,
+    30
+  );
+
+  updateUnitsUI();
+  render();
+  save();
+});
 
   els.btnUnits.addEventListener("click", () => {
-    state.units = (state.units === "ft") ? "m" : "ft";
-    updateUnitsUI();
-    updateSelectionUI();
-    save();
-  });
+  state.units = state.units === "ft" ? "m" : "ft";
+
+  updateUnitsUI();
+  updateSelectionUI();
+  render();
+  save();
+});
 
   els.viewZoom.addEventListener("input", () => {
     state.viewZoom = clamp(Number(els.viewZoom.value)/100, 0.5, 2.0);
@@ -2847,7 +3030,7 @@ els.stage3dBackWall.style.transform = `translateX(-50%) rotateX(-90deg)`;
     const ok = confirm("Reset Stage?\nThis clears items, selection, band name, notes, and resets view and stage size.");
     if(!ok) return;
     state.units = "ft";
-    state.stage = { w: 24, d: 16 };
+    state.stage = { w: 24, d: 16, height: 0 };
     state.view = { flip:false };
     state.viewZoom = 1.0;
     state.printScale = 1;
@@ -2884,6 +3067,36 @@ els.stage3dBackWall.style.transform = `translateX(-50%) rotateX(-90deg)`;
     els.uItemW.value = wDisp;
     els.uItemH.value = hDisp;
   }
+
+function setPrimaryHeight3DFromDisplay(value){
+  const it = getPrimary();
+  if(!it) return;
+
+  const raw = String(value ?? "").trim();
+
+  if(raw === ""){
+    it.height3d = null;
+  }else{
+    const feet = displayToFeet(raw);
+
+    if(!isFinite(feet) || feet <= 0){
+      it.height3d = null;
+    }else{
+      it.height3d = clamp(feet, 0.1, 50);
+    }
+  }
+
+  const displayValue =
+    it.height3d == null
+      ? ""
+      : Math.round(feetToDisplay(it.height3d) * 100) / 100;
+
+  els.itemHeight3d.value = displayValue;
+  els.uItemHeight3d.value = displayValue;
+
+  render();
+  save();
+}
 
   function expandPrintTextareas(){
     const areas = [els.showNotes, els.itemNotes];
@@ -2959,6 +3172,15 @@ els.stage3dBackWall.style.transform = `translateX(-50%) rotateX(-90deg)`;
     render();
     save();
   });
+  
+  els.itemHeight3d.addEventListener("change", () => {
+  setPrimaryHeight3DFromDisplay(els.itemHeight3d.value);
+});
+
+els.uItemHeight3d.addEventListener("change", () => {
+  setPrimaryHeight3DFromDisplay(els.uItemHeight3d.value);
+});
+  
   els.itemH.addEventListener("change", () => {
     const it = getPrimary(); if(!it) return;
     applyItemWHFromDisplay(it, els.itemW.value, els.itemH.value);
@@ -3066,7 +3288,11 @@ els.stage3dBackWall.style.transform = `translateX(-50%) rotateX(-90deg)`;
       exportedAt: new Date().toISOString(),
       internalUnits: "ft",
       units: state.units,
-      stage: { w: state.stage.w, d: state.stage.d },
+      stage: {
+  w: state.stage.w,
+  d: state.stage.d,
+  height: state.stage.height || 0
+},
       view: state.view,
       viewZoom: state.viewZoom,
       bandName: state.bandName,
